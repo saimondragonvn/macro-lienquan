@@ -98,14 +98,26 @@ object ShizukuHelper {
         val outputLog = StringBuilder()
 
         try {
+            val shizukuClass = Class.forName("rikka.shizuku.Shizuku")
+            val newProcessMethod = shizukuClass.getDeclaredMethod(
+                "newProcess",
+                Array<String>::class.java,
+                Array<String>::class.java,
+                String::class.java
+            )
+            newProcessMethod.isAccessible = true
+
             for (cmd in commands) {
-                val process = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
-                val reader = BufferedReader(InputStreamReader(process.inputStream))
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    outputLog.append(line).append("\n")
+                val process = newProcessMethod.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? java.lang.Process
+                process?.let { p ->
+                    val reader = BufferedReader(InputStreamReader(p.inputStream))
+                    var line: String?
+                    while (reader.readLine().also { line = it } != null) {
+                        outputLog.append(line).append("\n")
+                    }
+                    p.waitFor()
+                    p.destroy()
                 }
-                process.waitFor()
             }
             Result.success("Đã cấp toàn bộ quyền thành công qua Shizuku!")
         } catch (e: Throwable) {
