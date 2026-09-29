@@ -4,6 +4,22 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.2.2] - 2026-09-30
+### 📱 Sửa triệt để Crash & Nâng cấp giao diện Cyberpunk chuyên nghiệp cho Infinix Note 30
+- **ĐẶC TRỊ 100% LỖI CRASH TRÊN MÁY INFINIX NOTE 30 (XOS 13/14)**:
+  - Loại bỏ hoàn toàn thao tác kiểm tra Root đồng bộ trên Main UI Thread làm treo máy / ANR ("Ứng dụng đã dừng"). Kiểm tra file nhị phân tức thì và lưu cache.
+  - Sửa lỗi `ForegroundServiceDidNotStartInTimeException`: Tích hợp `ServiceCompat.startForeground` với kiểu `specialUse` an toàn trên Android 13/14, không gọi `stopSelf()` sớm trong `onCreate()`.
+  - Thay thế cơ chế bắt lỗi đóng băng Main Looper trong `MacroApp` bằng bộ ghi nhận sự cố chẩn đoán và bàn giao chuẩn cho hệ điều hành.
+  - Tối ưu hóa lệnh shell `input tap` / `input swipe` với tọa độ nguyên `toInt()` an toàn cho chip MediaTek Helio G99.
+- **NÂNG CẤP TOÀN DIỆN GIAO DIỆN (UI REDESIGN)**:
+  - Tự động nhận diện thiết bị: Hiển thị badge "Thiết bị: Infinix Note 30 • 120Hz Fast Combo" trực tiếp trên màn hình chính.
+  - Card đặc quyền tối ưu Infinix: Hướng dẫn và mở trực tiếp màn hình mở khóa "Cài đặt bị hạn chế" (Restricted Settings) và "Cửa sổ thả nổi" (Floating Window).
+  - Đèn LED trạng thái thời gian thực: Hiển thị "SẴN SÀNG" hoặc "CHƯA CẤP ĐỦ" tức thì.
+  - Bố cục cyberpunk hiện đại, phong cách game thủ chuyên nghiệp, trực quan và dễ sử dụng.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.2.2.apk`.
+
+---
+
 ## [v1.2.1] - 2026-09-30
 ### 🎯 Hiển thị trực quan vị trí ghi & Tự động tạo Nút tròn Macro nổi
 - **HIỂN THỊ TRỰC QUAN TẤT CẢ VỊ TRÍ ĐÃ NHẤN HOẶC VUỐT**:

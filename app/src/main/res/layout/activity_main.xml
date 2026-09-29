@@ -15,16 +15,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="16dp">
 
-            <!-- Hero Header -->
+            <!-- Hero Gaming Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="20dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="14dp">
 
                 <ImageView
                     android:layout_width="48dp"
@@ -35,9 +35,10 @@
                     app:tint="@color/cyan_neon" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
@@ -47,59 +48,45 @@
                         android:textColor="@color/cyan_neon"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:letterSpacing="0.05" />
+                        android:letterSpacing="0.04" />
 
+                    <!-- Device identification badge -->
                     <TextView
+                        android:id="@+id/tvDeviceBadge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Fast Combo &amp; Precision Auto-Touch"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:layout_marginTop="2dp"
+                        android:text="Thiết bị: Infinix Note 30 • 120Hz Fast Combo"
+                        android:textColor="@color/emerald_play"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
+
+                <!-- Engine Status Pill -->
+                <TextView
+                    android:id="@+id/tvEngineStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_floating_pill"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="SẴN SÀNG"
+                    android:textColor="@color/emerald_play"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Quick Settings Info Banner -->
+            <!-- Card: Tối ưu riêng cho Infinix Note 30 / Transsion XOS 13 & 14 -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInfinixOptimizer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="14dp"
                 app:cardBackgroundColor="@color/bg_surface_elevated"
-                app:cardCornerRadius="12dp"
-                app:strokeColor="@color/cyan_neon"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_speed"
-                        app:tint="@color/cyan_neon" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Mẹo: Kéo thanh thông báo xuống và thêm Quick Settings Tile 'Macro Combo' để bật/tắt nhanh khi đang trong game!"
-                        android:textColor="@color/text_primary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Shizuku & Wireless Debugging Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardShizuku"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/bg_surface"
                 app:cardCornerRadius="14dp"
-                app:strokeColor="@color/purple_accent"
+                app:strokeColor="@color/cyan_neon"
                 app:strokeWidth="1.5dp">
 
                 <LinearLayout
@@ -115,8 +102,105 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_speed"
+                            app:tint="@color/cyan_neon" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TỐI ƯU CHO INFINIX NOTE 30 (XOS)"
+                                android:textColor="@color/cyan_neon"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Xử lý nhanh 'Cài đặt bị hạn chế' &amp; Cửa sổ thả nổi trên Infinix"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="📌 Trên Infinix Note 30 (Android 13/14): Khi cài file APK từ bên ngoài, hệ thống XOS mặc định khóa 'Cài đặt bị hạn chế'. Hãy bấm nút bên dưới để mở khóa ngay:"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp"
+                        android:lineSpacingExtra="2dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnUnlockInfinixRestricted"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:backgroundTint="@color/bg_surface"
+                            app:strokeColor="@color/cyan_neon"
+                            app:strokeWidth="1dp"
+                            android:text="🔓 Mở khóa Cài đặt (⋮)"
+                            android:textColor="@color/cyan_neon"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnInfinixFloatingPerm"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/bg_surface"
+                            app:strokeColor="@color/purple_accent"
+                            app:strokeWidth="1dp"
+                            android:text="🪟 Cửa sổ thả nổi"
+                            android:textColor="@color/purple_accent"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card: Shizuku / Gỡ lỗi Wi-Fi 1-chạm -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardShizuku"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="@color/bg_surface"
+                app:cardCornerRadius="14dp"
+                app:strokeColor="@color/purple_accent"
+                app:strokeWidth="1.2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:src="@drawable/ic_speed"
                             app:tint="@color/purple_accent" />
 
@@ -130,7 +214,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="CẤP QUYỀN 1-CHẠM (SHIZUKU / GỠ LỖI WI-FI)"
+                                android:text="KÍCH HOẠT TỰ ĐỘNG QUA SHIZUKU (WI-FI)"
                                 android:textColor="@color/purple_accent"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -138,7 +222,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Bỏ qua màn hình bị hạn chế, tự kích hoạt Trợ năng và Vẽ màn hình!"
+                                android:text="Tự động mở khóa Restricted Settings &amp; bật Trợ năng 1-chạm!"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp" />
                         </LinearLayout>
@@ -147,17 +231,17 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnGrantShizuku"
                             android:layout_width="0dp"
-                            android:layout_height="44dp"
+                            android:layout_height="42dp"
                             android:layout_weight="1.6"
                             android:layout_marginEnd="6dp"
                             android:backgroundTint="@color/purple_accent"
-                            android:text="⚡ Hướng dẫn cài đặt"
+                            android:text="⚡ Cấp quyền 1-Chạm"
                             android:textColor="@color/white"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -166,85 +250,27 @@
                             android:id="@+id/btnCopyAdb"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
-                            android:layout_height="44dp"
+                            android:layout_height="42dp"
                             android:layout_weight="1.4"
-                            android:text="📋 Lệnh Wi-Fi"
+                            android:text="📋 Lệnh Wi-Fi / ADB"
                             android:textColor="@color/text_primary"
                             android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Required Permissions Section -->
+            <!-- Section Title: Core Permissions -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="QUYỀN HOẠT ĐỘNG (CHỈ CẦN QUYỀN VẼ TRÊN MÀN HÌNH)"
+                android:text="CÁC QUYỀN HỆ THỐNG"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="8dp" />
 
-            <!-- Card 1: Accessibility Service -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardAccessibility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="14dp">
-
-                    <ImageView
-                        android:id="@+id/ivAccStatus"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_warning"
-                        app:tint="@color/amber_warning" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Dịch vụ Trợ năng (Không bắt buộc)"
-                            android:textColor="@color/text_primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tự động chạm màn hình. Có thể thay bằng Shizuku/ADB hoặc Root."
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnGrantAccessibility"
-                        android:layout_width="wrap_content"
-                        android:layout_height="38dp"
-                        android:backgroundTint="@color/cyan_neon"
-                        android:text="@string/btn_grant"
-                        android:textColor="@color/bg_dark"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Card 2: Overlay Permission -->
+            <!-- Card 1: Overlay Permission (Crucial) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardOverlay"
                 android:layout_width="match_parent"
@@ -258,12 +284,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="14dp">
+                    android:padding="12dp">
 
                     <ImageView
                         android:id="@+id/ivOverlayStatus"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:src="@drawable/ic_warning"
                         app:tint="@color/amber_warning" />
 
@@ -277,15 +303,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/perm_overlay_title"
+                            android:text="Hiển thị trên ứng dụng khác"
                             android:textColor="@color/text_primary"
-                            android:textSize="14sp"
+                            android:textSize="13sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/perm_overlay_desc"
+                            android:text="Bắt buộc để hiện Nút Macro Tròn và Dock nổi trên game."
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -293,11 +319,69 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGrantOverlay"
                         android:layout_width="wrap_content"
-                        android:layout_height="38dp"
+                        android:layout_height="36dp"
                         android:backgroundTint="@color/cyan_neon"
                         android:text="@string/btn_grant"
                         android:textColor="@color/bg_dark"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card 2: Accessibility Service -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAccessibility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                app:cardBackgroundColor="@color/bg_surface"
+                app:cardCornerRadius="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:id="@+id/ivAccStatus"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_warning"
+                        app:tint="@color/amber_warning" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dịch vụ Trợ năng (Accessibility)"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mô phỏng cử chỉ chạm màn hình (không cần nếu dùng Shizuku/Root)."
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGrantAccessibility"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:backgroundTint="@color/cyan_neon"
+                        android:text="@string/btn_grant"
+                        android:textColor="@color/bg_dark"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -307,7 +391,7 @@
                 android:id="@+id/cardBattery"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/bg_surface"
                 app:cardCornerRadius="12dp">
 
@@ -316,12 +400,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="14dp">
+                    android:padding="12dp">
 
                     <ImageView
                         android:id="@+id/ivBatteryStatus"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:src="@drawable/ic_warning"
                         app:tint="@color/amber_warning" />
 
@@ -335,15 +419,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/perm_battery_title"
+                            android:text="Bỏ qua tối ưu hóa Pin"
                             android:textColor="@color/text_primary"
-                            android:textSize="14sp"
+                            android:textSize="13sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/perm_battery_desc"
+                            android:text="Giữ combo chạy mượt mà, không bị Infinix XOS ngắt ngầm."
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -351,38 +435,38 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGrantBattery"
                         android:layout_width="wrap_content"
-                        android:layout_height="38dp"
+                        android:layout_height="36dp"
                         android:backgroundTint="@color/cyan_neon"
                         android:text="@string/btn_grant"
                         android:textColor="@color/bg_dark"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Start Floating Controller Action Button -->
+            <!-- Primary Action: Start Floating Controller -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnToggleFloatingWidget"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="54dp"
                 android:backgroundTint="@color/cyan_neon"
                 android:text="@string/btn_start_dock"
                 android:textColor="@color/bg_dark"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 app:cornerRadius="14dp"
                 app:icon="@drawable/ic_play"
                 app:iconTint="@color/bg_dark"
                 app:iconGravity="textStart"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="20dp" />
 
-            <!-- Presets Section -->
+            <!-- Presets Section Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="10dp">
 
                 <TextView
                     android:layout_width="0dp"

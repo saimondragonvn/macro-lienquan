@@ -62,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.tvDeviceBadge.text = "Thiết bị: ${ShizukuHelper.getDeviceDisplayName()} • 120Hz Fast Combo"
+
         setupRecyclerView()
         setupListeners()
         setupShizukuListeners()
@@ -112,6 +114,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        binding.btnUnlockInfinixRestricted.setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Mở khóa trên Infinix Note 30 (XOS)")
+                .setMessage(
+                    "Khi trang Cài đặt ứng dụng mở ra:\n\n" +
+                    "1. Bấm vào dấu 3 chấm (⋮) ở góc trên bên phải màn hình.\n" +
+                    "2. Chọn 'Cho phép cài đặt bị hạn chế' (Allow restricted settings).\n" +
+                    "3. Xác nhận mã PIN hoặc vân tay.\n\n" +
+                    "Sau đó bạn có thể kích hoạt dịch vụ Trợ năng tự do!"
+                )
+                .setPositiveButton("Mở Cài đặt ngay") { _, _ ->
+                    PermissionUtils.openAppDetailsSettings(this)
+                }
+                .setNegativeButton("Đóng", null)
+                .show()
+        }
+
+        binding.btnInfinixFloatingPerm.setOnClickListener {
+            val opened = PermissionUtils.openTranssionFloatingSettings(this)
+            if (!opened) {
+                PermissionUtils.openOverlaySettings(this)
+            }
+        }
+
         binding.btnGrantAccessibility.setOnClickListener {
             if (ShizukuHelper.hasShizukuPermission() || ShizukuHelper.isRootAvailable()) {
                 lifecycleScope.launch {
@@ -322,6 +348,15 @@ class MainActivity : AppCompatActivity() {
             binding.btnGrantBattery.isEnabled = true
             binding.btnGrantBattery.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
             binding.btnGrantBattery.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
+        }
+
+        val allReady = perms.hasOverlay && (perms.hasAccessibility || ShizukuHelper.hasShizukuPermission() || ShizukuHelper.isRootAvailable())
+        if (allReady) {
+            binding.tvEngineStatus.text = "SẴN SÀNG"
+            binding.tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
+        } else {
+            binding.tvEngineStatus.text = "CHƯA CẤP ĐỦ"
+            binding.tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.amber_warning))
         }
     }
 

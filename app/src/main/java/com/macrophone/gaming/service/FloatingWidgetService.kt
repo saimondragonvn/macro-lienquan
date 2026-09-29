@@ -172,18 +172,26 @@ class FloatingWidgetService : Service() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 try {
-                    startForeground(
+                    androidx.core.app.ServiceCompat.startForeground(
+                        this,
                         NotificationHelper.NOTIFICATION_ID,
                         notification,
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
                     )
                 } catch (_: Throwable) {
-                    startForeground(NotificationHelper.NOTIFICATION_ID, notification)
+                    androidx.core.app.ServiceCompat.startForeground(
+                        this,
+                        NotificationHelper.NOTIFICATION_ID,
+                        notification,
+                        0
+                    )
                 }
             } else {
                 startForeground(NotificationHelper.NOTIFICATION_ID, notification)
             }
-        } catch (_: Throwable) {}
+        } catch (e: Throwable) {
+            Log.e("FloatingWidgetService", "startForegroundNotification error: ${e.message}", e)
+        }
     }
 
     /**
@@ -202,7 +210,7 @@ class FloatingWidgetService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = screenWidth - 320
+            x = (screenWidth - 320).coerceAtLeast(20)
             y = 350
         }
 
@@ -212,8 +220,15 @@ class FloatingWidgetService : Service() {
         try {
             windowManager.addView(dockView, dockParams)
         } catch (e: Exception) {
-            Toast.makeText(this, "Chưa cấp quyền hiển thị trên ứng dụng khác!", Toast.LENGTH_LONG).show()
-            stopSelf()
+            Log.e("FloatingWidgetService", "Cannot add dockView: ${e.message}", e)
+            Toast.makeText(
+                this,
+                "Chưa cấp đủ quyền 'Cửa sổ thả nổi' hoặc 'Hiển thị trên ứng dụng khác'! Vui lòng kiểm tra cài đặt Infinix.",
+                Toast.LENGTH_LONG
+            ).show()
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                stopSelf()
+            }, 800)
         }
     }
 

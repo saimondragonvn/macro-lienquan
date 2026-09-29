@@ -137,5 +137,32 @@ object PermissionUtils {
             }
             context.startActivity(intent)
         }
+    /**
+     * Mở màn hình quản lý Cửa sổ thả nổi của Infinix (Phone Master)
+     */
+    fun openTranssionFloatingSettings(context: Context): Boolean {
+        val intents = listOf(
+            Intent().apply {
+                component = android.content.ComponentName(
+                    "com.transsion.phonemaster",
+                    "com.cyin.himgr.widget.dialog.PermissionActivity"
+                )
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            },
+            Intent().apply {
+                component = android.content.ComponentName(
+                    "com.transsion.phonemaster",
+                    "com.transsion.phonemaster.MainActivity"
+                )
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        )
+        for (intent in intents) {
+            try {
+                context.startActivity(intent)
+                return true
+            } catch (_: Throwable) {}
+        }
+        return false
     }
 }

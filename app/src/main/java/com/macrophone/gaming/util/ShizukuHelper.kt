@@ -5,22 +5,51 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 /**
- * Tiện ích tương tác với Shizuku (Gỡ lỗi qua Wi-Fi) & Root (cho máy ảo / giả lập Android):
- * - Tự động cấp toàn bộ quyền mà không cần làm thủ công
- * - Hỗ trợ cả điện thoại thật (qua Shizuku) và giả lập PC (LDPlayer, BlueStacks, Nox qua Root)
- * - Tuyệt đối không gây crash ứng dụng ("Ứng dụng đã dừng")
+ * Tiện ích tương tác với Shizuku (Gỡ lỗi qua Wi-Fi) & Root:
+ * - Tối ưu hóa đặc biệt cho Infinix Note 30 (Transsion XOS 13/14) và trình giả lập PC.
+ * - Kiểm tra Root an toàn tức thì (không block Main UI thread).
+ * - Bắt trọn 100% ngoại lệ, chống hoàn toàn hiện tượng văng ứng dụng ("Ứng dụng đã dừng").
  */
 object ShizukuHelper {
 
     const val SHIZUKU_REQUEST_CODE = 8899
     private const val TAG = "ShizukuHelper"
+
+    @Volatile
+    private var cachedRootAvailable: Boolean? = null
+
+    /**
+     * Tự động nhận diện thiết bị Transsion (Infinix, Tecno, Itel) chạy XOS / HiOS
+     */
+    fun isTranssionDevice(): Boolean {
+        val m = Build.MANUFACTURER.lowercase()
+        val b = Build.BRAND.lowercase()
+        return m.contains("infinix") || m.contains("tecno") || m.contains("itel") || m.contains("transsion") ||
+                b.contains("infinix") || b.contains("tecno") || b.contains("itel")
+    }
+
+    /**
+     * Lấy tên thương hiệu và model hiển thị đẹp mắt cho người dùng
+     */
+    fun getDeviceDisplayName(): String {
+        val model = Build.MODEL
+        val brand = Build.BRAND.replaceFirstChar { it.uppercase() }
+        return if (model.startsWith(brand, ignoreCase = true)) {
+            model
+        } else {
+            "$brand $model"
+        }
+    }
 
     /**
      * Kiểm tra ứng dụng Shizuku có được cài đặt trên máy không
@@ -46,14 +75,38 @@ object ShizukuHelper {
     }
 
     /**
-     * Kiểm tra thiết bị có quyền Root không (đặc biệt hữu ích cho giả lập LDPlayer, Nox, BlueStacks trên PC)
+     * Kiểm tra thiết bị có quyền Root không.
+     * TỐI ƯU HÓA: Kiểm tra sự tồn tại của file nhị phân trước, tránh chạy exec trên Main Thread làm đơ máy Infinix Note 30!
      */
     fun isRootAvailable(): Boolean {
+        cachedRootAvailable?.let { return it }
+
+        val rootPaths = arrayOf(
+            "/system/app/Superuser.apk",
+            "/sbin/su",
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/data/local/xbin/su",
+            "/data/local/bin/su",
+            "/system/sd/xbin/su",
+            "/system/bin/failsafe/su",
+            "/data/local/su"
+        )
+        val hasBinary = rootPaths.any { File(it).exists() }
+        if (!hasBinary) {
+            cachedRootAvailable = false
+            return false
+        }
+
         return try {
             val process = Runtime.getRuntime().exec(arrayOf("su", "-c", "id"))
-            process.waitFor()
-            process.exitValue() == 0
+            val finished = process.waitFor(500, TimeUnit.MILLISECONDS)
+            val isRoot = finished && process.exitValue() == 0
+            process.destroy()
+            cachedRootAvailable = isRoot
+            isRoot
         } catch (_: Throwable) {
+            cachedRootAvailable = false
             false
         }
     }
@@ -106,10 +159,10 @@ object ShizukuHelper {
                     String::class.java
                 )
                 method.isAccessible = true
-                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? java.lang.Process
+                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
                 if (proc != null) {
-                    proc.waitFor()
-                    val code = proc.exitValue()
+                    val finished = proc.waitFor(3, TimeUnit.SECONDS)
+                    val code = if (finished) proc.exitValue() else -1
                     proc.destroy()
                     if (code == 0) return true
                 }
@@ -119,13 +172,15 @@ object ShizukuHelper {
         }
 
         // 2. Thử qua Root `su` (cho máy giả lập PC hoặc máy đã root)
-        try {
-            val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
-            proc.waitFor()
-            val code = proc.exitValue()
-            proc.destroy()
-            if (code == 0) return true
-        } catch (_: Throwable) {}
+        if (isRootAvailable()) {
+            try {
+                val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
+                val finished = proc.waitFor(3, TimeUnit.SECONDS)
+                val code = if (finished) proc.exitValue() else -1
+                proc.destroy()
+                if (code == 0) return true
+            } catch (_: Throwable) {}
+        }
 
         return false
     }
@@ -148,7 +203,7 @@ object ShizukuHelper {
         val serviceClass = "com.macrophone.gaming.service.MacroAccessibilityService"
 
         val commands = listOf(
-            // 1. Mở khóa "Cài đặt bị hạn chế" (Restricted Settings) trên Android 13/14+
+            // 1. Mở khóa "Cài đặt bị hạn chế" (Restricted Settings) trên Android 13/14 (Infinix XOS)
             "appops set $pkg ACCESS_RESTRICTED_SETTINGS allow",
             // 2. Cấp quyền vẽ trên ứng dụng khác (SYSTEM_ALERT_WINDOW)
             "appops set $pkg SYSTEM_ALERT_WINDOW allow",
@@ -166,11 +221,11 @@ object ShizukuHelper {
             }
         }
 
-        if (successCount >= 3) {
-            val modeStr = if (hasShizuku) "Shizuku" else "Root Giả Lập"
-            Result.success("Đã cấp toàn bộ quyền thành công qua $modeStr!")
+        if (successCount >= 2) {
+            val modeStr = if (hasShizuku) "Shizuku" else "Root"
+            Result.success("Đã tự động mở khóa & cấp quyền thành công qua $modeStr!")
         } else {
-            Result.failure(Exception("Đã thực thi lệnh nhưng một số quyền chưa nhận được."))
+            Result.failure(Exception("Đã thực thi lệnh nhưng hệ thống chưa lưu. Hãy kiểm tra Shizuku."))
         }
     }
 

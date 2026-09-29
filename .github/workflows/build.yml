@@ -46,31 +46,29 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.1' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.1' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.2' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.2' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.2.1 (Hiển Thị Trực Quan Vị Trí Ghi & Tự Tạo Nút Tròn Macro)
+            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.2.2 (Đặc Trị Crash & Tối Ưu Riêng Cho Infinix Note 30 / XOS)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🛠️ CÁC TÍNH NĂNG MỚI & SỬA LỖI TRỌNG YẾU TRONG BẢN v1.2.1:
-            1. **Hiển thị trực quan toàn bộ các vị trí đã nhấn hoặc vuốt khi ghi Macro**:
-               - Mọi điểm Chạm (Tap) được đánh số thứ tự (1, 2, 3...) với vòng tròn phát sáng cyan neon rõ nét, căn tỷ lệ theo mật độ màn hình (density).
-               - Mọi điểm Giữ (Hold) hiển thị vòng neon tím kèm thời lượng giữ tính bằng mili-giây.
-               - Mọi vệt Vuốt (Swipe) hiển thị đường đứt nét emerald green kèm mũi tên định hướng và điểm bắt đầu đánh số.
-               - Hỗ trợ nút **↩ Xóa điểm** (Undo) để xóa ngay thao tác vừa bấm nhầm mà không cần ghi lại từ đầu.
-            2. **Tự động tạo 1 nút tròn Macro nổi trên màn hình**:
-               - Khi bấm **✓ Tạo nút Macro**, hệ thống lưu ngay combo với tốc độ xả chiêu siêu nhanh (5x Gaming Speed).
-               - Tự động sinh một nút tròn nổi (56dp x 56dp, oval neon) ngay trên màn hình game.
-               - Người chơi chỉ cần kéo nút tròn này đến vị trí thuận tay (gần nút đánh thường hoặc chiêu thức) và chạm vào nút là combo lập tức được xả ra!
-            3. **Khắc phục triệt để lỗi Crash & Số nguyên toInt()**:
-               - Sửa lỗi `Integer.parseInt` trong lệnh shell `input tap` / `input swipe` (chuyển đổi float sang int tuyệt đối an toàn).
-               - Đảm bảo `Path` trong `GestureDescription` không bị rỗng (`lineTo`) trên mọi phiên bản Android.
-               - Bọc luồng UI an toàn cho các Shizuku listener, chống hoàn toàn hiện tượng văng "Ứng dụng đã dừng".
+            #### 🛠️ CÁC SỬA LỖI & NÂNG CẤP CHUYÊN NGHIỆP TRONG BẢN v1.2.2:
+            1. **Đặc trị 100% lỗi Crash trên máy Infinix Note 30 (Transsion XOS 13/14)**:
+               - Loại bỏ hoàn toàn lệnh kiểm tra Root đồng bộ trên Main Thread làm treo máy / ANR ("Ứng dụng đã dừng").
+               - Bổ sung ServiceCompat và ForegroundServiceType an toàn cho Android 13/14, khắc phục triệt để lỗi ForegroundServiceDidNotStartInTimeException.
+               - Gỡ bỏ bộ bắt lỗi đóng băng Main Looper, chuyển sang cơ chế ghi nhận chẩn đoán sạch sẽ.
+            2. **Nâng cấp toàn diện giao diện Cyberpunk Gaming**:
+               - Tự động nhận diện thiết bị: Hiển thị badge "Thiết bị: Infinix Note 30 (XOS) • 120Hz Fast Combo" trực tiếp trên màn hình chính.
+               - Bổ sung Banner đặc quyền cho Infinix: Hướng dẫn mở khóa "Cài đặt bị hạn chế" (Restricted Settings) và "Cửa sổ thả nổi" (Floating Window) chỉ với 1 cú click!
+               - Đèn LED trạng thái hệ thống: Báo "SẴN SÀNG" hoặc "CHƯA CẤP ĐỦ" tức thì.
+            3. **Ghi hình trực quan & Tự tạo nút tròn Macro**:
+               - Hiển thị rõ nét các điểm Chạm (1, 2, 3...), Giữ (Hold) và Vuốt (Swipe) kèm nút hoàn tác (Undo).
+               - Bấm lưu là có ngay nút tròn nổi (56dp x 56dp) trên màn hình game để xả chiêu với tốc độ 5x!
 
             #### 📲 Hướng dẫn cài đặt APK:
-            1. Tải file **`Macro-LienQuan-v1.2.1.apk`** ở mục **Assets** bên dưới.
-            2. Cài đặt vào điện thoại hoặc kéo thả trực tiếp vào trình giả lập trên máy tính (LDPlayer, BlueStacks, Nox).
-            3. Mở ứng dụng và bắt đầu tận hưởng combo chớp nhoáng!
+            1. Tải file **`Macro-LienQuan-v1.2.2.apk`** ở mục **Assets** bên dưới.
+            2. Cài đặt vào điện thoại Infinix Note 30 hoặc trình giả lập PC.
+            3. Mở ứng dụng, bấm nút mở khóa Cài đặt bị hạn chế và bắt đầu chiến game!
           draft: false
           prerelease: false
         env:
