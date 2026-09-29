@@ -124,7 +124,7 @@ class MacroManager private constructor(private val context: Context) {
     private fun playViaShell(sequence: MacroSequence): Boolean {
         return try {
             val speedFactor = sequence.config.speedMultiplier.coerceAtLeast(0.1f)
-            val repeatCount = if (sequence.config.repeatCount <= 0) 1 else sequence.config.repeatCount
+            val repeatCount = if (sequence.config.isInfiniteLoop) 1000 else sequence.config.loopCount.coerceAtLeast(1)
 
             for (r in 0 until repeatCount) {
                 if (_macroState.value != MacroState.PLAYING) break
@@ -142,6 +142,11 @@ class MacroManager private constructor(private val context: Context) {
                             val pt = action.points.firstOrNull() ?: continue
                             executeShellInput("input tap ${pt.x} ${pt.y}")
                         }
+                        MacroType.HOLD -> {
+                            val pt = action.points.firstOrNull() ?: continue
+                            val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(50)
+                            executeShellInput("input swipe ${pt.x} ${pt.y} ${pt.x} ${pt.y} $dur")
+                        }
                         MacroType.SWIPE -> {
                             val p1 = action.points.firstOrNull() ?: continue
                             val p2 = action.points.lastOrNull() ?: continue
@@ -151,8 +156,8 @@ class MacroManager private constructor(private val context: Context) {
                     }
                 }
 
-                if (sequence.config.repeatIntervalMs > 0 && r < repeatCount - 1) {
-                    Thread.sleep((sequence.config.repeatIntervalMs / speedFactor).toLong())
+                if (sequence.config.loopIntervalMs > 0 && r < repeatCount - 1) {
+                    Thread.sleep((sequence.config.loopIntervalMs / speedFactor).toLong())
                 }
             }
             true
