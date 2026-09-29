@@ -10,9 +10,11 @@
 .DS_Store
 /build
 /captures
+*.apk
 .externalNativeBuild
 .cxx
 local.properties
 .navigation
 *.keystore
+!app/release.keystore
 *.jks

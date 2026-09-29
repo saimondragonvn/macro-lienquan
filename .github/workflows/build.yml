@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build:
-    name: Build Debug APK & Create Release
+    name: Build Release APK & Publish
     runs-on: ubuntu-latest
 
     steps:
@@ -31,39 +31,47 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK with Gradle
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build Signed Release APK with Gradle
+        run: ./gradlew assembleRelease --stacktrace
 
-      - name: Upload Debug APK Artifact
+      - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Macro-LienQuan-Debug-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Macro-LienQuan-Release-APK
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
       - name: Publish GitHub Release with APK
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
-          files: app/build/outputs/apk/debug/app-debug.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.0' }}
+          files: app/build/outputs/apk/release/*.apk
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.1' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.1' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller)
-            Bản cài đặt APK tự động biên dịch cho Android từ commit `${{ github.sha }}`.
+            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release Chính Thức
+            Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
             #### 📲 Hướng dẫn cài đặt APK:
-            1. Tải file **`app-debug.apk`** ở mục **Assets** bên dưới về điện thoại.
+            1. Tải file **`Macro-LienQuan-v1.0.1.apk`** ở mục **Assets** bên dưới về điện thoại.
             2. Mở file APK để cài đặt (cho phép "Cài đặt ứng dụng không rõ nguồn gốc" nếu điện thoại yêu cầu).
             3. Khởi động ứng dụng, cấp quyền **Trợ năng (Accessibility)** và **Hiển thị trên ứng dụng khác (Overlay)**.
-            4. Vào game, nhấn Record để tạo nút Macro nổi và chiến game!
+            
+            #### ⚠️ CÁCH MỞ KHÓA NẾU BỊ MỜ CÔNG TẮC TRỢ NĂNG (ANDROID 13/14+):
+            Nếu vào phần Hỗ trợ tiếp cận mà thấy dòng chữ *"Cài đặt bị hạn chế"* (Restricted setting):
+            - Bước 1: Vào **Cài đặt > Ứng dụng > Macro Gaming Combo** (hoặc nhấn nút *"Mở Cài đặt ứng dụng"* ngay trong app).
+            - Bước 2: Bấm vào **dấu 3 chấm (⋮)** ở góc trên bên phải màn hình.
+            - Bước 3: Chọn **"Cho phép cài đặt bị hạn chế"** (Allow restricted settings) và nhập mã PIN/vân tay.
+            - Bước 4: Quay lại mục Trợ năng, công tắc đã sáng rõ và gạt **BẬT** bình thường!
 
-            #### Tính năng nổi bật:
+            #### Tính năng nổi bật trong bản v1.0.1:
+            - **Tên tệp chuẩn Release**: File APK mang tên `Macro-LienQuan-v1.0.1.apk`.
+            - **Hộp thoại Hướng dẫn Mở khóa Trợ năng thông minh**: Trực tiếp hỗ trợ người dùng Android 13/14+.
+            - **Cấu hình AccessibilityService chuẩn hóa**: Tương thích hoàn hảo với Samsung OneUI, Xiaomi HyperOS, Oppo ColorOS.
             - **Ghi thao tác thực tế**: Ghi nhận tọa độ và khoảng cách thời gian giữa các chiêu thức.
-            - **Tăng tốc siêu tốc (Speed Multiplier)**: Rút ngắn thời gian combo từ 1x đến 10x.
+            - **Tăng tốc siêu tốc (Speed Multiplier 1x - 10x)**: Rút ngắn thời gian combo để tạo combo chớp nhoáng.
             - **Nút Macro Nổi độc lập**: Kéo thả nút cạnh phím chiêu, chạm là tự động xả combo.
             - **Đa điểm đồng thời (Multi-Touch)**: Tay trái vẫn di chuyển Joystick mượt mà trong khi macro đang xả skill.
-            - Tương thích từ Android 11 (API 30) đến Android 14+ (API 34+).
           draft: false
           prerelease: false
         env:

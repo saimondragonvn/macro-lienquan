@@ -4,6 +4,18 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.0.1] - 2026-09-29
+### 🔧 Bản cải tiến & Sửa lỗi (Improvements & Fixes)
+- **Đổi tên tệp và đóng gói Signed Release**:
+  - Biên dịch phiên bản Release chính thức với tên tệp: `Macro-LienQuan-v1.0.1.apk`.
+  - Tích hợp Keystore ký số trực tiếp giúp cài đặt an toàn trên mọi thiết bị.
+- **Khắc phục cấp quyền Trợ năng (Accessibility) trên Android 13/14+**:
+  - Tích hợp hộp thoại điều hướng thông minh hỗ trợ người dùng mở khóa *"Cài đặt bị hạn chế"* (Restricted Settings) cho Xiaomi HyperOS/MIUI, Samsung OneUI, Oppo/Realme ColorOS.
+  - Thêm nút tắt mở thẳng màn hình App Details Settings.
+  - Chuẩn hóa `accessibility_service_config.xml` và `serviceInfo` lập trình trong mã nguồn để tránh xung đột cờ hệ điều hành.
+
+---
+
 ## [v1.0.0] - 2026-09-29
 ### 🚀 Bản phát hành đầu tiên (Initial Release)
 - **Kiến trúc cốt lõi**:

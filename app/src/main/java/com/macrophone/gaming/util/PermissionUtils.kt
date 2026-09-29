@@ -108,4 +108,16 @@ object PermissionUtils {
             true
         }
     }
+
+    /**
+     * Mở màn hình Thông tin ứng dụng (App Info / Details) để người dùng mở khóa
+     * "Cài đặt bị hạn chế" (Restricted Settings) trên Android 13/14+
+     */
+    fun openAppDetailsSettings(context: Context) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.parse("package:${context.packageName}")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
+    }
 }

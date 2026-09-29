@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnGrantAccessibility.setOnClickListener {
-            PermissionUtils.openAccessibilitySettings(this)
+            showAccessibilityGuidanceDialog()
         }
 
         binding.btnGrantOverlay.setOnClickListener {
@@ -208,6 +208,29 @@ class MainActivity : AppCompatActivity() {
             binding.btnGrantBattery.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
             binding.btnGrantBattery.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
         }
+    }
+
+    private fun showAccessibilityGuidanceDialog() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle("Kích hoạt Dịch vụ Trợ năng")
+            .setMessage(
+                "Để Macro tự động bấm chiêu trong game, bạn cần gạt BẬT 'Macro Gaming Combo Service'.\n\n" +
+                "⚠️ LƯU Ý CHO ANDROID 13/14+ (SAMSUNG, XIAOMI, OPPO, REALME...):\n" +
+                "Nếu công tắc Trợ năng bị MỜ (báo 'Cài đặt bị hạn chế'):\n" +
+                "1. Nhấn nút [Mở Cài đặt ứng dụng] bên dưới.\n" +
+                "2. Bấm vào dấu 3 chấm (⋮) ở góc trên bên phải màn hình.\n" +
+                "3. Chọn 'Cho phép cài đặt bị hạn chế' (Allow restricted settings).\n" +
+                "4. Xác nhận mở khóa vân tay / mã PIN.\n" +
+                "5. Quay lại đây và nhấn [Đến Cài đặt Trợ năng] để gạt BẬT!"
+            )
+            .setPositiveButton("Đến Cài đặt Trợ năng") { _, _ ->
+                PermissionUtils.openAccessibilitySettings(this)
+            }
+            .setNeutralButton("Mở Cài đặt ứng dụng (Mở khóa)") { _, _ ->
+                PermissionUtils.openAppDetailsSettings(this)
+            }
+            .setNegativeButton("Đóng", null)
+            .show()
     }
 
     private fun requestNotificationPermissionIfNeeded() {

@@ -5,8 +5,17 @@ Dự án Android hoàn chỉnh bằng **Kotlin** hỗ trợ từ **Android 11 (A
 ---
 
 ### 📥 Tải file APK cài đặt ngay:
-👉 **[Tải file APK v1.0.0 (app-debug.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.0.0/app-debug.apk)**  
+👉 **[Tải file APK chính thức (Macro-LienQuan-v1.0.1.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.0.1/Macro-LienQuan-v1.0.1.apk)**  
 👉 **[Xem toàn bộ các bản phát hành (Releases)](https://github.com/saimondragonvn/macro-lienquan/releases)**
+
+---
+
+### ⚠️ Lưu ý cấp quyền Trợ năng trên Android 13/14+ (Samsung, Xiaomi, Oppo...):
+Nếu khi mở phần Hỗ trợ tiếp cận mà công tắc bị **MỜ** (báo *"Cài đặt bị hạn chế"*):
+1. Vào **Cài đặt điện thoại > Ứng dụng > Macro Gaming Combo** (hoặc bấm nút *"Mở Cài đặt ứng dụng"* trong app).
+2. Nhấn vào **dấu 3 chấm (⋮)** ở góc trên bên phải màn hình.
+3. Chọn **"Cho phép cài đặt bị hạn chế"** (*Allow restricted settings*) và mở khóa vân tay/mã PIN.
+4. Quay lại phần Trợ năng, công tắc đã sáng rõ và gạt **BẬT** bình thường!
 
 ---
 

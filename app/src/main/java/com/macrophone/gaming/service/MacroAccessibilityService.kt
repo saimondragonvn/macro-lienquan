@@ -44,6 +44,13 @@ class MacroAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
+
+        val info = serviceInfo ?: android.accessibilityservice.AccessibilityServiceInfo()
+        info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK
+        info.feedbackType = android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_GENERIC
+        info.notificationTimeout = 100
+        info.flags = android.accessibilityservice.AccessibilityServiceInfo.DEFAULT
+        serviceInfo = info
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
