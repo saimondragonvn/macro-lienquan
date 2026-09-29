@@ -4,6 +4,29 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.1.0] - 2026-09-29
+### 🎮 Hướng dẫn cài đặt kiểu Panda Touch Pro & Xem trước thao tác
+- **TRÌNH HƯỚNG DẪN CÀI ĐẶT KIỂU PANDA TOUCH PRO (Setup Wizard)**:
+  - Giao diện hướng dẫn 4 bước rõ ràng, trực quan:
+    1. Tải ứng dụng Shizuku từ CH Play (mở trực tiếp cửa hàng)
+    2. Bật Gỡ lỗi không dây (Wireless Debugging) - mở trực tiếp Developer Options
+    3. Ghép nối (Pairing) và khởi động Shizuku - mở trực tiếp app Shizuku
+    4. Nhấn 1 nút → Tự động cấp TẤT CẢ quyền (Trợ năng, Vẽ màn hình, Pin, Restricted Settings)
+  - Kiểm tra trạng thái từng bước theo thời gian thực (✅ / ⚠️)
+  - Nút "Refresh" để cập nhật trạng thái sau khi hoàn tất mỗi bước
+- **XEM TRƯỚC THAO TÁC ĐÃ GHI (Gesture Preview Canvas)**:
+  - Khi lưu combo, hiển thị bản xem trước trực quan (visual preview) toàn bộ thao tác đã ghi:
+    - TAP: Vòng tròn cyan kèm số thứ tự
+    - HOLD: Vòng tròn tím lớn hơn
+    - SWIPE: Đường nét đứt xanh lá với điểm bắt đầu/kết thúc
+  - Hiển thị thời gian ghi gốc chính xác và thời gian sau khi tăng tốc
+- **CẢI TIẾN GIAO DIỆN GHI THAO TÁC**:
+  - Nền ghi thao tác trong suốt hơn (20% thay vì 50%) để nhìn rõ game bên dưới
+  - Nút "Hướng dẫn cài đặt" thay thế nút "Cấp quyền Shizuku" cũ trên màn hình chính
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.1.0.apk`.
+
+---
+
 ## [v1.0.3] - 2026-09-29
 ### 🛡️ Bản sửa lỗi Crash toàn diện & Bỏ bắt buộc quyền Trợ năng
 - **BỎ BẮT BUỘC QUYỀN TRỢ NĂNG (Accessibility)**:

@@ -506,13 +506,26 @@ class FloatingWidgetService : Service() {
         }
 
         val etName = saveDialogView!!.findViewById<EditText>(R.id.etMacroName)
+        val gesturePreview = saveDialogView!!.findViewById<com.macrophone.gaming.ui.overlay.GesturePreviewCanvas>(R.id.gesturePreview)
+        val tvPreviewEmpty = saveDialogView!!.findViewById<TextView>(R.id.tvPreviewEmpty)
         val tvOrig = saveDialogView!!.findViewById<TextView>(R.id.tvOriginalDuration)
         val tvAccel = saveDialogView!!.findViewById<TextView>(R.id.tvAcceleratedDuration)
         val cbFloating = saveDialogView!!.findViewById<CheckBox>(R.id.cbCreateFloatingButton)
         val btnCancel = saveDialogView!!.findViewById<MaterialButton>(R.id.btnCancelSaveDialog)
         val btnConfirm = saveDialogView!!.findViewById<MaterialButton>(R.id.btnConfirmSaveDialog)
 
+        // Hiển thị preview thao tác đã ghi
+        val recordedActions = macroManager.getRecordedActions()
+        if (recordedActions.isNotEmpty()) {
+            gesturePreview.setActions(recordedActions)
+            tvPreviewEmpty.visibility = View.GONE
+        } else {
+            tvPreviewEmpty.visibility = View.VISIBLE
+        }
+
         // Tính toán thời gian ghi gốc từ các action vừa ghi nhận
+        val totalOriginalMs = recordedActions.sumOf { it.durationMs + it.delayBeforeMs }
+        val origSec = String.format("%.2f", totalOriginalMs / 1000.0)
         val defaultName = "Combo #${(System.currentTimeMillis() % 1000)}"
         etName.setText(defaultName)
 
@@ -537,8 +550,8 @@ class FloatingWidgetService : Service() {
                     view.setTextColor(ContextCompat.getColor(this, R.color.text_primary))
                 }
             }
-            tvOrig.text = "Thời gian ghi gốc: ~1.5 giây"
-            val accelerated = String.format("%.2f", 1.5f / selectedSpeed)
+            tvOrig.text = "Thời gian ghi gốc: ~${origSec}s (${recordedActions.size} thao tác)"
+            val accelerated = String.format("%.2f", totalOriginalMs / 1000.0 / selectedSpeed)
             tvAccel.text = "Thời gian sau khi tăng tốc: ${accelerated}s (Nhanh hơn ${selectedSpeed}x! ⚡)"
         }
         updateSpeedDisplay()

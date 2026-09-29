@@ -5,17 +5,17 @@ Dự án Android hoàn chỉnh bằng **Kotlin** hỗ trợ từ **Android 11 (A
 ---
 
 ### 📥 Tải file APK cài đặt ngay:
-👉 **[Tải file APK chính thức (Macro-LienQuan-v1.0.2.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.0.2/Macro-LienQuan-v1.0.2.apk)**  
+👉 **[Tải file APK chính thức (Macro-LienQuan-v1.1.0.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.1.0/Macro-LienQuan-v1.1.0.apk)**  
 👉 **[Xem toàn bộ các bản phát hành (Releases)](https://github.com/saimondragonvn/macro-lienquan/releases)**
 
 ---
 
-### ⚡ CÁCH CẤP QUYỀN TRỢ NĂNG 1-CHẠM BẰNG SHIZUKU (GỠ LỖI QUA WI-FI):
-Nếu máy bạn bị mờ công tắc Trợ năng hoặc không bật được thủ công:
-1. Cài ứng dụng **Shizuku** từ Google Play (hoặc GitHub).
-2. Vào **Cài đặt điện thoại > Tùy chọn nhà phát triển > Bật "Gỡ lỗi không dây" (Wireless Debugging)**.
-3. Mở Shizuku > Chọn **Ghép nối (Pairing)** qua mã 6 số Wi-Fi > Nhấn **Khởi động (Start)**.
-4. Mở app **Macro Gaming Combo**, bấm nút tím: **`[⚡ Cấp quyền Shizuku]`** $\rightarrow$ App sẽ tự động cấp toàn bộ quyền và kích hoạt Trợ năng ngay lập tức mà không cần bấm thêm bất cứ thứ gì!
+### ⚡ CÁCH CẤP QUYỀN 1-CHẠM KIỂU PANDA TOUCH PRO:
+App có **Trình hướng dẫn cài đặt 4 bước** tự động (không cần máy tính, không cần Root):
+1. Cài ứng dụng **Shizuku** từ Google Play → App dẫn đến đúng trang trên CH Play.
+2. Vào **Cài đặt điện thoại > Tùy chọn nhà phát triển > Bật "Gỡ lỗi không dây"** → App mở trực tiếp Developer Options.
+3. Mở Shizuku > **Ghép nối (Pairing)** qua mã 6 số Wi-Fi > Nhấn **Khởi động** → App mở trực tiếp Shizuku.
+4. Nhấn nút **`[⚡ Cấp TẤT CẢ quyền]`** → Tự động cấp Trợ năng, Vẽ màn hình, Pin, Restricted Settings!
 
 ---
 

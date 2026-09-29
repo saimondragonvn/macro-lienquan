@@ -139,4 +139,44 @@ object ShizukuHelper {
             dumpsys deviceidle whitelist +$pkg
         """.trimIndent()
     }
+
+    /**
+     * Mở Shizuku trên CH Play (Google Play Store)
+     */
+    fun openShizukuInPlayStore(context: Context) {
+        try {
+            val intent = android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+                android.net.Uri.parse("market://details?id=moe.shizuku.privileged.api")
+            )
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        } catch (_: Throwable) {
+            val intent = android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+                android.net.Uri.parse("https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api")
+            )
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+    }
+
+    /**
+     * Mở ứng dụng Shizuku đã cài đặt
+     */
+    fun openShizukuApp(context: Context) {
+        try {
+            val launchIntent = context.packageManager.getLaunchIntentForPackage("moe.shizuku.privileged.api")
+            if (launchIntent != null) {
+                launchIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(launchIntent)
+            } else {
+                android.widget.Toast.makeText(context, "Chưa cài Shizuku! Hãy tải từ CH Play trước.", android.widget.Toast.LENGTH_LONG).show()
+                openShizukuInPlayStore(context)
+            }
+        } catch (_: Throwable) {
+            openShizukuInPlayStore(context)
+        }
+    }
 }
+

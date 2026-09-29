@@ -3,7 +3,7 @@
     android:id="@+id/recorderRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/rec_overlay_tint">
+    android:background="#33000000">
 
     <!-- Interactive Touch Canvas where touches are drawn -->
     <com.macrophone.gaming.ui.overlay.TouchRecorderCanvas

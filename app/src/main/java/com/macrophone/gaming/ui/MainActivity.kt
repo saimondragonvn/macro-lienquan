@@ -141,10 +141,11 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Cài đặt tương tác cho tính năng Shizuku & Gỡ lỗi qua Wi-Fi
+     * → Mở Trình hướng dẫn từng bước (Panda Touch Pro style)
      */
     private fun setupShizukuListeners() {
         binding.btnGrantShizuku.setOnClickListener {
-            executeShizukuGrant()
+            SetupWizardActivity.start(this)
         }
 
         binding.btnCopyAdb.setOnClickListener {

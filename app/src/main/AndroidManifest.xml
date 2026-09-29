@@ -39,6 +39,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Trình hướng dẫn cấp quyền kiểu Panda Touch Pro (từng bước) -->
+        <activity
+            android:name=".ui.SetupWizardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MacroGaming" />
+
         <!-- Dịch vụ Accessibility mô phỏng cử chỉ cảm ứng (dispatchGesture) -->
         <service
             android:name=".service.MacroAccessibilityService"

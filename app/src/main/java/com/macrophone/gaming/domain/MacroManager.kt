@@ -247,6 +247,14 @@ class MacroManager private constructor(private val context: Context) {
         _macroState.value = MacroState.IDLE
     }
 
+    /**
+     * Trả về danh sách các thao tác đã ghi (để hiển thị preview trước khi lưu)
+     */
+    fun getRecordedActions(): List<MacroAction> {
+        return ArrayList(recordedActions)
+    }
+
+
     fun getAllMacros(): List<MacroSequence> {
         return repository.getAllMacros()
     }

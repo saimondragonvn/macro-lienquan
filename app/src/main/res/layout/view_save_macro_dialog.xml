@@ -41,6 +41,39 @@
         android:paddingEnd="12dp"
         android:inputType="text" />
 
+    <!-- Gesture Preview Canvas: Xem trước thao tác đã ghi -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="XEM TRƯỚC THAO TÁC ĐÃ GHI:"
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_chip_unselected">
+
+        <com.macrophone.gaming.ui.overlay.GesturePreviewCanvas
+            android:id="@+id/gesturePreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/tvPreviewEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="(Không có thao tác nào)"
+            android:textColor="@color/text_disabled"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+
     <!-- Timing Stats Preview -->
     <LinearLayout
         android:layout_width="match_parent"

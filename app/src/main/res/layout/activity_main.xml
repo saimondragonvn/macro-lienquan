@@ -157,7 +157,7 @@
                             android:layout_weight="1.6"
                             android:layout_marginEnd="6dp"
                             android:backgroundTint="@color/purple_accent"
-                            android:text="⚡ Cấp quyền Shizuku"
+                            android:text="⚡ Hướng dẫn cài đặt"
                             android:textColor="@color/white"
                             android:textSize="11sp"
                             android:textStyle="bold" />

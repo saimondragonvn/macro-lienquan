@@ -120,4 +120,22 @@ object PermissionUtils {
         }
         context.startActivity(intent)
     }
+
+    /**
+     * Mở màn hình Tùy chọn nhà phát triển (Developer Options)
+     */
+    fun openDeveloperOptions(context: Context) {
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(intent)
+        } catch (_: Throwable) {
+            // Fallback: mở cài đặt chung nếu Developer Options chưa bật
+            val intent = Intent(Settings.ACTION_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(intent)
+        }
+    }
 }
