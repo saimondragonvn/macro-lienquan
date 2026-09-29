@@ -4,6 +4,23 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.0.3] - 2026-09-29
+### 🛡️ Bản sửa lỗi Crash toàn diện & Bỏ bắt buộc quyền Trợ năng
+- **BỎ BẮT BUỘC QUYỀN TRỢ NĂNG (Accessibility)**:
+  - Cho phép người dùng bật ngay Dock Nổi (`FloatingWidgetService`) chỉ cần quyền Vẽ trên màn hình (`SYSTEM_ALERT_WINDOW`).
+  - Không còn chặn người dùng không bật được Trợ năng: Vẫn có thể tạo điểm ghim mục tiêu, kéo thả, ghi thao tác và tạo Nút Macro Nổi.
+  - Tích hợp **Cơ chế Phát Đa Năng (Dual-Engine Dispatch)**:
+    - Nếu có Trợ năng: Tự động dùng `dispatchGesture`.
+    - Nếu không có Trợ năng: Tự động chuyển sang Shizuku Shell (`input tap / swipe`) hoặc Root / ADB.
+    - Nếu chưa có phương thức nào: Thông báo hướng dẫn nhẹ nhàng, không gây văng/crash app.
+- **SỬA TRIỆT ĐỂ CÁC LỖI CRASH ỨNG DỤNG**:
+  - Khắc phục lỗi `IllegalArgumentException: foregroundServiceType 0x40000000 is not valid` trên Android 10, 11, 12, 13 (do cờ `specialUse` chỉ dành riêng cho Android 14+).
+  - Loại bỏ khai báo `ShizukuProvider` thừa và `INTERACT_ACROSS_USERS_FULL` trong Manifest (nguyên nhân gây `SecurityException` khi mở app trên nhiều dòng máy Xiaomi/Samsung/Oppo).
+  - Bổ sung `Thread.setDefaultUncaughtExceptionHandler` toàn cục tại `MacroApp.kt` để tự động phục hồi nếu có lỗi hệ thống phát sinh.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.0.3.apk`.
+
+---
+
 ## [v1.0.2] - 2026-09-29
 ### 🚀 Tính năng đột phá: Tích hợp Shizuku & Gỡ lỗi qua Wi-Fi
 - **Cấp quyền 1-chạm qua Shizuku (Không cần máy tính)**:

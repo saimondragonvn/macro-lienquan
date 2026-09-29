@@ -66,13 +66,17 @@ class MainActivity : AppCompatActivity() {
         requestNotificationPermissionIfNeeded()
 
         try {
-            Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
+            if (ShizukuHelper.isShizukuRunning()) {
+                Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
+            }
         } catch (_: Throwable) {}
     }
 
     override fun onDestroy() {
         try {
-            Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
+            if (ShizukuHelper.isShizukuRunning()) {
+                Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
+            }
         } catch (_: Throwable) {}
         super.onDestroy()
     }
@@ -90,13 +94,8 @@ class MainActivity : AppCompatActivity() {
                 viewModel.selectMacro(sequence)
             },
             onQuickPlay = { sequence ->
-                if (!viewModel.permissions.value.hasAccessibility) {
-                    Toast.makeText(this, "Vui lòng cấp quyền Trợ năng trước khi phát!", Toast.LENGTH_SHORT).show()
-                    showAccessibilityGuidanceDialog()
-                } else {
-                    viewModel.playMacro(sequence)
-                    Toast.makeText(this, "Đang phát: ${sequence.name}", Toast.LENGTH_SHORT).show()
-                }
+                viewModel.playMacro(sequence)
+                Toast.makeText(this, "Đang phát: ${sequence.name}", Toast.LENGTH_SHORT).show()
             },
             onDelete = { sequence ->
                 viewModel.deleteMacro(sequence)
@@ -130,16 +129,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnToggleFloatingWidget.setOnClickListener {
             val perms = viewModel.permissions.value
             if (!perms.hasOverlay) {
-                Toast.makeText(this, "Vui lòng cấp quyền 'Display over other apps' trước!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' trước!", Toast.LENGTH_SHORT).show()
                 PermissionUtils.openOverlaySettings(this)
                 return@setOnClickListener
             }
-            if (!perms.hasAccessibility) {
-                Toast.makeText(this, "Vui lòng bật 'Accessibility Service' trước!", Toast.LENGTH_SHORT).show()
-                showAccessibilityGuidanceDialog()
-                return@setOnClickListener
-            }
 
+            // Mở Dock nổi ngay lập tức, không bắt buộc quyền Trợ năng!
             viewModel.toggleFloatingService(this)
         }
     }

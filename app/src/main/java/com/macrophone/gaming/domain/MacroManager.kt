@@ -1,14 +1,18 @@
 package com.macrophone.gaming.domain
 
 import android.content.Context
+import android.widget.Toast
 import com.macrophone.gaming.data.model.MacroAction
 import com.macrophone.gaming.data.model.MacroSequence
 import com.macrophone.gaming.data.model.MacroState
+import com.macrophone.gaming.data.model.MacroType
 import com.macrophone.gaming.data.model.PlaybackConfig
 import com.macrophone.gaming.data.repository.MacroRepository
 import com.macrophone.gaming.service.MacroAccessibilityService
+import com.macrophone.gaming.util.ShizukuHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +39,7 @@ class MacroManager private constructor(private val context: Context) {
     private val _isFloatingServiceRunning = MutableStateFlow(false)
     val isFloatingServiceRunning: StateFlow<Boolean> = _isFloatingServiceRunning.asStateFlow()
 
+    private var playbackJob: Job? = null
     private val recordedActions = mutableListOf<MacroAction>()
 
     init {
@@ -77,33 +82,122 @@ class MacroManager private constructor(private val context: Context) {
     }
 
     /**
-     * Phát trực tiếp một chuỗi thao tác (ví dụ từ các điểm ghim Target Points trên màn hình)
+     * Phát trực tiếp một chuỗi thao tác (hỗ trợ cả Trợ năng lẫn Shizuku/Root/ADB)
      */
     fun playDirectSequence(sequence: MacroSequence) {
         if (sequence.actions.isEmpty()) return
 
-        val accService = MacroAccessibilityService.instance ?: return
+        stopPlayback()
 
-        _macroState.value = MacroState.PLAYING
-        accService.playMacro(
-            sequence = sequence,
-            onComplete = {
-                scope.launch {
-                    _macroState.value = MacroState.IDLE
+        val accService = MacroAccessibilityService.instance
+        if (accService != null && MacroAccessibilityService.isRunning) {
+            _macroState.value = MacroState.PLAYING
+            accService.playMacro(
+                sequence = sequence,
+                onComplete = {
+                    scope.launch { _macroState.value = MacroState.IDLE }
+                },
+                onError = {
+                    scope.launch { _macroState.value = MacroState.IDLE }
                 }
-            },
-            onError = {
-                scope.launch {
-                    _macroState.value = MacroState.IDLE
+            )
+            return
+        }
+
+        // Nếu Dịch vụ Trợ năng chưa bật: Chạy mô phỏng click qua Shizuku Shell hoặc ADB / Root
+        _macroState.value = MacroState.PLAYING
+        playbackJob = scope.launch(Dispatchers.IO) {
+            val executed = playViaShell(sequence)
+            scope.launch(Dispatchers.Main) {
+                _macroState.value = MacroState.IDLE
+                if (!executed) {
+                    Toast.makeText(
+                        context,
+                        "Cần bật Trợ năng HOẶC chạy Shizuku/ADB để điện thoại tự động click!",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
-        )
+        }
+    }
+
+    private fun playViaShell(sequence: MacroSequence): Boolean {
+        return try {
+            val speedFactor = sequence.config.speedMultiplier.coerceAtLeast(0.1f)
+            val repeatCount = if (sequence.config.repeatCount <= 0) 1 else sequence.config.repeatCount
+
+            for (r in 0 until repeatCount) {
+                if (_macroState.value != MacroState.PLAYING) break
+
+                for (action in sequence.actions) {
+                    if (_macroState.value != MacroState.PLAYING) break
+
+                    val delay = (action.delayBeforeMs / speedFactor).toLong()
+                    if (delay > 0) {
+                        Thread.sleep(delay)
+                    }
+
+                    when (action.type) {
+                        MacroType.TAP -> {
+                            val pt = action.points.firstOrNull() ?: continue
+                            executeShellInput("input tap ${pt.x} ${pt.y}")
+                        }
+                        MacroType.SWIPE -> {
+                            val p1 = action.points.firstOrNull() ?: continue
+                            val p2 = action.points.lastOrNull() ?: continue
+                            val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(20)
+                            executeShellInput("input swipe ${p1.x} ${p1.y} ${p2.x} ${p2.y} $dur")
+                        }
+                    }
+                }
+
+                if (sequence.config.repeatIntervalMs > 0 && r < repeatCount - 1) {
+                    Thread.sleep((sequence.config.repeatIntervalMs / speedFactor).toLong())
+                }
+            }
+            true
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
+    private fun executeShellInput(cmd: String): Boolean {
+        // 1. Thử qua Shizuku nếu đang chạy
+        if (ShizukuHelper.isShizukuRunning() && ShizukuHelper.hasShizukuPermission()) {
+            try {
+                val clazz = Class.forName("rikka.shizuku.Shizuku")
+                val method = clazz.getDeclaredMethod("newProcess", Array<String>::class.java, Array<String>::class.java, String::class.java)
+                method.isAccessible = true
+                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? java.lang.Process
+                proc?.waitFor()
+                proc?.destroy()
+                return true
+            } catch (_: Throwable) {}
+        }
+
+        // 2. Thử qua Root su
+        try {
+            val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
+            proc.waitFor()
+            if (proc.exitValue() == 0) return true
+        } catch (_: Throwable) {}
+
+        // 3. Thử qua sh thông thường
+        try {
+            val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
+            proc.waitFor()
+            if (proc.exitValue() == 0) return true
+        } catch (_: Throwable) {}
+
+        return false
     }
 
     /**
      * Dừng phát lại ngay lập tức
      */
     fun stopPlayback() {
+        playbackJob?.cancel()
+        playbackJob = null
         MacroAccessibilityService.instance?.stopMacro()
         _macroState.value = MacroState.IDLE
     }

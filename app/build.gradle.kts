@@ -11,8 +11,8 @@ android {
         applicationId = "com.macrophone.gaming"
         minSdk = 30
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -70,9 +70,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("com.google.code.gson:gson:2.11.0")
 
-    // Shizuku API & Provider để cấp quyền tự động qua Gỡ lỗi Wi-Fi không cần PC
+    // Shizuku API để cấp quyền và dispatch touch qua Gỡ lỗi Wi-Fi
     implementation("dev.rikka.shizuku:api:13.1.5")
-    implementation("dev.rikka.shizuku:provider:13.1.5")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

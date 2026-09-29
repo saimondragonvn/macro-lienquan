@@ -162,22 +162,28 @@ class FloatingWidgetService : Service() {
     }
 
     private fun startForegroundNotification() {
-        NotificationHelper.createNotificationChannel(this)
-        val notification = NotificationHelper.buildNotification(
-            this,
-            macroManager.macroState.value,
-            macroManager.activeMacro.value?.name
-        )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(
-                NotificationHelper.NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+        try {
+            NotificationHelper.createNotificationChannel(this)
+            val notification = NotificationHelper.buildNotification(
+                this,
+                macroManager.macroState.value,
+                macroManager.activeMacro.value?.name
             )
-        } else {
-            startForeground(NotificationHelper.NOTIFICATION_ID, notification)
-        }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                try {
+                    startForeground(
+                        NotificationHelper.NOTIFICATION_ID,
+                        notification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                    )
+                } catch (_: Throwable) {
+                    startForeground(NotificationHelper.NOTIFICATION_ID, notification)
+                }
+            } else {
+                startForeground(NotificationHelper.NOTIFICATION_ID, notification)
+            }
+        } catch (_: Throwable) {}
     }
 
     /**
@@ -230,11 +236,7 @@ class FloatingWidgetService : Service() {
             windowManager = windowManager,
             sequence = sequence,
             onTrigger = { seq ->
-                if (!MacroAccessibilityService.isRunning) {
-                    Toast.makeText(this, "Vui lòng bật dịch vụ Trợ năng trước!", Toast.LENGTH_SHORT).show()
-                    return@FloatingMacroButton
-                }
-                // Phát lại thao tác với tốc độ đã cấu hình
+                // Phát lại thao tác (hỗ trợ cả Trợ năng lẫn Shizuku/Root)
                 macroManager.playDirectSequence(seq)
             },
             onStop = {
@@ -340,11 +342,6 @@ class FloatingWidgetService : Service() {
         }
 
         btnPlayStop.setOnClickListener {
-            if (!MacroAccessibilityService.isRunning) {
-                Toast.makeText(this, "Vui lòng bật dịch vụ Trợ năng trước!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             if (macroManager.macroState.value == MacroState.PLAYING) {
                 macroManager.stopPlayback()
             } else {
