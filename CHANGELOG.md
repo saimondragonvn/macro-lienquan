@@ -4,6 +4,26 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.2.1] - 2026-09-30
+### 🎯 Hiển thị trực quan vị trí ghi & Tự động tạo Nút tròn Macro nổi
+- **HIỂN THỊ TRỰC QUAN TẤT CẢ VỊ TRÍ ĐÃ NHẤN HOẶC VUỐT**:
+  - `TouchRecorderCanvas` vẽ và giữ nguyên toàn bộ các điểm Chạm (Tap) với vòng sáng cyan neon và đánh số thứ tự (1, 2, 3...) to rõ, tự căn chỉnh theo DPI màn hình (`density`).
+  - Điểm Giữ (Hold) hiển thị vòng neon tím kèm nhãn "GIỮ (ms)".
+  - Đường Vuốt (Swipe) hiển thị vạch đứt nét màu xanh lá kèm mũi tên chỉ hướng vuốt chiêu rõ ràng.
+  - Bổ sung nút **↩ Xóa điểm** (Undo) trên thanh công cụ cho phép xóa ngay điểm vừa bấm nhầm.
+- **TỰ ĐỘNG TẠO NÚT TRÒN MACRO NỔI TRÊN MÀN HÌNH**:
+  - Khi bấm **✓ Tạo nút Macro**, combo lập tức được lưu với cấu hình xả chiêu siêu tốc (5x Gaming Speed).
+  - Tự động sinh ngay 1 nút tròn nổi (`FloatingMacroButton` 56dp x 56dp oval neon) ngay trên màn hình game.
+  - Chạm vào nút tròn → lập tức phát combo với tốc độ cực nhanh!
+  - Đè lâu vào nút tròn → hiện nút xóa (X) nếu không muốn dùng nữa.
+- **SỬA LỖI CRASH VÀ TỌA ĐỘ SHELL INPUT**:
+  - Ép kiểu tọa độ chạm/vuốt sang số nguyên (`.toInt()`) trong lệnh shell `input tap` / `input swipe`, tránh lỗi `NumberFormatException` trên Android.
+  - Sửa `Path.lineTo` trong `GestureBuilder` cho các điểm Tap/Hold để `GestureDescription` không bao giờ bị rỗng gây crash trên một số dòng máy.
+  - Bọc luồng `runOnUiThread` an toàn cho các Shizuku listener trong `MainActivity` và `SetupWizardActivity`.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.2.1.apk`.
+
+---
+
 ## [v1.2.0] - 2026-09-29
 ### 🛡️ Khắc phục triệt để lỗi Crash Shizuku & Hỗ trợ Giả lập PC (LDPlayer, Nox, BlueStacks)
 - **SỬA LỖI CRASH "ỨNG DỤNG ĐÃ DỪNG" (100% FIXED)**:

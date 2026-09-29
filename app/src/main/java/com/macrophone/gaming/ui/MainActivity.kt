@@ -37,13 +37,16 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var presetAdapter: MacroPresetAdapter
 
-    // Lắng nghe kết quả yêu cầu quyền Shizuku
+    // Lắng nghe kết quả yêu cầu quyền Shizuku an toàn trên UI thread
     private val shizukuPermissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         if (requestCode == ShizukuHelper.SHIZUKU_REQUEST_CODE) {
-            if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                executeShizukuGrant()
-            } else {
-                Toast.makeText(this, "Bạn đã từ chối cấp quyền Shizuku!", Toast.LENGTH_SHORT).show()
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    executeShizukuGrant()
+                } else {
+                    Toast.makeText(this, "Bạn đã từ chối cấp quyền Shizuku!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

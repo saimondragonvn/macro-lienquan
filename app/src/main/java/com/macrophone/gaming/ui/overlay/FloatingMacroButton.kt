@@ -116,7 +116,7 @@ class FloatingMacroButton(
 
                     MotionEvent.ACTION_UP -> {
                         val duration = System.currentTimeMillis() - downTime
-                        if (!isDragging && duration < 300) {
+                        if (!isDragging && duration < 500) {
                             // Người dùng CLICK vào nút Macro để BẬT hoặc DỪNG phát lại!
                             vibrateClick(35)
                             if (isPlaying) {
@@ -126,7 +126,7 @@ class FloatingMacroButton(
                                 setPlayingState(true)
                                 onTrigger(sequence)
                             }
-                        } else if (!isDragging && duration >= 800) {
+                        } else if (!isDragging && duration >= 500) {
                             // Nhấn giữ lâu để bật/tắt nút xóa
                             vibrateClick(80)
                             ivDelete.visibility = if (ivDelete.visibility == View.VISIBLE) View.GONE else View.VISIBLE

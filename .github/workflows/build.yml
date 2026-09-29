@@ -46,28 +46,29 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.1' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.1' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.2.0 (Fix Triệt Để Lỗi Crash & Hỗ Trợ Giả Lập PC)
+            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.2.1 (Hiển Thị Trực Quan Vị Trí Ghi & Tự Tạo Nút Tròn Macro)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🛠️ CÁC SỬA LỖI & NÂNG CẤP TRỌNG YẾU TRONG BẢN v1.2.0:
-            1. **Khắc phục 100% lỗi "Ứng dụng đã dừng" (Crash) khi cấp quyền Shizuku**:
-               - Bổ sung `dev.rikka.shizuku:provider:13.1.5` và khai báo `ShizukuProvider` vào `AndroidManifest.xml`.
-               - Chuyển sang sử dụng `Shizuku.addBinderReceivedListenerSticky` chuẩn xác, nhận Binder an toàn tuyệt đối.
-               - Cơ chế tự phục hồi chống crash toàn cục (`UncaughtExceptionHandler`) ngăn ngừa ứng dụng bị đóng đột ngột.
-            2. **Hỗ trợ toàn diện máy ảo / giả lập Android trên máy tính (PC)**:
-               - Hạ `minSdk = 26` (Android 8.0 Oreo), tương thích hoàn toàn với LDPlayer 9, BlueStacks 5, NoxPlayer, MuMu Player và tất cả điện thoại Android 8 -> Android 15.
-               - Tự động nhận diện quyền Root (`su`) phổ biến trên các trình giả lập: Người dùng giả lập chỉ cần 1 cú click là tự động cấp toàn bộ quyền và chạy macro mượt mà không cần cài đặt Shizuku!
-            3. **Tự động kích hoạt Trợ năng 1-chạm**:
-               - Nhấn nút "Cấp quyền Trợ năng" trên màn hình chính sẽ tự kích hoạt ngay lập tức qua Shizuku/Root mà không cần tìm kiếm trong Cài đặt hệ thống.
-            4. **Đa điểm & Ghi hình trực quan**:
-               - Bản đồ xem trước thao tác (`GesturePreviewCanvas`) hiển thị rõ ràng từng nút bấm, vuốt chiêu và độ trễ.
-               - Không xung đột Joystick di chuyển khi thi triển combo.
+            #### 🛠️ CÁC TÍNH NĂNG MỚI & SỬA LỖI TRỌNG YẾU TRONG BẢN v1.2.1:
+            1. **Hiển thị trực quan toàn bộ các vị trí đã nhấn hoặc vuốt khi ghi Macro**:
+               - Mọi điểm Chạm (Tap) được đánh số thứ tự (1, 2, 3...) với vòng tròn phát sáng cyan neon rõ nét, căn tỷ lệ theo mật độ màn hình (density).
+               - Mọi điểm Giữ (Hold) hiển thị vòng neon tím kèm thời lượng giữ tính bằng mili-giây.
+               - Mọi vệt Vuốt (Swipe) hiển thị đường đứt nét emerald green kèm mũi tên định hướng và điểm bắt đầu đánh số.
+               - Hỗ trợ nút **↩ Xóa điểm** (Undo) để xóa ngay thao tác vừa bấm nhầm mà không cần ghi lại từ đầu.
+            2. **Tự động tạo 1 nút tròn Macro nổi trên màn hình**:
+               - Khi bấm **✓ Tạo nút Macro**, hệ thống lưu ngay combo với tốc độ xả chiêu siêu nhanh (5x Gaming Speed).
+               - Tự động sinh một nút tròn nổi (56dp x 56dp, oval neon) ngay trên màn hình game.
+               - Người chơi chỉ cần kéo nút tròn này đến vị trí thuận tay (gần nút đánh thường hoặc chiêu thức) và chạm vào nút là combo lập tức được xả ra!
+            3. **Khắc phục triệt để lỗi Crash & Số nguyên toInt()**:
+               - Sửa lỗi `Integer.parseInt` trong lệnh shell `input tap` / `input swipe` (chuyển đổi float sang int tuyệt đối an toàn).
+               - Đảm bảo `Path` trong `GestureDescription` không bị rỗng (`lineTo`) trên mọi phiên bản Android.
+               - Bọc luồng UI an toàn cho các Shizuku listener, chống hoàn toàn hiện tượng văng "Ứng dụng đã dừng".
 
             #### 📲 Hướng dẫn cài đặt APK:
-            1. Tải file **`Macro-LienQuan-v1.2.0.apk`** ở mục **Assets** bên dưới.
+            1. Tải file **`Macro-LienQuan-v1.2.1.apk`** ở mục **Assets** bên dưới.
             2. Cài đặt vào điện thoại hoặc kéo thả trực tiếp vào trình giả lập trên máy tính (LDPlayer, BlueStacks, Nox).
             3. Mở ứng dụng và bắt đầu tận hưởng combo chớp nhoáng!
           draft: false

@@ -140,18 +140,18 @@ class MacroManager private constructor(private val context: Context) {
                     when (action.type) {
                         MacroType.TAP -> {
                             val pt = action.points.firstOrNull() ?: continue
-                            executeShellInput("input tap ${pt.x} ${pt.y}")
+                            executeShellInput("input tap ${pt.x.toInt()} ${pt.y.toInt()}")
                         }
                         MacroType.HOLD -> {
                             val pt = action.points.firstOrNull() ?: continue
                             val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(50)
-                            executeShellInput("input swipe ${pt.x} ${pt.y} ${pt.x} ${pt.y} $dur")
+                            executeShellInput("input swipe ${pt.x.toInt()} ${pt.y.toInt()} ${pt.x.toInt()} ${pt.y.toInt()} $dur")
                         }
                         MacroType.SWIPE -> {
                             val p1 = action.points.firstOrNull() ?: continue
                             val p2 = action.points.lastOrNull() ?: continue
                             val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(20)
-                            executeShellInput("input swipe ${p1.x} ${p1.y} ${p2.x} ${p2.y} $dur")
+                            executeShellInput("input swipe ${p1.x.toInt()} ${p1.y.toInt()} ${p2.x.toInt()} ${p2.y.toInt()} $dur")
                         }
                     }
                 }
@@ -195,8 +195,21 @@ class MacroManager private constructor(private val context: Context) {
         }
     }
 
-    fun saveRecording(name: String, config: PlaybackConfig = PlaybackConfig()): MacroSequence? {
-        if (recordedActions.isEmpty()) {
+    fun removeLastRecordedAction(): Boolean {
+        if (recordedActions.isNotEmpty()) {
+            recordedActions.removeAt(recordedActions.size - 1)
+            return true
+        }
+        return false
+    }
+
+    fun saveRecording(
+        name: String,
+        config: PlaybackConfig = PlaybackConfig(),
+        customActions: List<MacroAction>? = null
+    ): MacroSequence? {
+        val actionsToSave = customActions ?: recordedActions
+        if (actionsToSave.isEmpty()) {
             _macroState.value = MacroState.IDLE
             return null
         }
@@ -204,8 +217,9 @@ class MacroManager private constructor(private val context: Context) {
         val newSequence = MacroSequence(
             name = name.ifBlank { "Custom Combo #${System.currentTimeMillis() % 1000}" },
             description = "Ghi lại trực tiếp từ màn hình",
-            actions = ArrayList(recordedActions),
-            config = config
+            actions = ArrayList(actionsToSave),
+            config = config,
+            hasFloatingButton = true
         )
 
         repository.saveMacro(newSequence)

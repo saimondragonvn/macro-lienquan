@@ -31,19 +31,24 @@ class SetupWizardActivity : AppCompatActivity() {
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         runOnUiThread {
-            refreshStepStatuses()
+            if (!isFinishing && !isDestroyed) {
+                refreshStepStatuses()
+            }
         }
     }
 
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
         runOnUiThread {
-            refreshStepStatuses()
+            if (!isFinishing && !isDestroyed) {
+                refreshStepStatuses()
+            }
         }
     }
 
     private val shizukuPermissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         if (requestCode == ShizukuHelper.SHIZUKU_REQUEST_CODE) {
             runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
                 if (grantResult == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this@SetupWizardActivity, "Đã cấp quyền Shizuku thành công!", Toast.LENGTH_SHORT).show()
                     runAutoGrant()

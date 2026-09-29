@@ -18,6 +18,8 @@
         android:layout_alignParentTop="true"
         android:layout_margin="16dp"
         android:background="@drawable/bg_dialog_card"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="12dp">
@@ -53,12 +55,22 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnUndoRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginEnd="6dp"
+            android:backgroundTint="@color/bg_surface_elevated"
+            android:text="↩ Xóa điểm"
+            android:textColor="@color/amber_warning"
+            android:textSize="11sp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelRecord"
             android:layout_width="wrap_content"
             android:layout_height="38dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:backgroundTint="@color/bg_surface_elevated"
-            android:text="@string/rec_btn_cancel"
+            android:text="✕ Hủy"
             android:textColor="@color/text_primary"
             android:textSize="11sp" />
 
@@ -67,7 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="38dp"
             android:backgroundTint="@color/emerald_play"
-            android:text="@string/rec_btn_save"
+            android:text="✓ Tạo nút Macro"
             android:textColor="@color/white"
             android:textSize="11sp"
             android:textStyle="bold" />

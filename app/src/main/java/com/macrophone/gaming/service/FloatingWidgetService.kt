@@ -452,20 +452,60 @@ class FloatingWidgetService : Service() {
 
         val canvas = recordOverlayView!!.findViewById<TouchRecorderCanvas>(R.id.touchCanvas)
         val tvCount = recordOverlayView!!.findViewById<TextView>(R.id.tvPointCount)
+        val btnUndo = recordOverlayView!!.findViewById<MaterialButton>(R.id.btnUndoRecord)
         val btnSave = recordOverlayView!!.findViewById<MaterialButton>(R.id.btnSaveRecord)
         val btnCancel = recordOverlayView!!.findViewById<MaterialButton>(R.id.btnCancelRecord)
 
-        var count = 0
         canvas.onActionRecorded = { action: MacroAction ->
             macroManager.addRecordedAction(action)
-            count++
-            tvCount.text = getString(R.string.rec_point_count, count)
+        }
+
+        canvas.onCountChanged = { count ->
+            tvCount.text = "Đã ghi: $count thao tác"
+        }
+
+        btnUndo?.setOnClickListener {
+            val undone = canvas.undoLast()
+            if (undone) {
+                macroManager.removeLastRecordedAction()
+                Toast.makeText(this, "↩ Đã xóa thao tác vừa ghi", Toast.LENGTH_SHORT).show()
+            }
         }
 
         btnSave.setOnClickListener {
-            // Đóng canvas ghi và mở Dialog Chỉnh Tốc Độ & Tạo Nút Macro Nổi!
+            val actions = canvas.getRecordedActions()
+            if (actions.isEmpty()) {
+                Toast.makeText(this, "Chưa ghi thao tác nào! Hãy chạm hoặc vuốt trên màn hình.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             closeRecordOverlay()
-            openSaveAndSpeedDialog()
+
+            val macroIndex = macroManager.getAllMacros().size + 1
+            val macroName = "M$macroIndex"
+            val config = PlaybackConfig(
+                speedMultiplier = 5.0f, // 5x speed cho game xả combo siêu tốc
+                loopCount = 1,
+                loopIntervalMs = 50L
+            )
+
+            val savedSequence = macroManager.saveRecording(
+                name = macroName,
+                config = config,
+                customActions = actions
+            )
+
+            if (savedSequence != null) {
+                savedSequence.buttonX = (screenWidth - 220).coerceAtLeast(60)
+                savedSequence.buttonY = (screenHeight / 2) - 100
+                createFloatingMacroButton(savedSequence)
+
+                Toast.makeText(
+                    this,
+                    "✅ Đã tạo nút tròn Macro [$macroName]! Chạm nút để xả combo, đè nút để xóa.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
 
         btnCancel.setOnClickListener {
@@ -474,7 +514,11 @@ class FloatingWidgetService : Service() {
         }
 
         dockView?.visibility = View.GONE
-        windowManager.addView(recordOverlayView, recordParams)
+        try {
+            windowManager.addView(recordOverlayView, recordParams)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Lỗi hiển thị màn hình ghi: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun closeRecordOverlay() {
@@ -623,7 +667,9 @@ class FloatingWidgetService : Service() {
             saveDialogView = null
         }
 
-        windowManager.addView(saveDialogView, saveParams)
+        try {
+            windowManager.addView(saveDialogView, saveParams)
+        } catch (_: Exception) {}
     }
 
     private fun toggleSettingsDialog() {
@@ -647,7 +693,9 @@ class FloatingWidgetService : Service() {
         }
 
         setupSettingsDialog(settingsDialogView!!)
-        windowManager.addView(settingsDialogView, settingsParams)
+        try {
+            windowManager.addView(settingsDialogView, settingsParams)
+        } catch (_: Exception) {}
     }
 
     private fun setupSettingsDialog(root: View) {

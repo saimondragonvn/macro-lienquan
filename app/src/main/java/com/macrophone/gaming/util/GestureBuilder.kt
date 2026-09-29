@@ -26,6 +26,18 @@ object GestureBuilder {
         val firstPoint = action.points.first()
         path.moveTo(firstPoint.x, firstPoint.y)
 
+        when (action.type) {
+            MacroType.TAP, MacroType.HOLD -> {
+                path.lineTo(firstPoint.x, firstPoint.y)
+            }
+            MacroType.SWIPE -> {
+                for (i in 1 until action.points.size) {
+                    val p = action.points[i]
+                    path.lineTo(p.x, p.y)
+                }
+            }
+        }
+
         val safeMultiplier = if (speedMultiplier <= 0f) 1.0f else speedMultiplier
 
         val effectiveDuration = when (action.type) {
@@ -39,10 +51,6 @@ object GestureBuilder {
                 max(50L, (action.durationMs / safeMultiplier).toLong())
             }
             MacroType.SWIPE -> {
-                for (i in 1 until action.points.size) {
-                    val p = action.points[i]
-                    path.lineTo(p.x, p.y)
-                }
                 max(30L, (action.durationMs / safeMultiplier).toLong())
             }
         }
