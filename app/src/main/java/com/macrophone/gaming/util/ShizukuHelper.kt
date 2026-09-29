@@ -99,11 +99,20 @@ object ShizukuHelper {
         // 1. Thử qua Shizuku nếu đang chạy và đã cấp quyền
         if (isShizukuRunning() && hasShizukuPermission()) {
             try {
-                val proc = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
-                proc.waitFor()
-                val code = proc.exitValue()
-                proc.destroy()
-                if (code == 0) return true
+                val method = Shizuku::class.java.getDeclaredMethod(
+                    "newProcess",
+                    Array<String>::class.java,
+                    Array<String>::class.java,
+                    String::class.java
+                )
+                method.isAccessible = true
+                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? java.lang.Process
+                if (proc != null) {
+                    proc.waitFor()
+                    val code = proc.exitValue()
+                    proc.destroy()
+                    if (code == 0) return true
+                }
             } catch (e: Throwable) {
                 Log.w(TAG, "Shizuku exec command failed: ${e.message}")
             }
