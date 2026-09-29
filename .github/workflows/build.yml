@@ -9,9 +9,12 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
-    name: Build Debug & Release APK
+    name: Build Debug APK & Create Release
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +31,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
+      - name: Build Debug APK with Gradle
         run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload Debug APK Artifact
@@ -36,22 +39,31 @@ jobs:
         with:
           name: Macro-LienQuan-Debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
 
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Publish GitHub Release with APK
         uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/debug/app-debug.apk
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.0' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.0' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - ${{ github.ref_name }}
-            Bản build tự động cho game thủ Liên Quân Mobile / MOBA.
-            
+            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller)
+            Bản cài đặt APK tự động biên dịch cho Android từ commit `${{ github.sha }}`.
+
+            #### 📲 Hướng dẫn cài đặt APK:
+            1. Tải file **`app-debug.apk`** ở mục **Assets** bên dưới về điện thoại.
+            2. Mở file APK để cài đặt (cho phép "Cài đặt ứng dụng không rõ nguồn gốc" nếu điện thoại yêu cầu).
+            3. Khởi động ứng dụng, cấp quyền **Trợ năng (Accessibility)** và **Hiển thị trên ứng dụng khác (Overlay)**.
+            4. Vào game, nhấn Record để tạo nút Macro nổi và chiến game!
+
             #### Tính năng nổi bật:
-            - Ghi thao tác combo thực tế và chỉnh tốc độ siêu tốc (Speed Multiplier 1x - 10x).
-            - Lưu thành Nút Macro Nổi độc lập trên màn hình (kéo thả cạnh phím chiêu).
-            - Đa điểm không cản trở: Tay trái vẫn di chuyển Joystick mượt mà trong khi macro đang xả skill.
-            - Tương thích Android 11 (API 30) đến Android 14+ (API 34+).
+            - **Ghi thao tác thực tế**: Ghi nhận tọa độ và khoảng cách thời gian giữa các chiêu thức.
+            - **Tăng tốc siêu tốc (Speed Multiplier)**: Rút ngắn thời gian combo từ 1x đến 10x.
+            - **Nút Macro Nổi độc lập**: Kéo thả nút cạnh phím chiêu, chạm là tự động xả combo.
+            - **Đa điểm đồng thời (Multi-Touch)**: Tay trái vẫn di chuyển Joystick mượt mà trong khi macro đang xả skill.
+            - Tương thích từ Android 11 (API 30) đến Android 14+ (API 34+).
           draft: false
           prerelease: false
         env:
