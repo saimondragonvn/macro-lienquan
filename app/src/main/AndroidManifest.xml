@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Cửa sổ nổi trên game và ứng dụng khác -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Chạy Foreground Service duy trì trạng thái Dock nổi -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Hiển thị Notification điều khiển nhanh (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Phản hồi rung xúc giác khi chạm ghi thao tác -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Bỏ qua tối ưu hóa pin để không bị ngắt combo giữa chừng -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <application
+        android:name=".MacroApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_macro_tile"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/ic_macro_tile"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MacroGaming"
+        tools:targetApi="34">
+
+        <!-- Màn hình chính quản trị quyền và presets -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Dịch vụ Accessibility mô phỏng cử chỉ cảm ứng (dispatchGesture) -->
+        <service
+            android:name=".service.MacroAccessibilityService"
+            android:exported="true"
+            android:label="@string/accessibility_service_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- Service quản lý cửa sổ nổi (Floating Dock Controller) -->
+        <service
+            android:name=".service.FloatingWidgetService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Gaming floating assistant and overlay controls" />
+        </service>
+
+        <!-- Quick Settings Tile trên thanh cài đặt nhanh của Android -->
+        <service
+            android:name=".service.QuickSettingsTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_macro_tile"
+            android:label="@string/qs_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- Receiver nhận lệnh Play/Stop/Close từ các nút bấm trên Notification -->
+        <receiver
+            android:name=".service.NotificationActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.macrophone.gaming.ACTION_PLAY" />
+                <action android:name="com.macrophone.gaming.ACTION_STOP" />
+                <action android:name="com.macrophone.gaming.ACTION_CLOSE" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

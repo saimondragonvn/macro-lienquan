@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Backgrounds & Surfaces -->
+    <color name="bg_dark">#0F172A</color>
+    <color name="bg_surface">#1E293B</color>
+    <color name="bg_surface_elevated">#334155</color>
+    <color name="bg_floating_glass">#E60F172A</color>
+    <color name="bg_dialog">#1E293B</color>
+
+    <!-- Accents & Gaming Highlights -->
+    <color name="cyan_neon">#06B6D4</color>
+    <color name="cyan_neon_glow">#3306B6D4</color>
+    <color name="purple_accent">#8B5CF6</color>
+    <color name="emerald_play">#10B981</color>
+    <color name="crimson_stop">#EF4444</color>
+    <color name="amber_warning">#F59E0B</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_disabled">#64748B</color>
+
+    <!-- Overlay / Recorders -->
+    <color name="rec_overlay_tint">#88000000</color>
+    <color name="touch_point_circle">#CCEF4444</color>
+    <color name="touch_point_stroke">#FFFFFFFF</color>
+    <color name="stroke_border">#2E3D52</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+</resources>

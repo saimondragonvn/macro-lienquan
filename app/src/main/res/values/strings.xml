@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">Macro Gaming Combo</string>
+    <string name="accessibility_service_name">Macro Gaming Combo Service</string>
+    <string name="accessibility_service_description">Dịch vụ hỗ trợ mô phỏng thao tác cảm ứng tự động và chuỗi combo nhanh (Fast Combo) phục vụ trải nghiệm chơi game nâng cao.</string>
+
+    <!-- Permissions -->
+    <string name="perm_accessibility_title">Accessibility Service</string>
+    <string name="perm_accessibility_desc">Cần thiết để mô phỏng cử chỉ chạm, giữ và vuốt trên màn hình (dispatchGesture).</string>
+    <string name="perm_overlay_title">Display Over Other Apps</string>
+    <string name="perm_overlay_desc">Cần thiết để hiển thị thanh công cụ nổi (Floating Dock) trên các trò chơi.</string>
+    <string name="perm_notification_title">Notifications (Android 13+)</string>
+    <string name="perm_notification_desc">Hiển thị thanh điều khiển nhanh trạng thái combo đang chạy.</string>
+    <string name="perm_battery_title">Ignore Battery Optimization</string>
+    <string name="perm_battery_desc">Giúp macro không bị ngắt quãng giữa chừng khi chơi game lâu.</string>
+    
+    <string name="btn_grant">Cấp quyền</string>
+    <string name="btn_granted">Đã cấp ✓</string>
+    <string name="btn_start_dock">Khởi chạy Floating Dock</string>
+    <string name="btn_stop_dock">Tắt Floating Dock</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="qs_tile_label">Macro Combo</string>
+    <string name="qs_tile_state_active">Đang bật</string>
+    <string name="qs_tile_state_inactive">Đã tắt</string>
+
+    <!-- Notification -->
+    <string name="notif_channel_name">Macro Gaming Service</string>
+    <string name="notif_channel_desc">Thông báo trạng thái hoạt động của Macro Gaming</string>
+    <string name="notif_title_ready">Macro Gaming: Sẵn sàng</string>
+    <string name="notif_title_playing">Macro Gaming: Đang phát combo (%1$s)</string>
+    <string name="notif_title_recording">Macro Gaming: Đang ghi thao tác...</string>
+    <string name="notif_action_play">Phát</string>
+    <string name="notif_action_pause">Tạm dừng</string>
+    <string name="notif_action_stop">Dừng</string>
+    <string name="notif_action_close">Đóng dock</string>
+
+    <!-- Dialog / Settings -->
+    <string name="settings_title">Cài đặt Macro &amp; Combo</string>
+    <string name="settings_speed_label">Hệ số tốc độ (Speed Multiplier):</string>
+    <string name="settings_loop_label">Chế độ lặp (Repeat Count):</string>
+    <string name="settings_loop_infinite">Vô hạn (∞)</string>
+    <string name="settings_interval_label">Thời gian nghỉ giữa các vòng lặp:</string>
+    <string name="settings_preset_label">Chọn Preset Combo:</string>
+    <string name="btn_save">Lưu cấu hình</string>
+    <string name="btn_close">Đóng</string>
+
+    <!-- Recording Overlay -->
+    <string name="rec_instructions">Chạm / Vuốt trên màn hình để ghi thao tác. Nhấn [Lưu] khi hoàn tất.</string>
+    <string name="rec_btn_save">Lưu Combo</string>
+    <string name="rec_btn_cancel">Hủy bỏ</string>
+    <string name="rec_point_count">Đã ghi: %1$d thao tác</string>
+</resources>

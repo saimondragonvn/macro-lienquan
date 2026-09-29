@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dockRoot"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_floating_pill"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:elevation="12dp">
+
+    <!-- Drag Handle / Status Glow Indicator -->
+    <ImageView
+        android:id="@+id/ivDragHandle"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:padding="6dp"
+        android:src="@drawable/ic_macro_tile"
+        android:contentDescription="Drag Handle" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:background="@color/stroke_border" />
+
+    <!-- Play / Stop Button -->
+    <ImageButton
+        android:id="@+id/btnPlayStop"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="7dp"
+        android:src="@drawable/ic_play"
+        android:contentDescription="Play/Stop Macro" />
+
+    <!-- Add Target Point Button (+) -->
+    <ImageButton
+        android:id="@+id/btnAddPoint"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="7dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="Add Target Point" />
+
+    <!-- Remove Target Point Button (-) -->
+    <ImageButton
+        android:id="@+id/btnRemovePoint"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="7dp"
+        android:src="@drawable/ic_remove"
+        android:contentDescription="Remove Target Point" />
+
+    <!-- Toggle Points Visibility (Eye) -->
+    <ImageButton
+        android:id="@+id/btnToggleVisibility"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="7dp"
+        android:src="@drawable/ic_visibility"
+        android:contentDescription="Toggle Target Visibility" />
+
+    <!-- Record Button -->
+    <ImageButton
+        android:id="@+id/btnRecord"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="7dp"
+        android:src="@drawable/ic_record"
+        android:contentDescription="Record Macro" />
+
+    <!-- Settings / Config Button -->
+    <ImageButton
+        android:id="@+id/btnSettings"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="7dp"
+        android:src="@drawable/ic_settings"
+        android:contentDescription="Macro Settings" />
+
+    <!-- Close Dock Button -->
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="5dp"
+        android:src="@drawable/ic_close"
+        android:contentDescription="Close Dock" />
+
+</LinearLayout>

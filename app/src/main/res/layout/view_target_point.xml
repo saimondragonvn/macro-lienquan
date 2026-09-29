@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/targetPointRoot"
+    android:layout_width="44dp"
+    android:layout_height="44dp"
+    android:background="@drawable/bg_target_point"
+    android:elevation="14dp">
+
+    <TextView
+        android:id="@+id/tvPointIndex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="1"
+        android:textColor="@color/cyan_neon"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Center dot pointer for accurate visual alignment -->
+    <View
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:background="@color/crimson_stop"
+        android:alpha="0.6" />
+
+</FrameLayout>
