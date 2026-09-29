@@ -137,6 +137,8 @@ object PermissionUtils {
             }
             context.startActivity(intent)
         }
+    }
+
     /**
      * Mở màn hình quản lý Cửa sổ thả nổi của Infinix (Phone Master)
      */
