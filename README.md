@@ -2,6 +2,14 @@
 
 Dự án Android hoàn chỉnh bằng **Kotlin** hỗ trợ từ **Android 11 (API 30) đến Android 14+ (API 34+)**, cung cấp giải pháp ghi lại thao tác cảm ứng của game thủ, tăng tốc độ chuỗi thao tác (Speed Multiplier 1x – 10x), và **lưu thành NÚT MACRO NỔI độc lập trên màn hình** để kích hoạt combo tức thì.
 
+---
+
+### 📥 Tải file APK cài đặt ngay:
+👉 **[Tải file APK v1.0.0 (app-debug.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.0.0/app-debug.apk)**  
+👉 **[Xem toàn bộ các bản phát hành (Releases)](https://github.com/saimondragonvn/macro-lienquan/releases)**
+
+---
+
 > [!IMPORTANT]
 > **Đặc điểm cốt lõi**:
 > 1. **Ghi thao tác**: Ghi lại toàn bộ chuỗi bấm chiêu, vuốt, giữ và độ trễ trong trận đấu.
