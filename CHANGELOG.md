@@ -4,6 +4,17 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.0.2] - 2026-09-29
+### 🚀 Tính năng đột phá: Tích hợp Shizuku & Gỡ lỗi qua Wi-Fi
+- **Cấp quyền 1-chạm qua Shizuku (Không cần máy tính)**:
+  - Tích hợp trực tiếp Shizuku API (v13.1.5).
+  - Tự động thực thi shell commands kích hoạt Trợ năng, mở khóa Restricted Settings và cấp quyền Vẽ trên màn hình chỉ với 1 nút bấm trong app.
+- **Bộ công cụ Gỡ lỗi không dây (Wireless Debugging Helper)**:
+  - Nút sao chép 5 dòng lệnh ADB chuẩn hóa vào bộ nhớ tạm để dùng ngay trên LADB (Local ADB trên điện thoại) hoặc máy tính.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.0.2.apk`.
+
+---
+
 ## [v1.0.1] - 2026-09-29
 ### 🔧 Bản cải tiến & Sửa lỗi (Improvements & Fixes)
 - **Đổi tên tệp và đóng gói Signed Release**:

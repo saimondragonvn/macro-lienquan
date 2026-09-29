@@ -1,5 +1,8 @@
 package com.macrophone.gaming.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -11,15 +14,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.macrophone.gaming.R
 import com.macrophone.gaming.databinding.ActivityMainBinding
 import com.macrophone.gaming.ui.adapter.MacroPresetAdapter
 import com.macrophone.gaming.util.PermissionUtils
+import com.macrophone.gaming.util.ShizukuHelper
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import rikka.shizuku.Shizuku
 
 /**
  * Màn hình chính (MainActivity):
+ * - Quản trị và tự động cấp quyền qua Shizuku / Gỡ lỗi Wi-Fi
  * - Kiểm tra trạng thái cấp quyền (Trợ năng, Vẽ trên màn hình, Tối ưu pin, Thông báo)
  * - Quản lý danh sách Macro Presets
  * - Khởi động / tắt Floating Widget Controller
@@ -30,7 +37,17 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var presetAdapter: MacroPresetAdapter
 
-    // Xin quyền thông báo trên Android 13+
+    // Lắng nghe kết quả yêu cầu quyền Shizuku
+    private val shizukuPermissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
+        if (requestCode == ShizukuHelper.SHIZUKU_REQUEST_CODE) {
+            if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                executeShizukuGrant()
+            } else {
+                Toast.makeText(this, "Bạn đã từ chối cấp quyền Shizuku!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {
@@ -44,13 +61,24 @@ class MainActivity : AppCompatActivity() {
 
         setupRecyclerView()
         setupListeners()
+        setupShizukuListeners()
         observeViewModel()
         requestNotificationPermissionIfNeeded()
+
+        try {
+            Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
+        } catch (_: Throwable) {}
+    }
+
+    override fun onDestroy() {
+        try {
+            Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
+        } catch (_: Throwable) {}
+        super.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
-        // Cập nhật lại trạng thái quyền mỗi khi quay lại app từ Settings
         viewModel.refreshData()
     }
 
@@ -64,7 +92,7 @@ class MainActivity : AppCompatActivity() {
             onQuickPlay = { sequence ->
                 if (!viewModel.permissions.value.hasAccessibility) {
                     Toast.makeText(this, "Vui lòng cấp quyền Trợ năng trước khi phát!", Toast.LENGTH_SHORT).show()
-                    PermissionUtils.openAccessibilitySettings(this)
+                    showAccessibilityGuidanceDialog()
                 } else {
                     viewModel.playMacro(sequence)
                     Toast.makeText(this, "Đang phát: ${sequence.name}", Toast.LENGTH_SHORT).show()
@@ -108,7 +136,7 @@ class MainActivity : AppCompatActivity() {
             }
             if (!perms.hasAccessibility) {
                 Toast.makeText(this, "Vui lòng bật 'Accessibility Service' trước!", Toast.LENGTH_SHORT).show()
-                PermissionUtils.openAccessibilitySettings(this)
+                showAccessibilityGuidanceDialog()
                 return@setOnClickListener
             }
 
@@ -116,17 +144,94 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Cài đặt tương tác cho tính năng Shizuku & Gỡ lỗi qua Wi-Fi
+     */
+    private fun setupShizukuListeners() {
+        binding.btnGrantShizuku.setOnClickListener {
+            executeShizukuGrant()
+        }
+
+        binding.btnCopyAdb.setOnClickListener {
+            copyAdbCommands()
+        }
+    }
+
+    private fun executeShizukuGrant() {
+        if (!ShizukuHelper.isShizukuRunning()) {
+            showShizukuNotRunningDialog()
+            return
+        }
+
+        if (!ShizukuHelper.hasShizukuPermission()) {
+            Toast.makeText(this, "Đang xin quyền truy cập Shizuku...", Toast.LENGTH_SHORT).show()
+            ShizukuHelper.requestShizukuPermission(this)
+            return
+        }
+
+        lifecycleScope.launch {
+            Toast.makeText(this@MainActivity, "Đang tự động chạy lệnh cấp quyền...", Toast.LENGTH_SHORT).show()
+            val result = ShizukuHelper.grantAllPermissionsViaShizuku(this@MainActivity)
+            result.onSuccess { msg ->
+                MaterialAlertDialogBuilder(this@MainActivity)
+                    .setTitle("Thành công!")
+                    .setMessage("Đã tự động mở khóa Restricted Settings, kích hoạt Trợ năng và cấp quyền Vẽ màn hình qua Shizuku!")
+                    .setPositiveButton("Tuyệt vời", null)
+                    .show()
+                viewModel.refreshData()
+            }.onFailure { err ->
+                Toast.makeText(this@MainActivity, err.message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun showShizukuNotRunningDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Shizuku chưa được khởi động!")
+            .setMessage(
+                "Để kích hoạt Shizuku bằng Gỡ lỗi qua Wi-Fi (Không cần máy tính):\n\n" +
+                "1. Tải ứng dụng 'Shizuku' từ CH Play (hoặc GitHub).\n" +
+                "2. Vào Cài đặt điện thoại > Tùy chọn nhà phát triển > Bật 'Gỡ lỗi không dây' (Wireless Debugging).\n" +
+                "3. Mở Shizuku > Chọn 'Ghép nối' (Pairing) > Nhập mã 6 số từ Gỡ lỗi không dây.\n" +
+                "4. Nhấn 'Khởi động' (Start) trong Shizuku.\n" +
+                "5. Quay lại app này nhấn nút 'Cấp quyền Shizuku' là XONG NGAY!"
+            )
+            .setPositiveButton("Sao chép lệnh ADB thủ công") { _, _ ->
+                copyAdbCommands()
+            }
+            .setNegativeButton("Đã hiểu", null)
+            .show()
+    }
+
+    private fun copyAdbCommands() {
+        val cmds = ShizukuHelper.getAdbCommandsString(this)
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Macro ADB Commands", cmds)
+        clipboard.setPrimaryClip(clip)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Đã sao chép 5 dòng lệnh ADB!")
+            .setMessage(
+                "Bạn có thể dán toàn bộ lệnh này vào ứng dụng LADB (Gỡ lỗi Wi-Fi ngay trên điện thoại) hoặc Command Prompt trên PC:\n\n" +
+                cmds + "\n\n" +
+                "Lệnh này sẽ tự động:\n" +
+                "✓ Mở khóa Cài đặt bị hạn chế (Restricted settings)\n" +
+                "✓ Kích hoạt Trợ năng (Accessibility Service)\n" +
+                "✓ Cấp quyền Cửa sổ nổi (SYSTEM_ALERT_WINDOW)"
+            )
+            .setPositiveButton("Đã hiểu", null)
+            .show()
+    }
+
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Lắng nghe cập nhật quyền
                 launch {
                     viewModel.permissions.collect { perms ->
                         updatePermissionUi(perms)
                     }
                 }
 
-                // Lắng nghe danh sách Macro và Active Macro
                 launch {
                     combine(viewModel.macroList, viewModel.activeMacro) { list, active ->
                         Pair(list, active)
@@ -135,7 +240,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                // Lắng nghe trạng thái chạy của Floating Service
                 launch {
                     viewModel.isFloatingServiceRunning.collect { isRunning ->
                         if (isRunning) {
@@ -158,7 +262,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updatePermissionUi(perms: PermissionState) {
-        // 1. Accessibility Service Card
         if (perms.hasAccessibility) {
             binding.ivAccStatus.setImageResource(R.drawable.ic_check)
             binding.ivAccStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
@@ -175,7 +278,6 @@ class MainActivity : AppCompatActivity() {
             binding.btnGrantAccessibility.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
         }
 
-        // 2. Overlay Permission Card
         if (perms.hasOverlay) {
             binding.ivOverlayStatus.setImageResource(R.drawable.ic_check)
             binding.ivOverlayStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
@@ -192,7 +294,6 @@ class MainActivity : AppCompatActivity() {
             binding.btnGrantOverlay.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
         }
 
-        // 3. Battery Optimization Card
         if (perms.isBatteryOptimized) {
             binding.ivBatteryStatus.setImageResource(R.drawable.ic_check)
             binding.ivBatteryStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
@@ -211,11 +312,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showAccessibilityGuidanceDialog() {
-        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Kích hoạt Dịch vụ Trợ năng")
             .setMessage(
                 "Để Macro tự động bấm chiêu trong game, bạn cần gạt BẬT 'Macro Gaming Combo Service'.\n\n" +
-                "⚠️ LƯU Ý CHO ANDROID 13/14+ (SAMSUNG, XIAOMI, OPPO, REALME...):\n" +
+                "💡 MẸO NHANH: Bạn có thể dùng nút [⚡ Cấp quyền Shizuku] ở đầu trang để kích hoạt tự động 1-chạm mà không cần làm thủ công!\n\n" +
+                "⚠️ HOẶC MỞ KHÓA THỦ CÔNG (ANDROID 13/14+):\n" +
                 "Nếu công tắc Trợ năng bị MỜ (báo 'Cài đặt bị hạn chế'):\n" +
                 "1. Nhấn nút [Mở Cài đặt ứng dụng] bên dưới.\n" +
                 "2. Bấm vào dấu 3 chấm (⋮) ở góc trên bên phải màn hình.\n" +

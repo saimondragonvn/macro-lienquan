@@ -5,17 +5,29 @@ Dự án Android hoàn chỉnh bằng **Kotlin** hỗ trợ từ **Android 11 (A
 ---
 
 ### 📥 Tải file APK cài đặt ngay:
-👉 **[Tải file APK chính thức (Macro-LienQuan-v1.0.1.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.0.1/Macro-LienQuan-v1.0.1.apk)**  
+👉 **[Tải file APK chính thức (Macro-LienQuan-v1.0.2.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.0.2/Macro-LienQuan-v1.0.2.apk)**  
 👉 **[Xem toàn bộ các bản phát hành (Releases)](https://github.com/saimondragonvn/macro-lienquan/releases)**
 
 ---
 
-### ⚠️ Lưu ý cấp quyền Trợ năng trên Android 13/14+ (Samsung, Xiaomi, Oppo...):
-Nếu khi mở phần Hỗ trợ tiếp cận mà công tắc bị **MỜ** (báo *"Cài đặt bị hạn chế"*):
-1. Vào **Cài đặt điện thoại > Ứng dụng > Macro Gaming Combo** (hoặc bấm nút *"Mở Cài đặt ứng dụng"* trong app).
-2. Nhấn vào **dấu 3 chấm (⋮)** ở góc trên bên phải màn hình.
-3. Chọn **"Cho phép cài đặt bị hạn chế"** (*Allow restricted settings*) và mở khóa vân tay/mã PIN.
-4. Quay lại phần Trợ năng, công tắc đã sáng rõ và gạt **BẬT** bình thường!
+### ⚡ CÁCH CẤP QUYỀN TRỢ NĂNG 1-CHẠM BẰNG SHIZUKU (GỠ LỖI QUA WI-FI):
+Nếu máy bạn bị mờ công tắc Trợ năng hoặc không bật được thủ công:
+1. Cài ứng dụng **Shizuku** từ Google Play (hoặc GitHub).
+2. Vào **Cài đặt điện thoại > Tùy chọn nhà phát triển > Bật "Gỡ lỗi không dây" (Wireless Debugging)**.
+3. Mở Shizuku > Chọn **Ghép nối (Pairing)** qua mã 6 số Wi-Fi > Nhấn **Khởi động (Start)**.
+4. Mở app **Macro Gaming Combo**, bấm nút tím: **`[⚡ Cấp quyền Shizuku]`** $\rightarrow$ App sẽ tự động cấp toàn bộ quyền và kích hoạt Trợ năng ngay lập tức mà không cần bấm thêm bất cứ thứ gì!
+
+---
+
+### 📋 Hoặc dùng LADB (Chạy ADB ngay trên điện thoại không cần PC):
+Trong app có nút **`[📋 Lệnh Wi-Fi]`**, bấm để copy 5 dòng lệnh sau dán vào LADB hoặc máy tính:
+```bash
+appops set com.macrophone.gaming ACCESS_RESTRICTED_SETTINGS allow
+appops set com.macrophone.gaming SYSTEM_ALERT_WINDOW allow
+settings put secure enabled_accessibility_services com.macrophone.gaming/com.macrophone.gaming.service.MacroAccessibilityService
+settings put secure accessibility_enabled 1
+dumpsys deviceidle whitelist +com.macrophone.gaming
+```
 
 ---
 
