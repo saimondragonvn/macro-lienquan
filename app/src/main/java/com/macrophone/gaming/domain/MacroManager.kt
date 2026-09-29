@@ -167,34 +167,7 @@ class MacroManager private constructor(private val context: Context) {
     }
 
     private fun executeShellInput(cmd: String): Boolean {
-        // 1. Thử qua Shizuku nếu đang chạy
-        if (ShizukuHelper.isShizukuRunning() && ShizukuHelper.hasShizukuPermission()) {
-            try {
-                val clazz = Class.forName("rikka.shizuku.Shizuku")
-                val method = clazz.getDeclaredMethod("newProcess", Array<String>::class.java, Array<String>::class.java, String::class.java)
-                method.isAccessible = true
-                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? java.lang.Process
-                proc?.waitFor()
-                proc?.destroy()
-                return true
-            } catch (_: Throwable) {}
-        }
-
-        // 2. Thử qua Root su
-        try {
-            val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
-            proc.waitFor()
-            if (proc.exitValue() == 0) return true
-        } catch (_: Throwable) {}
-
-        // 3. Thử qua sh thông thường
-        try {
-            val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
-            proc.waitFor()
-            if (proc.exitValue() == 0) return true
-        } catch (_: Throwable) {}
-
-        return false
+        return ShizukuHelper.executePrivilegedCommand(cmd)
     }
 
     /**

@@ -2,7 +2,9 @@ package com.macrophone.gaming.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,22 +20,38 @@ import rikka.shizuku.Shizuku
 
 /**
  * Trình hướng dẫn cấp quyền kiểu Panda Touch Pro:
- * Hướng dẫn từng bước rõ ràng, trực quan, tự động kiểm tra trạng thái.
- *
- * 4 bước:
- * 1. Cài Shizuku từ CH Play
- * 2. Bật Gỡ lỗi không dây (Wireless Debugging)
- * 3. Ghép nối (Pairing) và khởi động Shizuku
- * 4. Nhấn nút để tự động cấp TẤT CẢ quyền
+ * - Hướng dẫn từng bước rõ ràng, trực quan, tự động kiểm tra trạng thái.
+ * - Tương thích hoàn hảo cả trên điện thoại thật (Shizuku) lẫn trình giả lập PC (LDPlayer, Nox, BlueStacks qua Root).
+ * - Sử dụng Shizuku Sticky Listener an toàn, không bao giờ gây crash ("Ứng dụng đã dừng").
  */
 class SetupWizardActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySetupWizardBinding
+    private val TAG = "SetupWizardActivity"
+
+    private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
+        runOnUiThread {
+            refreshStepStatuses()
+        }
+    }
+
+    private val binderDeadListener = Shizuku.OnBinderDeadListener {
+        runOnUiThread {
+            refreshStepStatuses()
+        }
+    }
 
     private val shizukuPermissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
-        if (requestCode == ShizukuHelper.SHIZUKU_REQUEST_CODE &&
-            grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            runAutoGrant()
+        if (requestCode == ShizukuHelper.SHIZUKU_REQUEST_CODE) {
+            runOnUiThread {
+                if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this@SetupWizardActivity, "Đã cấp quyền Shizuku thành công!", Toast.LENGTH_SHORT).show()
+                    runAutoGrant()
+                } else {
+                    Toast.makeText(this@SetupWizardActivity, "Bạn đã từ chối quyền Shizuku!", Toast.LENGTH_SHORT).show()
+                }
+                refreshStepStatuses()
+            }
         }
     }
 
@@ -49,11 +67,7 @@ class SetupWizardActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupListeners()
-        try {
-            if (ShizukuHelper.isShizukuRunning()) {
-                Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
-            }
-        } catch (_: Throwable) {}
+        registerShizukuListenersSafely()
     }
 
     override fun onResume() {
@@ -62,12 +76,26 @@ class SetupWizardActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        try {
-            if (ShizukuHelper.isShizukuRunning()) {
-                Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
-            }
-        } catch (_: Throwable) {}
+        unregisterShizukuListenersSafely()
         super.onDestroy()
+    }
+
+    private fun registerShizukuListenersSafely() {
+        try {
+            Shizuku.addBinderReceivedListenerSticky(binderReceivedListener)
+            Shizuku.addBinderDeadListener(binderDeadListener)
+            Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
+        } catch (e: Throwable) {
+            Log.w(TAG, "Shizuku listener registration: ${e.message}")
+        }
+    }
+
+    private fun unregisterShizukuListenersSafely() {
+        try {
+            Shizuku.removeBinderReceivedListener(binderReceivedListener)
+            Shizuku.removeBinderDeadListener(binderDeadListener)
+            Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
+        } catch (_: Throwable) {}
     }
 
     private fun setupListeners() {
@@ -88,16 +116,30 @@ class SetupWizardActivity : AppCompatActivity() {
             ShizukuHelper.openShizukuApp(this)
         }
 
-        // Bước 4: Cấp tất cả quyền
+        // Bước 4: Cấp tất cả quyền (hỗ trợ cả Shizuku lẫn Root giả lập)
         binding.btnStep4Action.setOnClickListener {
-            if (!ShizukuHelper.isShizukuRunning()) {
-                Toast.makeText(this, "Shizuku chưa khởi động! Hãy hoàn thành bước 3.", Toast.LENGTH_LONG).show()
+            val isRoot = ShizukuHelper.isRootAvailable()
+            val isShizukuRunning = ShizukuHelper.isShizukuRunning()
+
+            if (isRoot) {
+                // Trên máy ảo giả lập PC (LDPlayer, BlueStacks, Nox) đã có Root
+                runAutoGrant()
                 return@setOnClickListener
             }
+
+            if (!isShizukuRunning) {
+                Toast.makeText(this, "Shizuku chưa chạy! Hãy hoàn thành bước 3 hoặc bật Root trên giả lập.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             if (!ShizukuHelper.hasShizukuPermission()) {
-                ShizukuHelper.requestShizukuPermission(this)
+                val requested = ShizukuHelper.requestShizukuPermission(this)
+                if (!requested) {
+                    Toast.makeText(this, "Không thể mở hộp thoại xin quyền Shizuku. Hãy thử mở lại Shizuku.", Toast.LENGTH_SHORT).show()
+                }
                 return@setOnClickListener
             }
+
             runAutoGrant()
         }
 
@@ -114,27 +156,28 @@ class SetupWizardActivity : AppCompatActivity() {
     }
 
     private fun refreshStepStatuses() {
-        // Step 1: Shizuku installed?
-        val shizukuInstalled = ShizukuHelper.isShizukuInstalled(this)
-        updateStepStatus(binding.ivStep1Status, binding.btnStep1Action, shizukuInstalled)
-
-        // Step 2: Developer options / Wireless debugging (không kiểm tra chính xác được, check Shizuku running)
+        val hasRoot = ShizukuHelper.isRootAvailable()
         val shizukuRunning = ShizukuHelper.isShizukuRunning()
-        updateStepStatus(binding.ivStep2Status, binding.btnStep2Action, shizukuRunning)
+        val shizukuInstalled = ShizukuHelper.isShizukuInstalled(this)
 
-        // Step 3: Shizuku running & paired
-        updateStepStatus(binding.ivStep3Status, binding.btnStep3Action, shizukuRunning)
+        // Step 1: Shizuku installed (hoặc máy đã root)
+        updateStepStatus(binding.ivStep1Status, binding.btnStep1Action, shizukuInstalled || hasRoot)
 
-        // Step 4: All permissions granted
+        // Step 2 & Step 3: Service available
+        updateStepStatus(binding.ivStep2Status, binding.btnStep2Action, shizukuRunning || hasRoot)
+        updateStepStatus(binding.ivStep3Status, binding.btnStep3Action, shizukuRunning || hasRoot)
+
+        // Step 4: All system permissions granted
         val allGranted = PermissionUtils.hasOverlayPermission(this) &&
                 PermissionUtils.isIgnoringBatteryOptimizations(this)
         updateStepStatus(binding.ivStep4Status, binding.btnStep4Action, allGranted)
 
-        // Show finish button when all done
-        if (shizukuRunning && allGranted) {
+        // Hiển thị trạng thái hoàn tất
+        if ((shizukuRunning || hasRoot) && allGranted) {
             binding.btnFinish.visibility = View.VISIBLE
             binding.tvFinalStatus.visibility = View.VISIBLE
-            binding.tvFinalStatus.text = "✅ Tất cả đã sẵn sàng! Bạn có thể bắt đầu sử dụng Macro Gaming."
+            val mode = if (hasRoot) "Root Giả Lập" else "Shizuku"
+            binding.tvFinalStatus.text = "✅ Đã sẵn sàng qua $mode! Bạn có thể bắt đầu sử dụng Macro Gaming."
             binding.tvFinalStatus.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
         } else {
             binding.btnFinish.visibility = View.GONE
@@ -148,7 +191,7 @@ class SetupWizardActivity : AppCompatActivity() {
             (statusIcon as? android.widget.ImageView)?.setColorFilter(
                 ContextCompat.getColor(this, R.color.emerald_play)
             )
-            actionButton.alpha = 0.5f
+            actionButton.alpha = 0.6f
         } else {
             (statusIcon as? android.widget.ImageView)?.setImageResource(R.drawable.ic_warning)
             (statusIcon as? android.widget.ImageView)?.setColorFilter(
@@ -160,7 +203,7 @@ class SetupWizardActivity : AppCompatActivity() {
 
     private fun runAutoGrant() {
         binding.btnStep4Action.isEnabled = false
-        binding.btnStep4Action.text = "Đang cấp quyền..."
+        binding.btnStep4Action.text = "Đang tự động cấp quyền..."
         binding.progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
@@ -169,12 +212,12 @@ class SetupWizardActivity : AppCompatActivity() {
             binding.btnStep4Action.isEnabled = true
             binding.btnStep4Action.text = "⚡ Cấp TẤT CẢ quyền"
 
-            result.onSuccess {
-                Toast.makeText(this@SetupWizardActivity, "Đã cấp toàn bộ quyền thành công!", Toast.LENGTH_LONG).show()
+            result.onSuccess { msg ->
+                Toast.makeText(this@SetupWizardActivity, msg, Toast.LENGTH_LONG).show()
                 delay(300)
                 refreshStepStatuses()
             }.onFailure { err ->
-                Toast.makeText(this@SetupWizardActivity, "Lỗi: ${err.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@SetupWizardActivity, "Thông báo: ${err.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

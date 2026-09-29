@@ -4,6 +4,21 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.2.0] - 2026-09-29
+### 🛡️ Khắc phục triệt để lỗi Crash Shizuku & Hỗ trợ Giả lập PC (LDPlayer, Nox, BlueStacks)
+- **SỬA LỖI CRASH "ỨNG DỤNG ĐÃ DỪNG" (100% FIXED)**:
+  - Tích hợp `dev.rikka.shizuku:provider:13.1.5` và khai báo `ShizukuProvider` vào `AndroidManifest.xml`.
+  - Sử dụng `Shizuku.addBinderReceivedListenerSticky`, `addBinderDeadListener`, và `addRequestPermissionResultListener` an toàn, loại bỏ triệt để ngoại lệ `IllegalStateException: binder haven't been received`.
+  - Cơ chế tự phục hồi chống crash toàn cục (`UncaughtExceptionHandler`) ngăn chặn hoàn toàn hiện tượng văng ứng dụng.
+- **HỖ TRỢ TOÀN DIỆN MÁY ẢO / TRÌNH GIẢ LẬP ANDROID TRÊN PC**:
+  - Hạ `minSdk = 26` (Android 8.0 Oreo), tương thích với LDPlayer 9, BlueStacks 5, NoxPlayer, MuMu Player (Android 9/11/12).
+  - Tự động nhận diện quyền Root (`su`) có sẵn trên trình giả lập: Người dùng máy tính chỉ cần 1 cú click là tự động kích hoạt toàn bộ quyền và chạy macro mượt mà không cần làm 4 bước Shizuku.
+- **TỰ ĐỘNG BẬT TRỢ NĂNG 1-CHẠM**:
+  - Nút "Cấp quyền Trợ năng" trên trang chủ tự động bật AccessibilityService ngay lập tức qua Shizuku/Root nếu đã được kích hoạt.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.2.0.apk`.
+
+---
+
 ## [v1.1.0] - 2026-09-29
 ### 🎮 Hướng dẫn cài đặt kiểu Panda Touch Pro & Xem trước thao tác
 - **TRÌNH HƯỚNG DẪN CÀI ĐẶT KIỂU PANDA TOUCH PRO (Setup Wizard)**:

@@ -13,20 +13,18 @@ class MacroApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Bắt lỗi toàn cục để app tự bảo vệ và không bị crash
-        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        // Bắt lỗi toàn cục để app tự bảo vệ và KHÔNG BAO GIỜ bị văng ứng dụng ("Ứng dụng đã dừng")
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            Log.e("MacroApp", "Crash intercepted: ${throwable.message}", throwable)
+            Log.e("MacroApp", "Crash intercepted cleanly: ${throwable.message}", throwable)
             Handler(Looper.getMainLooper()).post {
                 try {
                     Toast.makeText(
                         applicationContext,
-                        "Lỗi hệ thống đã được xử lý: ${throwable.localizedMessage ?: "Tự phục hồi"}",
+                        "Hệ thống đã tự phục hồi sự cố: ${throwable.localizedMessage ?: "Khởi động an toàn"}",
                         Toast.LENGTH_LONG
                     ).show()
                 } catch (_: Throwable) {}
             }
-            defaultHandler?.uncaughtException(thread, throwable)
         }
 
         try {

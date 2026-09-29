@@ -110,7 +110,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnGrantAccessibility.setOnClickListener {
-            showAccessibilityGuidanceDialog()
+            if (ShizukuHelper.hasShizukuPermission() || ShizukuHelper.isRootAvailable()) {
+                lifecycleScope.launch {
+                    val pkg = packageName
+                    val serviceClass = "com.macrophone.gaming.service.MacroAccessibilityService"
+                    val ok = ShizukuHelper.executePrivilegedCommand("settings put secure enabled_accessibility_services $pkg/$serviceClass") &&
+                            ShizukuHelper.executePrivilegedCommand("settings put secure accessibility_enabled 1")
+                    if (ok) {
+                        Toast.makeText(this@MainActivity, "Đã tự động bật Dịch vụ Trợ năng!", Toast.LENGTH_SHORT).show()
+                        viewModel.refreshData()
+                    } else {
+                        showAccessibilityGuidanceDialog()
+                    }
+                }
+            } else {
+                showAccessibilityGuidanceDialog()
+            }
         }
 
         binding.btnGrantOverlay.setOnClickListener {

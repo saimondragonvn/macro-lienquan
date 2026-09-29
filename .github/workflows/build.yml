@@ -46,28 +46,30 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.1.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.1.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.0' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.0' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.1.0
+            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.2.0 (Fix Triệt Để Lỗi Crash & Hỗ Trợ Giả Lập PC)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🌟 ĐIỂM MỚI NỔI BẬT TRÊN BẢN v1.1.0:
-            1. **Trình hướng dẫn kích hoạt kiểu Panda Touch Pro (`SetupWizardActivity`)**:
-               - Hướng dẫn từng bước kích hoạt Shizuku qua Gỡ lỗi không dây (Wireless Debugging) / Wi-Fi Debugging.
-               - Không cần root, không cần máy tính (Android 11+).
-               - Tự động kiểm tra trạng thái quyền Shizuku & ADB thực thi trực tiếp trên máy.
-            2. **Giao diện Xem trước quỹ đạo thao tác (`GesturePreviewCanvas`)**:
-               - Sau khi ghi combo chiêu thức, hiển thị trực quan bản đồ thao tác (các điểm chạm tap, vuốt swipe, số thứ tự từng chiêu).
-               - Hiển thị chính xác thời gian thực tế đã ghi và thời gian sau khi tăng tốc (1x - 10x).
-            3. **Không crash khi dùng Shizuku/ADB**:
-               - Hỗ trợ thực thi lệnh mô phỏng cảm ứng (`input tap`, `input swipe`) trực tiếp thông qua Shizuku IPC service mà không phụ thuộc vào AccessibilityService bị crash trên một số dòng máy.
-               - Duy trì tính năng đa điểm: Tay trái điều khiển Joystick di chuyển bình thường trong lúc macro chạy combo.
+            #### 🛠️ CÁC SỬA LỖI & NÂNG CẤP TRỌNG YẾU TRONG BẢN v1.2.0:
+            1. **Khắc phục 100% lỗi "Ứng dụng đã dừng" (Crash) khi cấp quyền Shizuku**:
+               - Bổ sung `dev.rikka.shizuku:provider:13.1.5` và khai báo `ShizukuProvider` vào `AndroidManifest.xml`.
+               - Chuyển sang sử dụng `Shizuku.addBinderReceivedListenerSticky` chuẩn xác, nhận Binder an toàn tuyệt đối.
+               - Cơ chế tự phục hồi chống crash toàn cục (`UncaughtExceptionHandler`) ngăn ngừa ứng dụng bị đóng đột ngột.
+            2. **Hỗ trợ toàn diện máy ảo / giả lập Android trên máy tính (PC)**:
+               - Hạ `minSdk = 26` (Android 8.0 Oreo), tương thích hoàn toàn với LDPlayer 9, BlueStacks 5, NoxPlayer, MuMu Player và tất cả điện thoại Android 8 -> Android 15.
+               - Tự động nhận diện quyền Root (`su`) phổ biến trên các trình giả lập: Người dùng giả lập chỉ cần 1 cú click là tự động cấp toàn bộ quyền và chạy macro mượt mà không cần cài đặt Shizuku!
+            3. **Tự động kích hoạt Trợ năng 1-chạm**:
+               - Nhấn nút "Cấp quyền Trợ năng" trên màn hình chính sẽ tự kích hoạt ngay lập tức qua Shizuku/Root mà không cần tìm kiếm trong Cài đặt hệ thống.
+            4. **Đa điểm & Ghi hình trực quan**:
+               - Bản đồ xem trước thao tác (`GesturePreviewCanvas`) hiển thị rõ ràng từng nút bấm, vuốt chiêu và độ trễ.
+               - Không xung đột Joystick di chuyển khi thi triển combo.
 
             #### 📲 Hướng dẫn cài đặt APK:
-            1. Tải file **`Macro-LienQuan-v1.1.0.apk`** ở mục **Assets** bên dưới về điện thoại.
-            2. Mở file APK để cài đặt.
-            3. Khởi động ứng dụng, làm theo **⚡ Hướng dẫn cài đặt** để kích hoạt Shizuku và cấp quyền Overlay hiển thị nổi.
+            1. Tải file **`Macro-LienQuan-v1.2.0.apk`** ở mục **Assets** bên dưới.
+            2. Cài đặt vào điện thoại hoặc kéo thả trực tiếp vào trình giả lập trên máy tính (LDPlayer, BlueStacks, Nox).
+            3. Mở ứng dụng và bắt đầu tận hưởng combo chớp nhoáng!
           draft: false
           prerelease: false
         env:
