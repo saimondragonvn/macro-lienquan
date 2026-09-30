@@ -3,11 +3,11 @@
     android:id="@+id/dockRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#55000000"
+    android:background="#66000000"
     android:clickable="true"
     android:focusable="true">
 
-    <!-- 1. Trạng thái THU GỌN (Game Turbo Edge Tab) -->
+    <!-- 1. Trạng thái THU GỌN (Liquid Glass Edge Tab) -->
     <LinearLayout
         android:id="@+id/layoutCollapsed"
         android:layout_width="wrap_content"
@@ -15,17 +15,17 @@
         android:background="@drawable/bg_floating_pill"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="7dp"
-        android:paddingEnd="10dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:elevation="14dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:elevation="16dp"
         android:visibility="gone">
 
         <ImageView
             android:id="@+id/ivCollapsedHandle"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_macro_tile"
             android:contentDescription="Drag Handle" />
 
@@ -33,26 +33,26 @@
             android:id="@+id/tvCollapsedTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
+            android:layout_marginStart="6dp"
             android:text="⚡ TURBO"
             android:textColor="@color/cyan_neon"
-            android:textSize="11.5sp"
+            android:textSize="12sp"
             android:textStyle="bold"
-            android:letterSpacing="0.04" />
+            android:letterSpacing="0.05" />
     </LinearLayout>
 
-    <!-- 2. Trạng thái MỞ RỘNG (Game Turbo HUD Control Center - Basic & Clean) -->
+    <!-- 2. Trạng thái MỞ RỘNG (Game Turbo Liquid Glass HUD Control Center) -->
     <LinearLayout
         android:id="@+id/layoutExpanded"
-        android:layout_width="300dp"
+        android:layout_width="310dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@drawable/bg_dialog_card"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
-        android:padding="10dp"
-        android:elevation="16dp"
+        android:padding="14dp"
+        android:elevation="20dp"
         android:visibility="gone">
 
         <!-- Header -->
@@ -62,19 +62,26 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:layout_marginBottom="6dp">
+            android:layout_marginBottom="8dp">
 
-            <ImageView
-                android:id="@+id/ivExpandedDrag"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_macro_tile"
-                android:contentDescription="Drag Panel" />
+            <FrameLayout
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_floating_pill">
+
+                <ImageView
+                    android:id="@+id/ivExpandedDrag"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_macro_tile"
+                    android:contentDescription="Drag Panel" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -83,9 +90,9 @@
                     android:layout_height="wrap_content"
                     android:text="GAME TURBO PRO"
                     android:textColor="@color/cyan_neon"
-                    android:textSize="12.5sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                    android:letterSpacing="0.03" />
+                    android:letterSpacing="0.04" />
 
                 <TextView
                     android:id="@+id/tvEngineStatusBadge"
@@ -93,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:text="🟢 Shizuku: SẴN SÀNG"
                     android:textColor="@color/emerald_play"
-                    android:textSize="9.5sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -117,7 +124,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/stroke_border"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="8dp" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -134,47 +141,48 @@
                 <TextView
                     android:id="@+id/btnLaunchGameFromDock"
                     android:layout_width="match_parent"
-                    android:layout_height="32dp"
+                    android:layout_height="34dp"
                     android:background="@drawable/bg_turbo_btn_primary"
                     android:gravity="center"
                     android:text="🚀 MỞ LIÊN QUÂN MOBILE"
                     android:textColor="@color/bg_dark"
-                    android:textSize="10.5sp"
+                    android:textSize="11sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp" />
+                    android:letterSpacing="0.02"
+                    android:layout_marginBottom="8dp" />
 
                 <!-- NÚT GHI COMBO THỰC TẾ (REDMI STYLE) -->
                 <TextView
                     android:id="@+id/btnStartKernelRecord"
                     android:layout_width="match_parent"
-                    android:layout_height="36dp"
+                    android:layout_height="38dp"
                     android:background="@drawable/bg_turbo_btn_danger"
                     android:gravity="center"
                     android:text="🔴 BẮT ĐẦU GHI COMBO (VÀO GAME)"
                     android:textColor="@color/white"
-                    android:textSize="11sp"
+                    android:textSize="11.5sp"
                     android:textStyle="bold"
-                    android:letterSpacing="0.02"
+                    android:letterSpacing="0.03"
                     android:layout_marginBottom="8dp" />
 
                 <!-- NÚT DI CHUYỂN & SỬA VỊ TRÍ NÚT COMBO -->
                 <TextView
                     android:id="@+id/btnEditTriggerPositions"
                     android:layout_width="match_parent"
-                    android:layout_height="34dp"
+                    android:layout_height="36dp"
                     android:background="@drawable/bg_turbo_btn_secondary"
                     android:gravity="center"
                     android:text="🎯 DI CHUYỂN &amp; SỬA VỊ TRÍ NÚT"
                     android:textColor="@color/cyan_neon"
-                    android:textSize="11sp"
+                    android:textSize="11.5sp"
                     android:textStyle="bold"
                     android:letterSpacing="0.02"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="10dp" />
 
                 <!-- GHIM ĐIỂM THỦ CÔNG (TARGET PINS) -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="32dp"
+                    android:layout_height="34dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -182,12 +190,12 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1.2"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
                         android:text="+ Ghim Điểm"
                         android:textColor="@color/cyan_neon"
-                        android:textSize="10.5sp"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -195,12 +203,12 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.8"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
                         android:text="- Bớt"
                         android:textColor="@color/text_primary"
-                        android:textSize="10.5sp" />
+                        android:textSize="11sp" />
 
                     <TextView
                         android:id="@+id/btnPlayTest"
@@ -211,7 +219,7 @@
                         android:gravity="center"
                         android:text="▶ Thử Click"
                         android:textColor="@color/emerald_play"
-                        android:textSize="10.5sp"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -219,20 +227,20 @@
                 <TextView
                     android:id="@+id/btnCreateMacroBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_height="34dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/bg_turbo_btn_primary"
                     android:gravity="center"
                     android:text="⚡ TẠO NÚT BẤM TỪ ĐIỂM GHIM"
                     android:textColor="@color/bg_dark"
-                    android:textSize="10.5sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
 
                 <!-- Tốc độ delay -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="26dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="8dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
@@ -241,20 +249,20 @@
                         android:layout_height="wrap_content"
                         android:text="⏱️ Tốc độ:"
                         android:textColor="@color/text_secondary"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/btnSpeedFast"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="2dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="3dp"
                         android:background="@drawable/bg_turbo_btn_primary"
                         android:gravity="center"
                         android:text="30ms"
                         android:textColor="@color/bg_dark"
-                        android:textSize="9.5sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -262,12 +270,12 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="2dp"
+                        android:layout_marginEnd="3dp"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
                         android:text="60ms"
                         android:textColor="@color/text_primary"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/btnSpeedSlow"
@@ -278,15 +286,15 @@
                         android:gravity="center"
                         android:text="120ms"
                         android:textColor="@color/text_primary"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/stroke_border"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
 
                 <!-- ĐỘ MỜ NÚT (ẨN MỜ / TRONG SUỐT) -->
                 <TextView
@@ -294,13 +302,13 @@
                     android:layout_height="wrap_content"
                     android:text="👻 ĐỘ MỜ NÚT TRÊN MÀN HÌNH (ẨN MỜ):"
                     android:textColor="@color/cyan_neon"
-                    android:textSize="9.5sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="26dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="5dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -308,36 +316,36 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="2dp"
+                        android:layout_marginEnd="3dp"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
                         android:text="30% Mờ"
                         android:textColor="@color/text_primary"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/btnGlobalOpacity50"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="2dp"
+                        android:layout_marginEnd="3dp"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
                         android:text="50% Vừa"
                         android:textColor="@color/text_primary"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/btnGlobalOpacity80"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="2dp"
+                        android:layout_marginEnd="3dp"
                         android:background="@drawable/bg_turbo_btn_primary"
                         android:gravity="center"
                         android:text="80% Rõ"
                         android:textColor="@color/bg_dark"
-                        android:textSize="9.5sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -349,15 +357,15 @@
                         android:gravity="center"
                         android:text="100% Đậm"
                         android:textColor="@color/text_primary"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/stroke_border"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
 
                 <!-- DANH SÁCH NÚT MACRO ĐÃ TẠO -->
                 <LinearLayout
@@ -372,7 +380,7 @@
                         android:layout_weight="1"
                         android:text="📋 NÚT COMBO ĐÃ TẠO:"
                         android:textColor="@color/cyan_neon"
-                        android:textSize="9.5sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -381,18 +389,18 @@
                         android:layout_height="wrap_content"
                         android:text="🔄 Tải lại"
                         android:textColor="@color/text_secondary"
-                        android:textSize="9sp" />
+                        android:textSize="9.5sp" />
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvNoTriggers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginBottom="3dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
                     android:text="Chưa có nút nào. Bấm [🔴 Ghi Combo] để tạo."
                     android:textColor="@color/text_secondary"
-                    android:textSize="9.5sp"
+                    android:textSize="10sp"
                     android:visibility="visible" />
 
                 <LinearLayout
@@ -404,26 +412,26 @@
                 <TextView
                     android:id="@+id/btnClearAllTriggers"
                     android:layout_width="match_parent"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/bg_turbo_btn_secondary"
                     android:gravity="center"
                     android:text="🗑️ XÓA TOÀN BỘ NÚT COMBO"
                     android:textColor="@color/crimson_stop"
-                    android:textSize="9.5sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/stroke_border"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
 
                 <!-- CÔNG CỤ TIỆN ÍCH -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="32dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -431,24 +439,24 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
                         android:text="👁️ Ẩn/Hiện"
                         android:textColor="@color/text_primary"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/btnClearPoints"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginEnd="4dp"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
                         android:text="🗑️ Xóa Ghim"
                         android:textColor="@color/amber_warning"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/btnCloseService"
@@ -459,19 +467,19 @@
                         android:gravity="center"
                         android:text="✕ Tắt Turbo"
                         android:textColor="@color/crimson_stop"
-                        android:textSize="9.5sp" />
+                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/btnBottomCollapse"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/bg_turbo_btn_secondary"
                     android:gravity="center"
                     android:text="✕ ĐÓNG MENU TURBO"
                     android:textColor="@color/amber_warning"
-                    android:textSize="10sp"
+                    android:textSize="10.5sp"
                     android:textStyle="bold" />
 
             </LinearLayout>

@@ -4,7 +4,7 @@
     android:layout_width="44dp"
     android:layout_height="44dp"
     android:background="@drawable/bg_target_point"
-    android:elevation="14dp">
+    android:elevation="16dp">
 
     <TextView
         android:id="@+id/tvPointIndex"
@@ -14,14 +14,18 @@
         android:text="1"
         android:textColor="@color/cyan_neon"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:shadowColor="@color/black"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="2" />
 
-    <!-- Center dot pointer for accurate visual alignment -->
+    <!-- Center crosshair micro-dot pointer for precision skill placement -->
     <View
         android:layout_width="4dp"
         android:layout_height="4dp"
         android:layout_gravity="center"
         android:background="@color/crimson_stop"
-        android:alpha="0.6" />
+        android:alpha="0.75" />
 
 </FrameLayout>

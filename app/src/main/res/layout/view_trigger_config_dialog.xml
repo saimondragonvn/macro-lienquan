@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dialogRoot"
-    android:layout_width="280dp"
+    android:layout_width="290dp"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_dialog_card"
     android:orientation="vertical"
-    android:padding="14dp"
-    android:elevation="20dp">
+    android:padding="16dp"
+    android:elevation="24dp">
 
     <!-- Header -->
     <LinearLayout
@@ -14,18 +14,25 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="10dp">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_speed"
-            android:contentDescription="Turbo Icon" />
+        <FrameLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_floating_pill">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_speed"
+                android:contentDescription="Turbo Icon" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -35,8 +42,9 @@
                 android:layout_height="wrap_content"
                 android:text="CÀI ĐẶT COMBO [C1]"
                 android:textColor="@color/cyan_neon"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="13.5sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.03" />
 
             <TextView
                 android:id="@+id/tvDialogPointsSummary"
@@ -44,18 +52,18 @@
                 android:layout_height="wrap_content"
                 android:text="3 điểm chiêu đã gán"
                 android:textColor="@color/text_secondary"
-                android:textSize="10sp" />
+                android:textSize="10.5sp" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/btnDialogClose"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@drawable/bg_turbo_btn_secondary"
             android:gravity="center"
             android:text="✕"
             android:textColor="@color/text_primary"
-            android:textSize="12sp"
+            android:textSize="12.5sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -63,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/stroke_border"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="10dp" />
 
     <!-- Tốc độ xả chiêu / Replay (Hỗ trợ nhập số cơ động từ 0.5x đến 20x) -->
     <LinearLayout
@@ -78,7 +86,7 @@
             android:layout_weight="1"
             android:text="⚡ Tốc độ xả combo (0.5x - 20x):"
             android:textColor="@color/text_primary"
-            android:textSize="11sp"
+            android:textSize="11.5sp"
             android:textStyle="bold" />
 
         <TextView
@@ -87,14 +95,14 @@
             android:layout_height="wrap_content"
             android:text="x1.0"
             android:textColor="@color/cyan_neon"
-            android:textSize="12sp"
+            android:textSize="12.5sp"
             android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="6dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -107,10 +115,10 @@
             android:hint="Nhập số (VD: 5 -> x5 tốc độ)"
             android:textColorHint="@color/text_secondary"
             android:textColor="@color/cyan_neon"
-            android:textSize="12sp"
+            android:textSize="12.5sp"
             android:textStyle="bold"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:singleLine="true"
             android:maxLength="4"
             android:inputType="numberDecimal" />
@@ -121,13 +129,13 @@
             android:layout_marginStart="8dp"
             android:text="Tối đa 20x"
             android:textColor="@color/text_secondary"
-            android:textSize="9.5sp" />
+            android:textSize="10sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="26dp"
-        android:layout_marginTop="4dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="6dp"
         android:orientation="horizontal">
 
         <TextView
@@ -140,7 +148,7 @@
             android:gravity="center"
             android:text="1x"
             android:textColor="@color/bg_dark"
-            android:textSize="9.5sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
         <TextView
@@ -153,7 +161,7 @@
             android:gravity="center"
             android:text="2x"
             android:textColor="@color/text_primary"
-            android:textSize="9.5sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
         <TextView
@@ -166,7 +174,7 @@
             android:gravity="center"
             android:text="5x"
             android:textColor="@color/text_primary"
-            android:textSize="9.5sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
         <TextView
@@ -179,7 +187,7 @@
             android:gravity="center"
             android:text="10x"
             android:textColor="@color/text_primary"
-            android:textSize="9.5sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
         <TextView
@@ -191,7 +199,7 @@
             android:gravity="center"
             android:text="20x"
             android:textColor="@color/text_primary"
-            android:textSize="9.5sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -199,15 +207,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:text="⏱️ Độ trễ (Delay ghim điểm):"
         android:textColor="@color/text_primary"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="32dp"
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
@@ -221,7 +229,7 @@
             android:gravity="center"
             android:text="30ms"
             android:textColor="@color/bg_dark"
-            android:textSize="10sp"
+            android:textSize="10.5sp"
             android:textStyle="bold" />
 
         <TextView
@@ -234,7 +242,7 @@
             android:gravity="center"
             android:text="60ms"
             android:textColor="@color/text_primary"
-            android:textSize="10sp" />
+            android:textSize="10.5sp" />
 
         <TextView
             android:id="@+id/btnOptDelaySlow"
@@ -245,7 +253,7 @@
             android:gravity="center"
             android:text="120ms"
             android:textColor="@color/text_primary"
-            android:textSize="10sp" />
+            android:textSize="10.5sp" />
     </LinearLayout>
 
     <!-- Số lần lặp lại combo -->
@@ -255,13 +263,13 @@
         android:layout_marginTop="10dp"
         android:text="🔁 Số lần kích hoạt:"
         android:textColor="@color/text_primary"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
         <TextView
@@ -274,7 +282,7 @@
             android:gravity="center"
             android:text="1 lần"
             android:textColor="@color/bg_dark"
-            android:textSize="10sp"
+            android:textSize="10.5sp"
             android:textStyle="bold" />
 
         <TextView
@@ -287,7 +295,7 @@
             android:gravity="center"
             android:text="2 lần"
             android:textColor="@color/text_primary"
-            android:textSize="10sp" />
+            android:textSize="10.5sp" />
 
         <TextView
             android:id="@+id/btnRepeat3"
@@ -298,7 +306,7 @@
             android:gravity="center"
             android:text="3 lần"
             android:textColor="@color/text_primary"
-            android:textSize="10sp" />
+            android:textSize="10.5sp" />
     </LinearLayout>
 
     <!-- Độ mờ của nút (Opacity / Trong suốt) -->
@@ -308,13 +316,13 @@
         android:layout_marginTop="10dp"
         android:text="👻 Độ mờ (Trong suốt trên màn hình):"
         android:textColor="@color/text_primary"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
         <TextView
@@ -327,7 +335,7 @@
             android:gravity="center"
             android:text="30% Mờ"
             android:textColor="@color/text_primary"
-            android:textSize="10sp" />
+            android:textSize="10.5sp" />
 
         <TextView
             android:id="@+id/btnOpacity50"
@@ -339,7 +347,7 @@
             android:gravity="center"
             android:text="50% Vừa"
             android:textColor="@color/text_primary"
-            android:textSize="10sp" />
+            android:textSize="10.5sp" />
 
         <TextView
             android:id="@+id/btnOpacity80"
@@ -351,7 +359,7 @@
             android:gravity="center"
             android:text="80% Rõ"
             android:textColor="@color/bg_dark"
-            android:textSize="10sp"
+            android:textSize="10.5sp"
             android:textStyle="bold" />
 
         <TextView
@@ -363,62 +371,62 @@
             android:gravity="center"
             android:text="100% Đậm"
             android:textColor="@color/text_primary"
-            android:textSize="10sp" />
+            android:textSize="10.5sp" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/stroke_border"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/btnDialogRename"
         android:layout_width="match_parent"
-        android:layout_height="38dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
         android:text="✏️ ĐỔI TÊN NÚT COMBO NÀY"
         android:textColor="@color/cyan_neon"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
     <!-- Action buttons -->
     <TextView
         android:id="@+id/btnDialogTestRun"
         android:layout_width="match_parent"
-        android:layout_height="38dp"
+        android:layout_height="40dp"
         android:layout_marginTop="6dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
         android:text="▶️ THỬ CHẠY COMBO VÀO GAME"
         android:textColor="@color/emerald_play"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/btnDialogRestorePins"
         android:layout_width="match_parent"
-        android:layout_height="38dp"
+        android:layout_height="40dp"
         android:layout_marginTop="6dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
         android:text="🎯 HIỆN LẠI ĐIỂM GHIM TRÊN GAME ĐỂ CHỈNH"
         android:textColor="@color/cyan_neon"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/btnDialogDelete"
         android:layout_width="match_parent"
-        android:layout_height="38dp"
+        android:layout_height="40dp"
         android:layout_marginTop="6dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
         android:text="🗑️ XÓA NÚT COMBO NÀY"
         android:textColor="@color/crimson_stop"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
 </LinearLayout>

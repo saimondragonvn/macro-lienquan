@@ -46,30 +46,27 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.3.1' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.3.1' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.4.0' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.4.0' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.3.1)
+            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.4.0' }})
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🚀 TÍNH NĂNG VÀ CẢI TIẾN TRỌNG TÂM TRÊN V2.3.1:
-            1. **ẨN HOÀN TOÀN ICON TAB SÉT TURBO Ở MÉP MÀN HÌNH**:
-               - Loại bỏ hoàn toàn thanh tab nổi `[⚡ TURBO]` treo ở mép màn hình khi chơi game, giúp màn hình game sạch sẽ, thông thoáng 100%.
-            2. **MỞ MENU TURBO DẠNG TIỆN ÍCH THÔNG BÁO (CIRCLE TO SEARCH STYLE)**:
-               - Vuốt thanh thông báo của điện thoại xuống và chạm vào thông báo hoặc nút `[⚡ MỞ MENU]`, bảng điều khiển Game Turbo HUD sẽ lập tức hiện ra giữa màn hình.
-               - Bấm `[✕ Đóng]` là menu đóng hoàn toàn, không để lại bất kỳ icon nào trên màn hình.
-            3. **KHẮC PHỤC TRIỆT ĐỂ LỖI NÚT NHẢY LOẠN KHI KÉO THẢ**:
-               - Viết lại toàn bộ thuật toán dragging của Nút Combo và Điểm Ghim sử dụng tọa độ phần cứng `event.rawX` / `event.rawY`.
-               - Di chuyển nút cực kỳ mượt mà, bám dính 1:1 theo ngón tay, kéo thả cơ động đến bất kỳ vị trí nào trên màn hình mà không bị giật hay nhảy loạn.
-            4. **LƯU VỊ TRÍ NÚT CHUẨN XÁC, BẢO LƯU TỌA ĐỘ KHI XOAY NGANG**:
-               - Khắc phục lỗi clamp tọa độ theo chiều dọc portrait, đảm bảo tọa độ chiêu thức trong game ngang không bị ép sai hay biến mất.
-               - Ghi đĩa tức thì với cơ chế synchronous `commit()`, không bao giờ bị mất vị trí đã gán khi khởi động lại máy hay thoát game.
-            5. **CHỈNH TỐC ĐỘ CƠ ĐỘNG BẰNG SỐ (GIỚI HẠN TỐI ĐA 20X)**:
-               - Bổ sung ô nhập số tốc độ xả combo trực tiếp: Người dùng nhập 5 sẽ x5 tốc độ, nhập 10 sẽ x10 tốc độ (hỗ trợ từ 0.5x đến 20x).
-               - Kèm các phím chọn nhanh: 1x, 2x, 5x, 10x, 20x cả trong hộp thoại lưu combo lẫn menu cài đặt nút.
+            #### 💎 ĐẠI TU TOÀN DIỆN GIAO DIỆN LIQUID GLASS & CYBER HUD:
+            1. **MẶT KÍNH ACRYLIC MỜ ĐỤC CÓ CHIỀU SÂU (FROSTED ACRYLIC GLASS SURFACES)**:
+               - Nâng cấp toàn bộ thẻ giao diện, bảng điều khiển menu và hộp thoại sang cấu trúc kính acrylic đa lớp với độ trong suốt tối ưu (75-85%).
+            2. **VIỀN PHẢN QUANG TINH THỂ KÍNH (SPECULAR GLASS RIM LIGHTS)**:
+               - Viền phản xạ ánh sáng Specular Rim Light 1.2dp quanh mép các khối kính, mô phỏng ánh sáng phản chiếu chân thực khi chạm vào mép cắt của kính cường lực.
+            3. **HỆ THỐNG NÚT BẤM KHỐI CẦU KÍNH NỔI (LIQUID GLASS ORBS HUD BUTTONS)**:
+               - Nút bấm combo trên màn hình game (`FloatingTriggerView`) được nâng cấp thành các quả cầu kính thể lỏng (Liquid Glass Orbs) với hiệu ứng gradient 3D dạng thấu kính, viền hào quang phát quang (Cyan Neon Glow `2dp`).
+               - Trạng thái xả combo: Lõi cầu kính phát sáng ngọc lục bảo rực lửa (`Radiant Emerald Power Core`) với viền hào quang trắng sáng (`White Specular Rim`).
+            4. **THANH ĐIỀU KHIỂN CAPSULE DYNAMIC ISLAND**:
+               - Nâng cấp thanh điều khiển ghi combo và thanh chỉnh sửa vị trí nút thành dạng viên con nhộng Liquid Capsule (`radius = 999dp`).
+            5. **BẢO LƯU 100% CÁC TÍNH NĂNG CHỦ LỰC**:
+               - Khóa vị trí trong trận đấu, chế độ di chuyển nút khi mở menu, chỉnh tốc độ cơ động lên tới 20x, thanh thông báo tiện ích điều khiển, động cơ Shizuku Binder 120Hz.
 
             #### 📲 Tải về APK:
-            Tải file **`Macro-LienQuan-v2.3.1.apk`** ở mục **Assets** bên dưới.
+            Tải file **`Macro-LienQuan-v2.4.0.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

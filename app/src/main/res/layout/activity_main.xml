@@ -16,28 +16,33 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Sleek Gaming Header -->
+            <!-- Sleek Liquid Glass Gaming Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="18dp">
 
-                <ImageView
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/bg_floating_pill"
-                    android:padding="9dp"
-                    android:src="@drawable/ic_macro_tile"
-                    app:tint="@color/cyan_neon"
-                    android:contentDescription="Logo" />
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_floating_macro_btn_idle">
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_macro_tile"
+                        app:tint="@color/cyan_neon"
+                        android:contentDescription="Turbo Glass Core" />
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -46,18 +51,18 @@
                         android:layout_height="wrap_content"
                         android:text="GAME TURBO PRO"
                         android:textColor="@color/cyan_neon"
-                        android:textSize="18sp"
+                        android:textSize="19sp"
                         android:textStyle="bold"
-                        android:letterSpacing="0.04" />
+                        android:letterSpacing="0.05" />
 
                     <TextView
                         android:id="@+id/tvDeviceBadge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="3dp"
                         android:text="Thiết bị: Chuẩn 120Hz Fast Combo"
                         android:textColor="@color/text_secondary"
-                        android:textSize="10.5sp" />
+                        android:textSize="11sp" />
                 </LinearLayout>
 
                 <TextView
@@ -65,57 +70,62 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_floating_pill"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
                     android:text="SẴN SÀNG"
                     android:textColor="@color/emerald_play"
-                    android:textSize="10.5sp"
-                    android:textStyle="bold" />
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.03" />
             </LinearLayout>
 
-            <!-- Main Actions -->
+            <!-- Liquid Glass Hero Buttons -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnToggleTurbo"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginBottom="10dp"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
                 android:backgroundTint="@color/cyan_neon"
-                app:cornerRadius="12dp"
+                app:cornerRadius="16dp"
+                app:elevation="4dp"
                 android:text="⚡ BẬT GAME TURBO HUD"
+                android:textColor="@color/bg_dark"
+                android:textSize="14.5sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.04" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLaunchTurboAndGame"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="18dp"
+                android:backgroundTint="@color/emerald_play"
+                app:cornerRadius="16dp"
+                app:elevation="4dp"
+                android:text="🚀 MỞ LIÊN QUÂN MOBILE"
                 android:textColor="@color/bg_dark"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.03" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLaunchTurboAndGame"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/emerald_play"
-                app:cornerRadius="12dp"
-                android:text="🚀 MỞ LIÊN QUÂN MOBILE"
-                android:textColor="@color/bg_dark"
-                android:textSize="13.5sp"
-                android:textStyle="bold" />
-
-            <!-- Card 1: Quyền Cửa Sổ Nổi (Overlay) -->
+            <!-- Card 1: Quyền Cửa Sổ Nổi (Liquid Glass Card) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="14dp"
                 app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="12dp"
-                app:strokeColor="@color/stroke_border"
-                app:strokeWidth="1dp">
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/stroke_glass_specular"
+                app:strokeWidth="1.2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -127,52 +137,59 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="1. CỬA SỔ NỔI TRÊN GAME"
+                            android:text="1. CỬA SỔ NỔI TRÊN GAME (OVERLAY)"
                             android:textColor="@color/text_primary"
                             android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.02" />
 
                         <TextView
                             android:id="@+id/tvOverlayBadge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/bg_floating_pill"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingTop="3dp"
+                            android:paddingBottom="3dp"
                             android:text="CHƯA CẤP"
                             android:textColor="@color/amber_warning"
-                            android:textSize="10.5sp"
+                            android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGrantOverlay"
                         android:layout_width="match_parent"
-                        android:layout_height="38dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="10dp"
                         android:backgroundTint="@color/bg_surface_elevated"
                         app:strokeColor="@color/cyan_neon"
                         app:strokeWidth="1dp"
-                        app:cornerRadius="8dp"
+                        app:cornerRadius="12dp"
                         android:text="Cấp quyền Hiển thị trên ứng dụng khác"
                         android:textColor="@color/cyan_neon"
-                        android:textSize="11sp"
+                        android:textSize="11.5sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 2: Động cơ Shizuku / Root -->
+            <!-- Card 2: Động cơ Shizuku / Root (Liquid Violet Glass Card) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="12dp"
-                app:strokeColor="@color/purple_accent"
-                app:strokeWidth="1dp">
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/glass_rim_purple"
+                app:strokeWidth="1.2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -187,22 +204,28 @@
                             android:text="2. ĐỘNG CƠ SHIZUKU / ROOT (120Hz)"
                             android:textColor="@color/purple_accent"
                             android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:letterSpacing="0.02" />
 
                         <TextView
                             android:id="@+id/tvShizukuBadge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/bg_floating_pill"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingTop="3dp"
+                            android:paddingBottom="3dp"
                             android:text="CHƯA CẤP"
                             android:textColor="@color/amber_warning"
-                            android:textSize="10.5sp"
+                            android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="38dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
@@ -210,12 +233,12 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:layout_marginEnd="6dp"
+                            android:layout_marginEnd="8dp"
                             android:backgroundTint="@color/purple_accent"
-                            app:cornerRadius="8dp"
+                            app:cornerRadius="12dp"
                             android:text="⚡ Cấp quyền Shizuku"
                             android:textColor="@color/white"
-                            android:textSize="11sp"
+                            android:textSize="11.5sp"
                             android:textStyle="bold" />
 
                         <com.google.android.material.button.MaterialButton
@@ -226,7 +249,7 @@
                             android:backgroundTint="@color/bg_surface_elevated"
                             app:strokeColor="@color/purple_accent"
                             app:strokeWidth="1dp"
-                            app:cornerRadius="8dp"
+                            app:cornerRadius="12dp"
                             android:text="📋 Sao chép ADB"
                             android:textColor="@color/purple_accent"
                             android:textSize="11sp" />
@@ -234,37 +257,39 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Hướng dẫn sử dụng Basic & Gọn gàng -->
+            <!-- Card 3: Hướng Dẫn Sử Dụng Liquid Glass -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="12dp"
-                app:strokeColor="@color/stroke_border"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/stroke_glass_specular"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🎮 HƯỚNG DẪN 3 BƯỚC NHANH"
                         android:textColor="@color/emerald_play"
-                        android:textSize="11.5sp"
-                        android:textStyle="bold" />
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="• Bấm [BẬT GAME TURBO HUD] rồi vào game Liên Quân Mobile.\n• Chạm tab [⚡ TURBO] mép màn hình để Ghi Combo hoặc Ghim điểm.\n• Vuốt thanh thông báo xuống để Ẩn/Hiện nút hoặc Tắt Turbo 1-chạm!"
+                        android:layout_marginTop="8dp"
+                        android:text="• Bấm [BẬT GAME TURBO HUD] rồi vào game Liên Quân Mobile.\n• Vuốt thanh thông báo xuống và chạm [⚡ MỞ MENU TURBO] để Ghi Combo hoặc Ghim điểm.\n• Chạm [🎯 DI CHUYỂN &amp; SỬA VỊ TRÍ NÚT] để chỉnh vị trí bất kỳ lúc nào.\n• Khóa vị trí chống loạn chạm khi combat gank tổng!"
                         android:textColor="@color/text_secondary"
-                        android:textSize="10.5sp"
-                        android:lineSpacingExtra="3dp" />
+                        android:textSize="11sp"
+                        android:lineSpacingExtra="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -2,26 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_dialog_card"
+    android:background="@drawable/bg_floating_pill"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="12dp"
-    android:paddingTop="6dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="6dp"
-    android:elevation="18dp">
+    android:paddingStart="14dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="8dp"
+    android:elevation="20dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="🎯"
-        android:textSize="14sp" />
+        android:textSize="16sp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="14dp"
         android:orientation="vertical">
 
         <TextView
@@ -29,29 +29,30 @@
             android:layout_height="wrap_content"
             android:text="CHỈNH SỬA VỊ TRÍ NÚT"
             android:textColor="@color/cyan_neon"
-            android:textSize="11sp"
+            android:textSize="11.5sp"
             android:textStyle="bold"
-            android:letterSpacing="0.03" />
+            android:letterSpacing="0.04" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kéo nút tới mọi vị trí mong muốn rồi bấm Lưu"
+            android:text="Kéo thả nút tới mọi vị trí rồi bấm Lưu"
             android:textColor="@color/text_secondary"
-            android:textSize="9.5sp" />
+            android:textSize="10sp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/btnSaveAndLockPositions"
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
+        android:layout_height="34dp"
         android:background="@drawable/bg_turbo_btn_primary"
         android:gravity="center"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
         android:text="💾 LƯU &amp; KHÓA VỊ TRÍ"
         android:textColor="@color/bg_dark"
-        android:textSize="10.5sp"
-        android:textStyle="bold" />
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.02" />
 
 </LinearLayout>

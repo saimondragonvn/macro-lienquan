@@ -1,30 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Backgrounds & Surfaces -->
-    <color name="bg_dark">#0F172A</color>
-    <color name="bg_surface">#1E293B</color>
-    <color name="bg_surface_elevated">#334155</color>
-    <color name="bg_floating_glass">#E60F172A</color>
-    <color name="bg_dialog">#1E293B</color>
+    <!-- Liquid Glass Canvas & Deep Midnight Backdrops -->
+    <color name="bg_dark">#080E1A</color>
+    <color name="bg_surface">#141E32</color>
+    <color name="bg_surface_elevated">#222F48</color>
+    <color name="bg_floating_glass">#D90A1326</color>
+    <color name="bg_dialog">#D90E1A30</color>
 
-    <!-- Accents & Gaming Highlights -->
-    <color name="cyan_neon">#06B6D4</color>
-    <color name="cyan_neon_glow">#3306B6D4</color>
-    <color name="purple_accent">#8B5CF6</color>
-    <color name="emerald_play">#10B981</color>
-    <color name="crimson_stop">#EF4444</color>
-    <color name="amber_warning">#F59E0B</color>
+    <!-- Frosted Acrylic Glass Layers -->
+    <color name="glass_card_bg_start">#D9142340</color>
+    <color name="glass_card_bg_end">#C80A1224</color>
+    <color name="glass_dock_bg_start">#E60C172E</color>
+    <color name="glass_dock_bg_end">#D4070E1C</color>
+    <color name="glass_btn_bg_start">#3338547A</color>
+    <color name="glass_btn_bg_end">#22203654</color>
 
-    <!-- Text colors -->
+    <!-- Specular Glass Rim Lights & Holographic Borders -->
+    <color name="glass_rim_specular">#40FFFFFF</color>
+    <color name="glass_rim_subtle">#1FFFFFFF</color>
+    <color name="glass_rim_cyan">#8000F5FF</color>
+    <color name="glass_rim_purple">#80A855F7</color>
+    <color name="stroke_border">#2A3C58</color>
+    <color name="stroke_glass_specular">#4DFFFFFF</color>
+
+    <!-- Liquid Neon Accents & Power Highlights -->
+    <color name="cyan_neon">#00F5FF</color>
+    <color name="cyan_neon_bright">#38F9FF</color>
+    <color name="cyan_neon_glow">#4000F5FF</color>
+    <color name="cyan_gradient_end">#0099FF</color>
+
+    <color name="purple_accent">#A855F7</color>
+    <color name="purple_gradient_end">#6366F1</color>
+    <color name="purple_glow">#40A855F7</color>
+
+    <color name="emerald_play">#00F59B</color>
+    <color name="emerald_gradient_end">#059669</color>
+    <color name="emerald_glow">#4000F59B</color>
+
+    <color name="crimson_stop">#FF2A55</color>
+    <color name="crimson_gradient_end">#DC2626</color>
+    <color name="crimson_glow">#40FF2A55</color>
+
+    <color name="amber_warning">#FFB703</color>
+    <color name="amber_gradient_end">#F59E0B</color>
+
+    <!-- Refined Typography Colors -->
     <color name="text_primary">#F8FAFC</color>
     <color name="text_secondary">#94A3B8</color>
     <color name="text_disabled">#64748B</color>
+    <color name="text_glass_glow">#E0F2FE</color>
 
-    <!-- Overlay / Recorders -->
-    <color name="rec_overlay_tint">#88000000</color>
-    <color name="touch_point_circle">#CCEF4444</color>
+    <!-- Overlay / Recorders / Target Reticles -->
+    <color name="rec_overlay_tint">#99000000</color>
+    <color name="touch_point_circle">#CCFF2A55</color>
     <color name="touch_point_stroke">#FFFFFFFF</color>
-    <color name="stroke_border">#2E3D52</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>

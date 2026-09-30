@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/renameDialogRoot"
-    android:layout_width="280dp"
+    android:layout_width="290dp"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_dialog_card"
     android:orientation="vertical"
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="✏️ ĐỔI TÊN NÚT COMBO"
         android:textColor="@color/cyan_neon"
-        android:textSize="13sp"
+        android:textSize="13.5sp"
         android:textStyle="bold"
         android:letterSpacing="0.04"
         android:layout_marginBottom="10dp" />
@@ -30,13 +30,13 @@
         android:layout_height="wrap_content"
         android:text="Nhập tên mới (hiển thị trên nút nổi):"
         android:textColor="@color/text_secondary"
-        android:textSize="10.5sp" />
+        android:textSize="11sp" />
 
     <EditText
         android:id="@+id/etRenameInput"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_marginTop="6dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:hint="Tên combo (VD: Florentino, Raz)"
         android:textColorHint="@color/text_secondary"
@@ -52,8 +52,8 @@
     <!-- Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:layout_marginTop="14dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
         android:orientation="horizontal">
 
         <TextView
@@ -61,12 +61,12 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.8"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/bg_turbo_btn_secondary"
             android:gravity="center"
             android:text="✕ HỦY"
             android:textColor="@color/amber_warning"
-            android:textSize="11sp"
+            android:textSize="11.5sp"
             android:textStyle="bold" />
 
         <TextView
@@ -78,8 +78,9 @@
             android:gravity="center"
             android:text="💾 LƯU TÊN"
             android:textColor="@color/bg_dark"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:textSize="11.5sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.02" />
     </LinearLayout>
 
 </LinearLayout>

@@ -7,23 +7,23 @@
     android:background="@drawable/bg_turbo_btn_secondary"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="6dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/tvTriggerBadge"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
         android:background="@drawable/bg_floating_macro_btn_idle"
         android:gravity="center"
         android:text="C1"
         android:textColor="@color/cyan_neon"
-        android:textSize="10sp"
+        android:textSize="10.5sp"
         android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="Nút Combo C1"
             android:textColor="@color/text_primary"
-            android:textSize="11sp"
+            android:textSize="11.5sp"
             android:textStyle="bold" />
 
         <TextView
@@ -42,13 +42,13 @@
             android:layout_height="wrap_content"
             android:text="3 điểm • 30ms • 80%"
             android:textColor="@color/text_secondary"
-            android:textSize="9sp" />
+            android:textSize="9.5sp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/btnTriggerRename"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="4dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
@@ -56,46 +56,46 @@
         android:paddingEnd="8dp"
         android:text="✏️ Sửa"
         android:textColor="@color/cyan_neon"
-        android:textSize="10sp"
+        android:textSize="10.5sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/btnTriggerToggle"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="4dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
-        android:paddingStart="6dp"
-        android:paddingEnd="6dp"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
         android:text="👁️"
         android:textColor="@color/text_primary"
-        android:textSize="10sp" />
+        android:textSize="10.5sp" />
 
     <TextView
         android:id="@+id/btnTriggerRestorePins"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="4dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
-        android:paddingStart="6dp"
-        android:paddingEnd="6dp"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
         android:text="🎯"
         android:textColor="@color/cyan_neon"
-        android:textSize="10sp" />
+        android:textSize="10.5sp" />
 
     <TextView
         android:id="@+id/btnTriggerDelete"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="30dp"
         android:background="@drawable/bg_turbo_btn_danger"
         android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
+        android:paddingStart="9dp"
+        android:paddingEnd="9dp"
         android:text="✕"
         android:textColor="@color/white"
-        android:textSize="11sp"
+        android:textSize="11.5sp"
         android:textStyle="bold" />
 
 </LinearLayout>

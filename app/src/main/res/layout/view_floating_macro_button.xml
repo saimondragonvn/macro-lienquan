@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/macroButtonRoot"
     android:layout_width="56dp"
     android:layout_height="56dp"
     android:background="@drawable/bg_floating_macro_btn_idle"
-    android:elevation="14dp">
+    android:elevation="16dp">
 
-    <!-- Glowing Circular Border / Status indicator -->
+    <!-- Glowing Liquid Glass Orb Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,6 +20,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_speed"
+            app:tint="@color/cyan_neon"
             android:contentDescription="Macro Icon" />
 
         <TextView
@@ -26,19 +28,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="M1"
-            android:textColor="@color/text_primary"
-            android:textSize="10sp"
+            android:textColor="@color/white"
+            android:textSize="10.5sp"
             android:textStyle="bold"
-            android:maxLines="1" />
+            android:letterSpacing="0.03"
+            android:maxLines="1"
+            android:ellipsize="end" />
     </LinearLayout>
 
-    <!-- Close / Delete Mini Badge on long press -->
+    <!-- Delete Mini Badge on long press -->
     <ImageView
         android:id="@+id/ivMacroBtnDelete"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
         android:layout_gravity="top|end"
         android:src="@drawable/ic_close"
+        android:background="@drawable/bg_turbo_btn_danger"
+        android:padding="2dp"
         android:visibility="gone"
         android:contentDescription="Delete Macro Button" />
 

@@ -4,6 +4,29 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.4.0] - 2026-09-30
+### 💎 ĐẠI TU TOÀN DIỆN GIAO DIỆN THEO PHONG CÁCH LIQUID GLASS (GLASSMORPHISM & CYBER HUD)
+- **THIẾT KẾ KÍNH THỂ LỎNG CAO CẤP (LIQUID GLASS / GLASSMORPHISM)**:
+  - **Mặt kính Acrylic Mờ Đục Có Chiều Sâu (Frosted Acrylic Glass Surfaces)**:
+    - Nâng cấp toàn bộ thẻ giao diện, bảng điều khiển menu và hộp thoại cấu hình sang cấu trúc kính acrylic đa lớp (`glass_card_bg_start` ➔ `glass_card_bg_end`) với độ trong suốt tối ưu (75-85%), vừa nhìn thấy game phía sau vừa hiển thị rõ ràng nội dung điều khiển.
+  - **Viền Phản Quang Tinh Thể Kính (Specular Glass Rim Lights)**:
+    - Ứng dụng hiệu ứng viền phản xạ ánh sáng Specular Rim Light (`glass_rim_specular` #40FFFFFF) sắc nét 1.2dp quanh mép các khối kính, mô phỏng ánh sáng phản chiếu chân thực khi chạm vào mép cắt của kính cường lực.
+  - **Hệ Thống Nút Bấm Khối Cầu Kính Nổi (Liquid Glass Orbs HUD Buttons)**:
+    - Nút bấm combo trên màn hình game (`FloatingTriggerView`) được nâng cấp thành các quả cầu kính thể lỏng (Liquid Glass Orbs) với hiệu ứng gradient 3D dạng thấu kính, viền hào quang phát quang (Cyan Neon Glow `2dp`), và vòng sáng phản quang bên trong.
+    - Trạng thái kích hoạt (Active / Đang xả combo): Lõi cầu kính phát sáng ngọc lục bảo rực lửa (`Radiant Emerald Power Core`) với viền hào quang trắng sáng (`White Specular Rim`), cho phản hồi trực quan siêu mãn nhãn.
+  - **Thanh Điều Khiển Capsule Dynamic Island (`view_position_edit_pill`, `view_recording_pill`)**:
+    - Nâng cấp thanh điều khiển ghi hình combo và thanh chỉnh sửa vị trí nút thành dạng viên con nhộng Liquid Capsule bo góc tròn tuyệt đối (`radius = 999dp`), viền sáng khúc xạ ánh sáng xanh neon tinh xảo.
+  - **Màu Sắc Cyberpunk Fluid Neon Mới**:
+    - Bổ sung bảng màu dạ quang thể lỏng: Electric Liquid Cyan (`#00F5FF`), Fluid Violet (`#A855F7`), Radioactive Emerald (`#00F59B`), Liquid Ruby Crimson (`#FF2A55`), và Amber Warning (`#FFB703`).
+  - **Giao Diện Ứng Dụng Chính (Dashboard)**:
+    - Bo góc lớn 18dp - 22dp tạo cảm giác mềm mại, hiện đại.
+    - Thẻ điều khiển kính mờ kết hợp huy hiệu trạng thái dạ quang, tạo ấn tượng chuyên nghiệp như các ứng dụng công nghệ flagship.
+- **BẢO LƯU 100% TÍNH NĂNG & ĐỘ ỔN ĐỊNH CỦA ĐỘNG CƠ SHIZUKU BINDER 120HZ**:
+  - Giữ nguyên toàn bộ cơ chế khóa vị trí trong trận đấu, điều chỉnh tốc độ cơ động lên tới 20x, thanh thông báo tiện ích điều khiển, và bộ điều khiển chạm nhân Linux.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.4.0.apk`.
+
+---
+
 ## [v2.3.3] - 2026-09-30
 ### 🚀 KHÓA VỊ TRÍ NÚT KHI CHIẾN GAME & CHẾ ĐỘ DI CHUYỂN NÚT CHUYÊN DỤNG KHI MỞ MENU
 - **KHÓA CỐ ĐỊNH VỊ TRÍ NÚT TRONG TRẬN ĐẤU (ZERO ACCIDENTAL MOVEMENT)**:
