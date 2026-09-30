@@ -331,18 +331,23 @@ object GameTurboRecorder {
     private fun executeShellCommand(cmd: String): Process? {
         if (ShellExecutor.isShizukuRunning() && ShellExecutor.hasShizukuPermission()) {
             try {
-                return try {
-                    Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
-                } catch (_: Throwable) {
-                    val method = Shizuku::class.java.getMethod(
+                val method = try {
+                    Shizuku::class.java.getMethod(
                         "newProcess",
                         Array<String>::class.java,
                         Array<String>::class.java,
                         String::class.java
                     )
-                    method.isAccessible = true
-                    method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
+                } catch (_: Throwable) {
+                    Shizuku::class.java.getDeclaredMethod(
+                        "newProcess",
+                        Array<String>::class.java,
+                        Array<String>::class.java,
+                        String::class.java
+                    )
                 }
+                method.isAccessible = true
+                return method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
             } catch (e: Throwable) {
                 Log.w(TAG, "Shizuku process error: ${e.message}")
             }
