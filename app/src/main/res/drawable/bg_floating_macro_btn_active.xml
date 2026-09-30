@@ -1,32 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Outer Glowing Emerald Power Core with Brilliant Specular Rim -->
+    <!-- Layer 1: Supercharged Luminous Emerald Liquid Core (NO STROKE / KHÔNG VIỀN) -->
     <item>
         <shape android:shape="oval">
             <gradient
                 android:angle="135"
-                android:startColor="#F000F59B"
-                android:centerColor="#E608BA7B"
-                android:endColor="#D9059669"
+                android:startColor="#8500F59B"
+                android:centerColor="#5508BA7B"
+                android:endColor="#30059669"
                 android:type="linear" />
-            <stroke
-                android:width="2.5dp"
-                android:color="@color/white" />
             <size
                 android:width="56dp"
                 android:height="56dp" />
         </shape>
     </item>
-    <!-- Inner Radiant Aura Ring -->
-    <item
-        android:bottom="3dp"
-        android:left="3dp"
-        android:right="3dp"
-        android:top="3dp">
+
+    <!-- Layer 2: Radiant Internal Neon Flare -->
+    <item>
         <shape android:shape="oval">
-            <stroke
-                android:width="1.2dp"
-                android:color="#80FFFFFF" />
+            <gradient
+                android:angle="45"
+                android:startColor="#5000FFCC"
+                android:centerColor="#1A00F59B"
+                android:endColor="#00000000"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 3: Brilliant Specular Glare (Phản xạ chói sáng khi bắn combo) -->
+    <item
+        android:top="2dp"
+        android:left="6dp"
+        android:right="6dp"
+        android:bottom="24dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="270"
+                android:startColor="#95FFFFFF"
+                android:centerColor="#38FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 4: Bottom Emerald Radiant Bloom -->
+    <item
+        android:top="36dp"
+        android:left="10dp"
+        android:right="10dp"
+        android:bottom="2dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="90"
+                android:startColor="#4500F59B"
+                android:centerColor="#1500FFCC"
+                android:endColor="#00000000"
+                android:type="linear" />
         </shape>
     </item>
 </layer-list>

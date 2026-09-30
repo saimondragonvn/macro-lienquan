@@ -535,6 +535,11 @@ class FloatingTriggerView(
         vibrate(30)
         view.setBackgroundResource(R.drawable.bg_floating_macro_btn_active)
         ivIcon.setColorFilter(ContextCompat.getColor(context, R.color.white))
+        view.animate().scaleX(0.92f).scaleY(0.92f).setDuration(80).withEndAction {
+            if (view.isAttachedToWindow) {
+                view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(120).start()
+            }
+        }.start()
         view.postDelayed({
             if (view.isAttachedToWindow) {
                 view.setBackgroundResource(R.drawable.bg_floating_macro_btn_idle)

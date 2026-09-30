@@ -46,24 +46,24 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.1' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.1' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.0' }})
+            ### 💧 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.1' }})
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🎮 TÍNH NĂNG ĐA HỒ SƠ COMBO THEO TỪNG GAME (MULTI-GAME PROFILES):
-            1. **HỒ SƠ CẤU HÌNH COMBO ĐỘC LẬP CHO TỪNG GAME**:
-               - Mỗi game (Liên Quân Mobile, Free Fire, Tốc Chiến, Genshin...) sở hữu danh sách nút combo, vị trí tọa độ, độ trễ và độ mờ riêng biệt 100%.
-            2. **CHUYỂN ĐỔI GAME 1-CHẠM TRÊN MENU & DASHBOARD**:
-               - Thanh chọn game dạng thẻ kính (Chips) cuộn ngang trực quan: Chạm vào game nào là các nút combo của game đó lập tức xuất hiện đúng vị trí.
-            3. **THÊM MỚI, ĐỔI TÊN & XÓA HỒ SƠ LINH HOẠT**:
-               - Dễ dàng tạo hồ sơ cho bất kỳ tựa game nào với nút `[+ Thêm Game]`.
-            4. **MỞ GAME THÔNG MINH THEO HỒ SƠ ĐANG CHỌN**:
-               - Tự động nhận diện và khởi động chính xác tựa game đang được chọn.
+            #### 💎 GIAO DIỆN NÚT MACBO LIQUID GLASS (THỦY TINH LỎNG KHÔNG VIỀN):
+            1. **LOẠI BỎ HOÀN TOÀN ĐƯỜNG VIỀN THÔ RÁP**:
+               - Triệt tiêu 100% các nét stroke thô cứng xung quanh nút macro.
+            2. **CHUẨN THỦY TINH LỎNG (LIQUID GLASS DROPLET)**:
+               - Nền kính tinh thể trong suốt quang học cao (High Refraction Translucent Glass).
+               - Vầng bóng gương bán nguyệt mặt trên tạo độ cong 3D tự nhiên như giọt nước.
+               - Ánh sáng phản xạ tán sắc xanh ngọc (Chromatic Cyan Refraction) và hiệu ứng đáy giọt nước.
+            3. **HIỆU ỨNG TƯƠNG TÁC XÚC GIÁC (TACTILE LIQUID BOUNCE)**:
+               - Khi bấm bắn combo: Lõi ngọc bích phát sáng chói lọi cùng hiệu ứng nén đàn hồi giọt nước.
 
             #### 📲 Tải về APK:
-            Tải file **`Macro-LienQuan-v2.5.0.apk`** ở mục **Assets** bên dưới.
+            Tải file **`Macro-LienQuan-v2.5.1.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

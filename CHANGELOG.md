@@ -4,6 +4,25 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.5.1] - 2026-09-30
+### 💧 TÁI THIẾT KẾ NÚT MACRO CHUẨN LIQUID GLASS (KHÔNG VIỀN - BORDERLESS LIQUID GLASS)
+- **LOẠI BỎ TRIỆT ĐỂ ĐƯỜNG VIỀN THÔ RÁP**:
+  - Bỏ 100% các stroke/border (đường viền neon thô cứng xung quanh nút macro và điểm ghim chiêu).
+  - Nút macro lơ lửng trên game hoàn toàn liền mạch, không còn cảm giác bị đóng khung cứng nhắc.
+- **CHUẨN THỦY TINH LỎNG QUANG HỌC CAO (LIQUID GLASS DROPLET)**:
+  - Cấu trúc đa tầng (4-layer glass refraction):
+    1. *Khúc xạ nền kính lỏng (Translucent Crystal Base)*: Thủy tinh xanh saphir trong suốt cao, cho phép nhìn xuyên thấu giao diện trận đấu mà không che khuất tầm nhìn.
+    2. *Tán sắc ánh sáng nội thể (Chromatic Cyan Sheen)*: Luồng ánh sáng lỏng phát xạ dịu êm bên trong giọt kính.
+    3. *Bóng gương mặt cầu bán nguyệt (Curved Specular Lens Highlight)*: Vầng sáng lóa ở nửa trên tạo hiệu ứng 3D khối giọt nước bóng bẩy, chân thực chuẩn VisionOS / Liquid Glass.
+    4. *Phản quang hắt đáy (Bottom Caustic Bloom)*: Điểm sáng nhẹ ở đáy tạo cảm giác giọt nước nổi bồng bềnh trên màn hình.
+- **HIỆU ỨNG NÉN ĐÀN HỒI KHI CHẠM (TACTILE LIQUID BOUNCE FEEDBACK)**:
+  - Khi người dùng chạm ngón tay kích hoạt combo: Nút macro co giãn đàn hồi nhẹ (micro scale bounce) kèm hiệu ứng lõi ngọc bích phát sáng chói lọi trước khi trả về trạng thái tĩnh trong suốt.
+- **ĐỒNG BỘ ĐIỂM GHIM CHIÊU (TARGET POINTS)**:
+  - Các điểm ghim 1, 2, 3... trên giao diện game cũng được nâng cấp sang chuẩn kính lỏng không viền trong suốt và sắc sảo.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.5.1.apk`.
+
+---
+
 ## [v2.5.0] - 2026-09-30
 ### 🎮 TÍNH NĂNG ĐA HỒ SƠ COMBO THEO GAME (MULTI-GAME PROFILES & PRESETS)
 - **HỒ SƠ CẤU HÌNH COMBO ĐỘC LẬP CHO TỪNG GAME (INDEPENDENT MACRO STORES)**:

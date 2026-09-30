@@ -1,32 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Outer Glass Disc with Specular Cyan Rim -->
+    <!-- Layer 1: Crystalline Translucent Liquid Glass Base Disc (NO STROKE / KHÔNG VIỀN) -->
     <item>
         <shape android:shape="oval">
             <gradient
                 android:angle="135"
-                android:startColor="#E615284B"
-                android:centerColor="#D90C1932"
-                android:endColor="#C0050B16"
+                android:startColor="#60223D66"
+                android:centerColor="#38101E35"
+                android:endColor="#22060F1F"
                 android:type="linear" />
-            <stroke
-                android:width="2dp"
-                android:color="@color/cyan_neon" />
             <size
                 android:width="56dp"
                 android:height="56dp" />
         </shape>
     </item>
-    <!-- Inner Subtle Specular Highlight Ring -->
-    <item
-        android:bottom="3dp"
-        android:left="3dp"
-        android:right="3dp"
-        android:top="3dp">
+
+    <!-- Layer 2: Subtle Chromatic Cyan Ambient Refraction Glow -->
+    <item>
         <shape android:shape="oval">
-            <stroke
-                android:width="1dp"
-                android:color="#4DFFFFFF" />
+            <gradient
+                android:angle="45"
+                android:startColor="#2600E5FF"
+                android:centerColor="#0D0099FF"
+                android:endColor="#00000000"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 3: Pristine Specular Glare / Curved Glass Lens Highlight (Vầng bóng kính lỏng đỉnh) -->
+    <item
+        android:top="2dp"
+        android:left="6dp"
+        android:right="6dp"
+        android:bottom="24dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="270"
+                android:startColor="#75FFFFFF"
+                android:centerColor="#20FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 4: Soft Diffuse Ambient Bottom Reflection (Ánh quang đáy giọt nước) -->
+    <item
+        android:top="36dp"
+        android:left="10dp"
+        android:right="10dp"
+        android:bottom="2dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="90"
+                android:startColor="#25FFFFFF"
+                android:centerColor="#0F00E5FF"
+                android:endColor="#00000000"
+                android:type="linear" />
         </shape>
     </item>
 </layer-list>

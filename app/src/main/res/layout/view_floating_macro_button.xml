@@ -5,9 +5,9 @@
     android:layout_width="56dp"
     android:layout_height="56dp"
     android:background="@drawable/bg_floating_macro_btn_idle"
-    android:elevation="16dp">
+    android:elevation="12dp">
 
-    <!-- Glowing Liquid Glass Orb Content -->
+    <!-- Pure Borderless Liquid Glass Orb Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,7 +31,11 @@
             android:textColor="@color/white"
             android:textSize="10.5sp"
             android:textStyle="bold"
-            android:letterSpacing="0.03"
+            android:letterSpacing="0.04"
+            android:shadowColor="#D9000000"
+            android:shadowDx="0"
+            android:shadowDy="1.5"
+            android:shadowRadius="3"
             android:maxLines="1"
             android:ellipsize="end" />
     </LinearLayout>
