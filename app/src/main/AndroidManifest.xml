@@ -40,6 +40,15 @@
             </intent-filter>
         </activity>
 
+        <!-- Provider cho Shizuku Binder IPC (bắt buộc để Shizuku Manager truyền token và binder sang ứng dụng) -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
         <!-- Service Quản Lý Cửa Sổ Nổi Game Turbo (Kiến trúc Mới) -->
         <service
             android:name=".service.TurboOverlayService"

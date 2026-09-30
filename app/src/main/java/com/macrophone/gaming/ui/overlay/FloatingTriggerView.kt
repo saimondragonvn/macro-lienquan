@@ -32,7 +32,9 @@ class FloatingTriggerView(
     private val onDelete: (FloatingTriggerView) -> Unit
 ) {
 
-    val view: View = LayoutInflater.from(context).inflate(R.layout.view_floating_macro_button, null)
+    val view: View = LayoutInflater.from(
+        androidx.appcompat.view.ContextThemeWrapper(context, R.style.Theme_MacroGaming)
+    ).inflate(R.layout.view_floating_macro_button, null)
     private val tvLabel: TextView = view.findViewById(R.id.tvMacroBtnLabel)
     private val ivIcon: ImageView = view.findViewById(R.id.ivMacroBtnIcon)
     private val ivDelete: ImageView = view.findViewById(R.id.ivMacroBtnDelete)

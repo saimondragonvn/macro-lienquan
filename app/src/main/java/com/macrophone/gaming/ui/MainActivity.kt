@@ -29,12 +29,28 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
+        runOnUiThread {
+            if (!isFinishing && !isDestroyed) {
+                refreshStatuses()
+            }
+        }
+    }
+
+    private val binderDeadListener = Shizuku.OnBinderDeadListener {
+        runOnUiThread {
+            if (!isFinishing && !isDestroyed) {
+                refreshStatuses()
+            }
+        }
+    }
+
     private val shizukuPermissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         if (requestCode == ShellExecutor.SHIZUKU_REQUEST_CODE) {
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
                 if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Đã cấp quyền Shizuku thành công! Động cơ sẵn sàng 120Hz.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Đã cấp quyền Shizuku thành công! Động cơ 120Hz sẵn sàng.", Toast.LENGTH_SHORT).show()
                     ShellExecutor.autoGrantPermissions(this)
                 } else {
                     Toast.makeText(this, "Bạn đã từ chối cấp quyền Shizuku.", Toast.LENGTH_SHORT).show()
@@ -52,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         binding.tvDeviceBadge.text = "Thiết bị: ${ShizukuHelper.getDeviceDisplayName()} • 120Hz Fast Combo"
 
         setupButtons()
-        registerShizukuListenerSafe()
+        registerShizukuListeners()
     }
 
     override fun onResume() {
@@ -61,20 +77,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        unregisterShizukuListenerSafe()
+        unregisterShizukuListeners()
         super.onDestroy()
     }
 
-    private fun registerShizukuListenerSafe() {
+    private fun registerShizukuListeners() {
         try {
-            if (ShellExecutor.isShizukuRunning()) {
-                Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
-            }
+            Shizuku.addBinderReceivedListenerSticky(binderReceivedListener)
+            Shizuku.addBinderDeadListener(binderDeadListener)
+            Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
         } catch (_: Throwable) {}
     }
 
-    private fun unregisterShizukuListenerSafe() {
+    private fun unregisterShizukuListeners() {
         try {
+            Shizuku.removeBinderReceivedListener(binderReceivedListener)
+            Shizuku.removeBinderDeadListener(binderDeadListener)
             Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
         } catch (_: Throwable) {}
     }
@@ -87,12 +105,12 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Đã tắt Game Turbo HUD", Toast.LENGTH_SHORT).show()
             } else {
                 if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' trước!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' (Cửa sổ nổi) trước!", Toast.LENGTH_LONG).show()
                     openOverlaySettings()
                     return@setOnClickListener
                 }
                 TurboOverlayService.start(this)
-                Toast.makeText(this, "Đã khởi động Game Turbo HUD! Hãy mở game Liên Quân.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Đã bật Game Turbo HUD! Nhìn vào mép màn hình để thấy tab [⚡ TURBO].", Toast.LENGTH_LONG).show()
             }
             binding.root.postDelayed({ refreshStatuses() }, 300)
         }
@@ -104,21 +122,34 @@ class MainActivity : AppCompatActivity() {
 
         // Cấp quyền Shizuku 1-chạm
         binding.btnGrantShizuku.setOnClickListener {
-            if (!ShellExecutor.isShizukuRunning()) {
-                Toast.makeText(
-                    this,
-                    "Shizuku chưa chạy! Hãy mở app Shizuku trên máy và bấm 'Khởi động' qua Wi-Fi trước.",
-                    Toast.LENGTH_LONG
-                ).show()
-                return@setOnClickListener
-            }
-
-            if (!ShellExecutor.hasShizukuPermission()) {
-                ShellExecutor.requestShizukuPermission(this)
+            if (ShellExecutor.isShizukuRunning()) {
+                if (ShellExecutor.hasShizukuPermission()) {
+                    ShellExecutor.autoGrantPermissions(this)
+                    Toast.makeText(this, "Đã cấp quyền Shizuku rồi! Động cơ sẵn sàng.", Toast.LENGTH_SHORT).show()
+                    refreshStatuses()
+                } else {
+                    val ok = ShellExecutor.requestShizukuPermission(this)
+                    if (!ok) {
+                        Toast.makeText(this, "Không thể mở hộp thoại xin quyền Shizuku. Vui lòng kiểm tra lại dịch vụ Shizuku.", Toast.LENGTH_LONG).show()
+                    }
+                }
             } else {
-                ShellExecutor.autoGrantPermissions(this)
-                Toast.makeText(this, "Đã được cấp quyền Shizuku rồi!", Toast.LENGTH_SHORT).show()
-                refreshStatuses()
+                // Shizuku chưa chạy trên máy -> Thử mở app Shizuku cho người dùng
+                val shizukuLaunchIntent = packageManager.getLaunchIntentForPackage("moe.shizuku.privileged.api")
+                if (shizukuLaunchIntent != null) {
+                    Toast.makeText(
+                        this,
+                        "Đang mở ứng dụng Shizuku... Vui lòng bấm 'Khởi động' (qua Ghép nối Wi-Fi) trong app Shizuku!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    startActivity(shizukuLaunchIntent)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Chưa tìm thấy app Shizuku! Hãy cài đặt app Shizuku từ CH Play và khởi động qua Gỡ lỗi Wi-Fi.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
 
@@ -128,19 +159,6 @@ class MainActivity : AppCompatActivity() {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("ADB Command", cmd))
             Toast.makeText(this, "Đã sao chép lệnh ADB vào khay nhớ tạm!", Toast.LENGTH_SHORT).show()
-        }
-
-        // Mở cài đặt Infinix XOS (để mở khóa Restricted Settings)
-        binding.btnUnlockInfinix.setOnClickListener {
-            try {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.parse("package:$packageName")
-                }
-                startActivity(intent)
-                Toast.makeText(this, "Bấm nút 3 chấm (⋮) ở góc trên bên phải -> Chọn 'Cho phép cài đặt bị hạn chế'", Toast.LENGTH_LONG).show()
-            } catch (_: Throwable) {
-                Toast.makeText(this, "Không thể mở cài đặt ứng dụng.", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 

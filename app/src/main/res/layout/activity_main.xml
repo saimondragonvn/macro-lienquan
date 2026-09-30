@@ -252,51 +252,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 3: Mở khóa trên Infinix Note 30 (Transsion XOS) -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/bg_surface_elevated"
-                app:cardCornerRadius="14dp"
-                app:strokeColor="@color/stroke_border"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📌 DÀNH CHO INFINIX NOTE 30 (XOS 13/14)"
-                        android:textColor="@color/cyan_neon"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Nếu ứng dụng bị hệ thống XOS giới hạn quyền: Bấm nút dưới $\\rightarrow$ Bấm nút 3 chấm (⋮) ở góc trên bên phải màn hình $\\rightarrow$ Chọn 'Cho phép cài đặt bị hạn chế'."
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnUnlockInfinix"
-                        android:layout_width="match_parent"
-                        android:layout_height="38dp"
-                        android:layout_marginTop="8dp"
-                        android:backgroundTint="@color/bg_surface"
-                        app:strokeColor="@color/cyan_neon"
-                        app:strokeWidth="1dp"
-                        android:text="🔓 Mở trang Cài đặt ứng dụng Infinix"
-                        android:textColor="@color/cyan_neon"
-                        android:textSize="11sp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
             <!-- Hướng dẫn sử dụng trong game (Game Turbo Guide) -->
             <com.google.android.material.card.MaterialCardView

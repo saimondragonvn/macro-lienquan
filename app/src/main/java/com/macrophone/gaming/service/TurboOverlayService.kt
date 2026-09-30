@@ -160,13 +160,13 @@ class TurboOverlayService : Service() {
                         notification,
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
                     )
-                } catch (_: Throwable) {
-                    androidx.core.app.ServiceCompat.startForeground(
-                        this,
-                        NotificationHelper.NOTIFICATION_ID,
-                        notification,
-                        0
-                    )
+                } catch (e: Throwable) {
+                    Log.w("TurboOverlayService", "startForeground with type failed: ${e.message}")
+                    try {
+                        startForeground(NotificationHelper.NOTIFICATION_ID, notification)
+                    } catch (e2: Throwable) {
+                        Log.e("TurboOverlayService", "startForeground fallback failed: ${e2.message}")
+                    }
                 }
             } else {
                 startForeground(NotificationHelper.NOTIFICATION_ID, notification)
@@ -180,31 +180,31 @@ class TurboOverlayService : Service() {
      * Khởi tạo Tab nổi Game Turbo (Pill) ở mép màn hình
      */
     private fun initDockView() {
-        val inflater = LayoutInflater.from(this)
-        dockView = inflater.inflate(R.layout.view_floating_dock, null)
-
-        dockParams = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-            x = (screenWidth - 280).coerceAtLeast(16)
-            y = (screenHeight / 3).coerceAtLeast(100)
-        }
-
-        setupDockTouchAndDrag(dockView!!)
-        setupDockButtons(dockView!!)
-
         try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+            val inflater = LayoutInflater.from(themedContext)
+            dockView = inflater.inflate(R.layout.view_floating_dock, null)
+
+            dockParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                x = (screenWidth - 280).coerceAtLeast(16)
+                y = (screenHeight / 3).coerceAtLeast(100)
+            }
+
+            setupDockTouchAndDrag(dockView!!)
+            setupDockButtons(dockView!!)
+
             windowManager.addView(dockView, dockParams)
         } catch (e: Throwable) {
-            Log.e("TurboOverlayService", "initDockView error: ${e.message}")
-            Toast.makeText(this, "Chưa cấp quyền 'Hiển thị trên ứng dụng khác'!", Toast.LENGTH_LONG).show()
-            stopSelf()
+            Log.e("TurboOverlayService", "initDockView error: ${e.message}", e)
+            Toast.makeText(this, "Chưa cấp đủ quyền 'Cửa sổ thả nổi' hoặc 'Hiển thị trên ứng dụng khác'!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -433,76 +433,77 @@ class TurboOverlayService : Service() {
     private fun openRecordOverlay() {
         if (recordOverlayView != null) return
 
-        val inflater = LayoutInflater.from(this)
-        recordOverlayView = inflater.inflate(R.layout.view_touch_recorder, null)
-
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-            PixelFormat.TRANSLUCENT
-        )
-
-        val canvas = recordOverlayView!!.findViewById<TouchRecorderCanvas>(R.id.touchCanvas)
-        val tvCount = recordOverlayView!!.findViewById<TextView>(R.id.tvPointCount)
-        val btnUndo = recordOverlayView!!.findViewById<TextView>(R.id.btnUndoRecord)
-        val btnCancel = recordOverlayView!!.findViewById<TextView>(R.id.btnCancelRecord)
-        val btnStop = recordOverlayView!!.findViewById<TextView>(R.id.btnStopRecord)
-
-        canvas.onCountChanged = { count ->
-            tvCount.text = "Đã ghi: $count thao tác"
-        }
-
-        btnUndo?.setOnClickListener {
-            canvas.undoLast()
-        }
-
-        btnCancel?.setOnClickListener {
-            closeRecordOverlay()
-        }
-
-        btnStop?.setOnClickListener {
-            val actions = canvas.getRecordedActions()
-            if (actions.isEmpty()) {
-                Toast.makeText(this, "Chưa ghi thao tác nào! Hãy chạm trên màn hình.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            closeRecordOverlay()
-
-            val points = actions.mapNotNull { act ->
-                act.points.firstOrNull()?.let { Pair(it.x, it.y) }
-            }
-
-            val name = "R${triggerButtons.size + 1}"
-            val btnX = (screenWidth - 200).coerceAtLeast(60)
-            val btnY = (screenHeight / 2) - 80
-
-            val triggerBtn = FloatingTriggerView(
-                context = this,
-                windowManager = windowManager,
-                name = name,
-                points = points,
-                initialX = btnX,
-                initialY = btnY,
-                onTrigger = { pts ->
-                    scope.launch(Dispatchers.IO) {
-                        ShellExecutor.executeCombo(pts, delayBetweenMs = 40)
-                    }
-                },
-                onDelete = { btn ->
-                    triggerButtons.remove(btn)
-                }
-            )
-            triggerButtons.add(triggerBtn)
-
-            Toast.makeText(this, "✅ Đã tạo nút tròn [$name] từ ${points.size} thao tác ghi!", Toast.LENGTH_LONG).show()
-        }
-
-        dockView?.visibility = View.GONE
         try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+            val inflater = LayoutInflater.from(themedContext)
+            recordOverlayView = inflater.inflate(R.layout.view_touch_recorder, null)
+
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT
+            )
+
+            val canvas = recordOverlayView!!.findViewById<TouchRecorderCanvas>(R.id.touchCanvas)
+            val tvCount = recordOverlayView!!.findViewById<TextView>(R.id.tvPointCount)
+            val btnUndo = recordOverlayView!!.findViewById<TextView>(R.id.btnUndoRecord)
+            val btnCancel = recordOverlayView!!.findViewById<TextView>(R.id.btnCancelRecord)
+            val btnStop = recordOverlayView!!.findViewById<TextView>(R.id.btnStopRecord)
+
+            canvas.onCountChanged = { count ->
+                tvCount.text = "Đã ghi: $count thao tác"
+            }
+
+            btnUndo?.setOnClickListener {
+                canvas.undoLast()
+            }
+
+            btnCancel?.setOnClickListener {
+                closeRecordOverlay()
+            }
+
+            btnStop?.setOnClickListener {
+                val actions = canvas.getRecordedActions()
+                if (actions.isEmpty()) {
+                    Toast.makeText(this, "Chưa ghi thao tác nào! Hãy chạm trên màn hình.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                closeRecordOverlay()
+
+                val points = actions.mapNotNull { act ->
+                    act.points.firstOrNull()?.let { Pair(it.x, it.y) }
+                }
+
+                val name = "R${triggerButtons.size + 1}"
+                val btnX = (screenWidth - 200).coerceAtLeast(60)
+                val btnY = (screenHeight / 2) - 80
+
+                val triggerBtn = FloatingTriggerView(
+                    context = this,
+                    windowManager = windowManager,
+                    name = name,
+                    points = points,
+                    initialX = btnX,
+                    initialY = btnY,
+                    onTrigger = { pts ->
+                        scope.launch(Dispatchers.IO) {
+                            ShellExecutor.executeCombo(pts, delayBetweenMs = 40)
+                        }
+                    },
+                    onDelete = { btn ->
+                        triggerButtons.remove(btn)
+                    }
+                )
+                triggerButtons.add(triggerBtn)
+
+                Toast.makeText(this, "✅ Đã tạo nút tròn [$name] từ ${points.size} thao tác ghi!", Toast.LENGTH_LONG).show()
+            }
+
+            dockView?.visibility = View.GONE
             windowManager.addView(recordOverlayView, params)
         } catch (e: Throwable) {
             closeRecordOverlay()

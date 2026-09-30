@@ -46,30 +46,30 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.1' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.1' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - TÁI CẤU TRÚC HOÀN TOÀN MỚI (Bản Release v2.0.0)
+            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.0.1)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🚀 ĐỘT PHÁ TÁI CẤU TRÚC TOÀN DIỆN TRONG BẢN v2.0.0:
-            1. **KIẾN TRÚC MỚI TINH GỌN, ỔN ĐỊNH TUYỆT ĐỐI**:
-               - Đập đi xây lại hoàn toàn service điều khiển cửa sổ nổi với `TurboOverlayService`: loại bỏ toàn bộ các lớp wrapper rườm rà, adapter, dialogs cũ.
-               - Tự động thích ứng xoay màn hình ngang/dọc (`onConfigurationChanged`): Tối ưu hoàn hảo cho game xoay ngang như Liên Quân Mobile trên Infinix Note 30 và mọi dòng điện thoại khác!
-            2. **ĐỘNG CƠ THỰC THI SHELLEXECUTOR 120HZ SIÊU TỐC**:
-               - Chạy trực tiếp qua Shizuku hoặc Root `su` với cơ chế chuỗi lệnh bash liên tục, độ trễ 0ms.
-               - Không bao giờ bị nghẽn lệnh hoặc văng ứng dụng.
-            3. **GIAO DIỆN GAME TURBO HUD ĐẲNG CẤP**:
-               - Tab mép màn hình `[⚡ TURBO]` tự hút dính mép viền, 1 chạm mở bảng điều khiển.
-               - Gán vị trí chiêu: Bấm `[+ Ghim Điểm]` để kéo thả các điểm (1, 2, 3...) lên nút chiêu, sau đó bấm `[🚀 TẠO NÚT BẤM TURBO]` để tạo nút tròn `[⚡]`.
-               - Chạm nút tròn `[⚡]` để xả combo cực nhanh, đè lâu để xóa nút.
-            4. **LOẠI BỎ 100% TRỢ NĂNG (ACCESSIBILITY SERVICE)**:
-               - Không còn bất kỳ rào cản trợ năng nào.
+            #### 🛠️ CÁC CẢI TIẾN VÀ BẢN VÁ QUAN TRỌNG TRONG v2.0.1:
+            1. **KHẮC PHỤC TRIỆT ĐỂ LỖI CẤP QUYỀN SHIZUKU**:
+               - Bổ sung `rikka.shizuku.ShizukuProvider` vào `AndroidManifest.xml` giúp truyền Binder IPC an toàn giữa Shizuku Manager và ứng dụng.
+               - Tự động nhận diện kết nối Shizuku qua `addBinderReceivedListenerSticky`.
+               - Hỗ trợ 1-chạm mở app Shizuku nếu dịch vụ chưa chạy trên máy.
+            2. **KHẮC PHỤC LỖI CRASH KHI BẬT GAME TURBO HUD**:
+               - Loại bỏ hoàn toàn các thuộc tính theme phụ thuộc (`?attr/selectableItemBackgroundBorderless`, `android:tint`) trong layout overlay.
+               - Đảm bảo toàn bộ View cửa sổ nổi được render an toàn với `ContextThemeWrapper(context, R.style.Theme_MacroGaming)`.
+               - Bọc try-catch tuyệt đối cho `WindowManager.addView` và `startForeground`.
+            3. **GỠ BỎ HƯỚNG DẪN 3 CHẤM (⋮) GÂY NHẦM LẪN TRÊN INFINIX NOTE 30**:
+               - Vì ứng dụng đã loại bỏ hoàn toàn Trợ năng (Accessibility Service), hệ thống Android/XOS không bao giờ giới hạn hay hiển thị menu 3 chấm.
+               - Giao diện tinh gọn chỉ còn 2 bước rõ ràng: Cấp Cửa sổ nổi và Động cơ Shizuku / Root.
+            4. **GAME TURBO HUD 120HZ**:
+               - Gán vị trí chiêu: Kéo các điểm (1, 2, 3...) vào nút chiêu $\rightarrow$ Bấm `[🚀 TẠO NÚT BẤM TURBO]`.
+               - Nút tròn `[⚡]` hiển thị trên màn hình: Chạm để xả combo với độ trễ 0ms!
 
-            #### 📲 Hướng dẫn cài đặt APK:
-            1. Tải file **`Macro-LienQuan-v2.0.0.apk`** ở mục **Assets** bên dưới.
-            2. Cài đặt vào điện thoại hoặc trình giả lập PC.
-            3. Cấp quyền Cửa sổ nổi, bật Shizuku (hoặc Root), mở Game Turbo và chiến game!
+            #### 📲 Tải về APK:
+            Tải file **`Macro-LienQuan-v2.0.1.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

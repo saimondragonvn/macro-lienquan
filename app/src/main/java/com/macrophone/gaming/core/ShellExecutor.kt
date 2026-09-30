@@ -102,29 +102,11 @@ object ShellExecutor {
         // 1. Ưu tiên Shizuku
         if (isShizukuRunning() && hasShizukuPermission()) {
             try {
-                val method = try {
-                    Shizuku::class.java.getMethod(
-                        "newProcess",
-                        Array<String>::class.java,
-                        Array<String>::class.java,
-                        String::class.java
-                    )
-                } catch (_: Throwable) {
-                    Shizuku::class.java.getDeclaredMethod(
-                        "newProcess",
-                        Array<String>::class.java,
-                        Array<String>::class.java,
-                        String::class.java
-                    )
-                }
-                method.isAccessible = true
-                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
-                if (proc != null) {
-                    val finished = proc.waitFor(3, TimeUnit.SECONDS)
-                    val code = if (finished) proc.exitValue() else -1
-                    proc.destroy()
-                    if (code == 0) return true
-                }
+                val proc = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+                val finished = proc.waitFor(3, TimeUnit.SECONDS)
+                val code = if (finished) proc.exitValue() else -1
+                proc.destroy()
+                if (code == 0) return true
             } catch (e: Throwable) {
                 Log.w(TAG, "Shizuku exec failed: ${e.message}")
             }

@@ -4,6 +4,23 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.0.1] - 2026-09-30
+### 🛡️ Khắc Phục Lỗi Cấp Quyền Shizuku, Lỗi Crash Game Turbo HUD & Gỡ Bỏ Hướng Dẫn 3 Chấm (⋮)
+- **KHẮC PHỤC TRIỆT ĐỂ LỖI CẤP QUYỀN SHIZUKU**:
+  - Khôi phục thẻ `<provider android:name="rikka.shizuku.ShizukuProvider" ... />` trong `AndroidManifest.xml` để Shizuku Manager có thể truyền Binder IPC sang ứng dụng.
+  - Tích hợp `Shizuku.addBinderReceivedListenerSticky` và `Shizuku.addBinderDeadListener` trong `MainActivity.kt` giúp tự động nhận diện và cập nhật trạng thái ngay khi Shizuku chạy.
+  - Nút "Cấp quyền Shizuku" tự động mở ứng dụng Shizuku trên máy nếu dịch vụ chưa được kích hoạt qua Wi-Fi.
+- **KHẮC PHỤC TRIỆT ĐỂ LỖI CRASH KHI BẬT GAME TURBO HUD**:
+  - Loại bỏ các thuộc tính theme phụ thuộc (`?attr/selectableItemBackgroundBorderless`, `android:tint`) trong `view_floating_dock.xml`.
+  - Toàn bộ View Cửa sổ nổi (`TurboOverlayService`, `TargetPinView`, `FloatingTriggerView`) được khởi tạo qua `ContextThemeWrapper(context, R.style.Theme_MacroGaming)`.
+  - Bọc try-catch tuyệt đối cho `windowManager.addView()` và `startForeground()` trên Android 14+.
+- **GỠ BỎ HƯỚNG DẪN 3 CHẤM (⋮) GÂY NHẦM LẪN**:
+  - Vì ứng dụng đã loại bỏ hoàn toàn Trợ năng (Accessibility Service), hệ thống Android/XOS không bao giờ giới hạn hay hiển thị menu 3 chấm ở góc màn hình cài đặt.
+  - Đã xóa hoàn toàn Card hướng dẫn 3 chấm để tránh gây hoang mang cho người dùng.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.0.1.apk`.
+
+---
+
 ## [v2.0.0] - 2026-09-30
 ### 🚀 TÁI CẤU TRÚC TOÀN DIỆN - KIẾN TRÚC MỚI TINH GỌN, ỔN ĐỊNH TUYỆT ĐỐI
 - **ĐẬP ĐI XÂY LẠI TỪ ĐẦU TOÀN BỘ SERVICE VÀ ENGINE**:

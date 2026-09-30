@@ -26,7 +26,9 @@ class TargetPinView(
     private val onPinRemoved: ((TargetPinView) -> Unit)? = null
 ) {
 
-    val view: View = LayoutInflater.from(context).inflate(R.layout.view_target_point, null)
+    val view: View = LayoutInflater.from(
+        androidx.appcompat.view.ContextThemeWrapper(context, R.style.Theme_MacroGaming)
+    ).inflate(R.layout.view_target_point, null)
     private val tvIndex: TextView = view.findViewById(R.id.tvPointIndex)
 
     val params: WindowManager.LayoutParams = WindowManager.LayoutParams(
