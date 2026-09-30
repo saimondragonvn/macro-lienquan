@@ -105,6 +105,8 @@ object ShellExecutor {
         if (isShizukuRunning() && hasShizukuPermission()) {
             try {
                 val proc = try {
+                    Shizuku.newProcess(arrayOf("sh", "-c", wrappedCmd), null, null)
+                } catch (_: Throwable) {
                     val method = try {
                         Shizuku::class.java.getMethod(
                             "newProcess",
@@ -122,9 +124,6 @@ object ShellExecutor {
                     }
                     method.isAccessible = true
                     method.invoke(null, arrayOf("sh", "-c", wrappedCmd), null, null) as? Process
-                } catch (e: Throwable) {
-                    Log.w(TAG, "Shizuku process invocation error: ${e.message}")
-                    null
                 }
 
                 if (proc != null) {
@@ -210,11 +209,16 @@ object ShellExecutor {
     /**
      * Thực thi chuỗi MacroAction (bao gồm cả TAP, HOLD, SWIPE) ghi lại từ màn hình
      */
-    fun executeActions(actions: List<com.macrophone.gaming.data.model.MacroAction>, repeatCount: Int = 1): Boolean {
+    fun executeActions(
+        actions: List<com.macrophone.gaming.data.model.MacroAction>,
+        speedMultiplier: Float = 1.0f,
+        repeatCount: Int = 1
+    ): Boolean {
         if (actions.isEmpty()) return false
 
+        val mult = speedMultiplier.coerceIn(0.5f, 10.0f)
         val sb = StringBuilder()
-        val totalLoops = repeatCount.coerceIn(1, 10)
+        val totalLoops = repeatCount.coerceIn(1, 5)
         for (r in 0 until totalLoops) {
             for (i in actions.indices) {
                 val act = actions[i]
@@ -230,20 +234,21 @@ object ShellExecutor {
                         val pt = act.points.firstOrNull() ?: continue
                         val xi = pt.x.toInt()
                         val yi = pt.y.toInt()
-                        val dur = act.durationMs.coerceIn(50L, 1000L)
+                        val dur = (act.durationMs / mult).toLong().coerceIn(35L, 1000L)
                         sb.append("input swipe ").append(xi).append(" ").append(yi).append(" ")
                             .append(xi).append(" ").append(yi).append(" ").append(dur).append("; ")
                     }
                     com.macrophone.gaming.data.model.MacroType.SWIPE -> {
                         val start = act.points.firstOrNull() ?: continue
                         val end = act.points.lastOrNull() ?: continue
-                        val dur = act.durationMs.coerceIn(50L, 500L)
+                        val dur = (act.durationMs / mult).toLong().coerceIn(35L, 500L)
                         sb.append("input swipe ").append(start.x.toInt()).append(" ").append(start.y.toInt()).append(" ")
                             .append(end.x.toInt()).append(" ").append(end.y.toInt()).append(" ").append(dur).append("; ")
                     }
                 }
-                if (act.delayBeforeMs > 0) {
-                    val sec = String.format(Locale.US, "%.3f", act.delayBeforeMs / 1000.0)
+                val delay = (act.delayBeforeMs / mult).toLong()
+                if (delay > 50 && (i < actions.size - 1 || r < totalLoops - 1)) {
+                    val sec = String.format(Locale.US, "%.2f", delay / 1000.0)
                     sb.append("sleep ").append(sec).append("; ")
                 }
             }

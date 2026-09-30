@@ -22,18 +22,22 @@ import kotlin.math.abs
  * - CHẠM VÀO NÚT: Bắn ngay chuỗi combo chiêu đã gán với độ trễ siêu thấp 0ms!
  * - NHẤN GIỮ LÂU: Mở Menu Cài Đặt Combo (Tốc độ delay, Lặp lại, Hiện lại ghim trên game, Xóa).
  */
+import com.macrophone.gaming.data.model.MacroAction
+
 class FloatingTriggerView(
     private val context: Context,
     private val windowManager: WindowManager,
     val id: String = java.util.UUID.randomUUID().toString(),
     val name: String,
-    val points: List<Pair<Float, Float>>,
+    val points: List<Pair<Float, Float>> = emptyList(),
+    val actions: List<MacroAction> = emptyList(),
     initialX: Int,
     initialY: Int,
     var delayBetweenMs: Long = 40,
     var repeatCount: Int = 1,
     var opacityPercent: Int = 85,
-    private val onTrigger: (List<Pair<Float, Float>>, Long, Int) -> Unit,
+    var speedMultiplier: Float = 1.0f,
+    private val onTrigger: (FloatingTriggerView) -> Unit,
     private val onRestorePins: ((List<Pair<Float, Float>>) -> Unit)? = null,
     var onPositionChanged: ((FloatingTriggerView) -> Unit)? = null,
     var onConfigChanged: ((FloatingTriggerView) -> Unit)? = null,
@@ -144,7 +148,7 @@ class FloatingTriggerView(
                             if (!isDragging && duration < 350) {
                                 // 1. Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME NGAY TỨC THÌ!
                                 flashFeedback()
-                                onTrigger(points, delayBetweenMs, repeatCount)
+                                onTrigger(this@FloatingTriggerView)
                             } else if (duration >= 450 && !isDragging) {
                                 // 2. Nhấn giữ lâu mà không kéo -> Mở Menu Cài Đặt Combo!
                                 vibrate(60)
@@ -213,7 +217,11 @@ class FloatingTriggerView(
             val btnDialogDelete = configDialogView!!.findViewById<TextView>(R.id.btnDialogDelete)
 
             tvDialogComboName?.text = "CÀI ĐẶT COMBO [$name]"
-            tvDialogPointsSummary?.text = "${points.size} chiêu đã gán • Tọa độ chuẩn Liên Quân"
+            tvDialogPointsSummary?.text = if (actions.isNotEmpty()) {
+                "${actions.size} thao tác thực tế • Game Turbo 120Hz"
+            } else {
+                "${points.size} chiêu đã gán • Tọa độ chuẩn Liên Quân"
+            }
 
             val updateDelayUI = {
                 btnOptDelayFast?.setBackgroundResource(if (delayBetweenMs <= 35) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
@@ -257,16 +265,19 @@ class FloatingTriggerView(
 
             btnOptDelayFast?.setOnClickListener {
                 delayBetweenMs = 30
+                speedMultiplier = 2.0f
                 updateDelayUI()
                 onConfigChanged?.invoke(this@FloatingTriggerView)
             }
             btnOptDelayNormal?.setOnClickListener {
                 delayBetweenMs = 60
+                speedMultiplier = 1.0f
                 updateDelayUI()
                 onConfigChanged?.invoke(this@FloatingTriggerView)
             }
             btnOptDelaySlow?.setOnClickListener {
                 delayBetweenMs = 120
+                speedMultiplier = 0.8f
                 updateDelayUI()
                 onConfigChanged?.invoke(this@FloatingTriggerView)
             }
@@ -310,15 +321,20 @@ class FloatingTriggerView(
 
             btnDialogTestRun?.setOnClickListener {
                 flashFeedback()
-                onTrigger(points, delayBetweenMs, repeatCount)
+                onTrigger(this@FloatingTriggerView)
                 Toast.makeText(context, "▶ Đang bắn combo vào game!", Toast.LENGTH_SHORT).show()
             }
 
-            btnDialogRestorePins?.setOnClickListener {
-                dismissConfigDialog()
-                destroy()
-                onRestorePins?.invoke(points)
-                Toast.makeText(context, "🎯 Đã hiện lại các điểm ghim trên game! Bạn hãy kéo chỉnh vị trí chiêu theo ý muốn.", Toast.LENGTH_LONG).show()
+            if (actions.isNotEmpty() && points.isEmpty()) {
+                btnDialogRestorePins?.visibility = View.GONE
+            } else {
+                btnDialogRestorePins?.visibility = View.VISIBLE
+                btnDialogRestorePins?.setOnClickListener {
+                    dismissConfigDialog()
+                    destroy()
+                    onRestorePins?.invoke(points)
+                    Toast.makeText(context, "🎯 Đã hiện lại các điểm ghim trên game! Bạn hãy kéo chỉnh vị trí chiêu theo ý muốn.", Toast.LENGTH_LONG).show()
+                }
             }
 
             btnDialogDelete?.setOnClickListener {

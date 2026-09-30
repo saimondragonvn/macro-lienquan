@@ -144,6 +144,45 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
+                <!-- NÚT GHI COMBO THỜI GIAN THỰC (REDMI TURBO STYLE) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_turbo_btn_secondary"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚡ GHI COMBO KIỂU REDMI TURBO:"
+                        android:textColor="@color/crimson_stop"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Bấm Ghi -> Vào game bấm mở Shop, mua đồ, xả chiêu bình thường -> Bấm Xong là có ngay nút combo!"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="9.5sp" />
+
+                    <TextView
+                        android:id="@+id/btnStartKernelRecord"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_turbo_btn_danger"
+                        android:gravity="center"
+                        android:text="🔴 BẮT ĐẦU GHI COMBO VÀO GAME"
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03" />
+                </LinearLayout>
+
                 <!-- Phần 1: GÁN CHIÊU VỊ TRÍ TAY (TARGET POINTS) -->
                 <TextView
                     android:layout_width="wrap_content"

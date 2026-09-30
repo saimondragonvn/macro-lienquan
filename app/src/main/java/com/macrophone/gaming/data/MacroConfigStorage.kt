@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+import com.macrophone.gaming.data.model.MacroAction
+
 /**
  * Dữ liệu lưu trữ cấu hình Nút Macro nổi trên màn hình game
  */
@@ -16,7 +18,9 @@ data class SavedMacroTrigger(
     var delayBetweenMs: Long = 40,
     var repeatCount: Int = 1,
     var opacityPercent: Int = 85,
-    val points: List<Pair<Float, Float>> = emptyList()
+    val points: List<Pair<Float, Float>> = emptyList(),
+    val actions: List<MacroAction> = emptyList(),
+    var speedMultiplier: Float = 1.0f
 )
 
 /**

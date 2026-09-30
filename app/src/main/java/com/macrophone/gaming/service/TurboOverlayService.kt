@@ -23,9 +23,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.macrophone.gaming.R
+import com.macrophone.gaming.core.GameTurboRecorder
 import com.macrophone.gaming.core.ShellExecutor
 import com.macrophone.gaming.data.MacroConfigStorage
 import com.macrophone.gaming.data.SavedMacroTrigger
+import com.macrophone.gaming.data.model.MacroAction
 import com.macrophone.gaming.data.model.MacroState
 import com.macrophone.gaming.ui.MainActivity
 import com.macrophone.gaming.ui.overlay.FloatingTriggerView
@@ -33,21 +35,25 @@ import com.macrophone.gaming.ui.overlay.TargetPinView
 import com.macrophone.gaming.util.NotificationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 /**
- * Service Cửa Sổ Nổi Game Turbo (Kiến trúc v2.1.0 - 100% Tương tác Game, Chống Spam, Siêu Ổn Định):
- * - Hoàn toàn KHÔNG chặn cảm ứng game, cho phép vừa chơi vừa gán vị trí chiêu.
- * - Tab Nổi mép màn hình [⚡ TURBO] thu gọn/mở rộng mượt mà.
- * - Hỗ trợ Gán Điểm Ghim Chiêu (Target Pins ①, ②, ③) và chạm thử trực tiếp vào game.
- * - Tạo Nút Combo Nổi [⚡ C1], [⚡ C2] độc lập, tự động lưu vĩnh viễn vào bộ nhớ.
- * - Quản lý từng nút, xóa từng nút hoặc xóa toàn bộ nút 1-chạm (chống spam nút).
- * - Hiển thị trạng thái Động cơ Shizuku với đèn LED thời gian thực.
- * - Khởi động nhanh Liên Quân Mobile 1-chạm (Turbo Mode).
- * - Thực thi trực tiếp qua ShellExecutor (Shizuku/Root) với tốc độ 120Hz.
+ * Service Cửa Sổ Nổi Game Turbo (Kiến trúc v2.1.0 - Chuẩn Xiaomi / Redmi Turbo 4 Pro):
+ * - TÍNH NĂNG GHI COMBO THỰC TẾ (REDMI TURBO STYLE):
+ *   Đọc trực tiếp luồng cảm ứng Linux kernel (/dev/input/event*) ngầm qua Shizuku/Root.
+ *   Game thủ mở Shop, mua bán đồ, tung chiêu trong Liên Quân hoàn toàn bình thường 100%!
+ *   Bấm [Xong & Lưu] là có ngay nút Combo nổi trên màn hình.
+ * - TÍNH NĂNG GHIM ĐIỂM THỦ CÔNG (TARGET PINS):
+ *   Cho phép đặt các điểm ghim ①, ②, ③ trực tiếp lên nút game.
+ * - QUẢN LÝ COMBO & CHỐNG SPAM NÚT:
+ *   Nút [XÓA TOÀN BỘ NÚT] 1-chạm, quản lý từng nút, xóa vĩnh viễn hoặc sửa lại.
+ * - NÚT NỔI COMBO [⚡ C1], [⚡ R1]:
+ *   Chạm nhanh là xả combo siêu tốc 120Hz ngay lập tức.
  */
 class TurboOverlayService : Service() {
 
@@ -61,6 +67,11 @@ class TurboOverlayService : Service() {
     // Views của Thanh Điều Khiển Game Turbo
     private var dockView: View? = null
     private lateinit var dockParams: WindowManager.LayoutParams
+
+    // View Thanh trạng thái ghi combo (Dynamic Island / Top Pill)
+    private var recordingPillView: View? = null
+    private var recordingTimerJob: Job? = null
+    private var recordingSeconds = 0
 
     // Danh sách các Điểm Ghim Chiêu đang hiển thị trên màn hình
     private val targetPins = mutableListOf<TargetPinView>()
@@ -111,6 +122,7 @@ class TurboOverlayService : Service() {
         startForegroundSafe()
         initDockView()
         loadSavedTriggers()
+        GameTurboRecorder.prewarm(scope)
         isRunning = true
     }
 
@@ -135,6 +147,7 @@ class TurboOverlayService : Service() {
         isRunning = false
         scope.cancel()
 
+        cancelRealtimeComboRecording()
         clearAllTargetPins()
         clearAllTriggerButtons()
         removeViewSafely(dockView)
@@ -344,6 +357,8 @@ class TurboOverlayService : Service() {
         val btnLaunchGameFromDock = root.findViewById<View>(R.id.btnLaunchGameFromDock)
         tvEngineStatusBadge = root.findViewById(R.id.tvEngineStatusBadge)
 
+        val btnStartKernelRecord = root.findViewById<View>(R.id.btnStartKernelRecord)
+
         val btnAddPoint = root.findViewById<View>(R.id.btnAddPoint)
         val btnRemovePoint = root.findViewById<View>(R.id.btnRemovePoint)
         val btnPlayTest = root.findViewById<View>(R.id.btnPlayTest)
@@ -378,6 +393,11 @@ class TurboOverlayService : Service() {
             }
             startActivity(intent)
             collapseDock()
+        }
+
+        // 🔴 BẮT ĐẦU GHI COMBO THỜI GIAN THỰC (CHUẨN REDMI GAME TURBO)
+        btnStartKernelRecord?.setOnClickListener {
+            startRealtimeComboRecording()
         }
 
         // 1. Mở rộng khi chạm vào tab mép
@@ -481,6 +501,150 @@ class TurboOverlayService : Service() {
     }
 
     /**
+     * Bắt đầu phiên ghi combo thời gian thực (Chuẩn Redmi Turbo 4 Pro)
+     * Toàn bộ màn hình game thông thoáng 100%, thao tác trực tiếp vào Liên Quân!
+     */
+    private fun startRealtimeComboRecording() {
+        if (!ShellExecutor.isEngineReady()) {
+            Toast.makeText(this, "⚠️ Động cơ Shizuku chưa kích hoạt! Hãy mở app cấp quyền Shizuku trước.", Toast.LENGTH_LONG).show()
+            val intent = Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+            collapseDock()
+            return
+        }
+
+        collapseDock()
+
+        try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+            recordingPillView = LayoutInflater.from(themedContext).inflate(R.layout.view_recording_pill, null)
+
+            val pillParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                y = 12
+            }
+
+            val tvTimer = recordingPillView!!.findViewById<TextView>(R.id.tvRecordingTimer)
+            val tvCount = recordingPillView!!.findViewById<TextView>(R.id.tvRecordingActionCount)
+            val btnStop = recordingPillView!!.findViewById<View>(R.id.btnStopRecordingPill)
+            val btnCancel = recordingPillView!!.findViewById<View>(R.id.btnCancelRecordingPill)
+
+            btnStop.setOnClickListener {
+                stopRealtimeComboRecording()
+            }
+
+            btnCancel.setOnClickListener {
+                cancelRealtimeComboRecording()
+            }
+
+            recordingSeconds = 0
+            recordingTimerJob?.cancel()
+            recordingTimerJob = scope.launch(Dispatchers.Main) {
+                while (GameTurboRecorder.isRecording) {
+                    delay(1000)
+                    recordingSeconds++
+                    val mins = recordingSeconds / 60
+                    val secs = recordingSeconds % 60
+                    tvTimer.text = String.format(java.util.Locale.US, "%02d:%02d", mins, secs)
+                }
+            }
+
+            windowManager.addView(recordingPillView, pillParams)
+
+            GameTurboRecorder.startRecording(
+                context = this,
+                scope = scope,
+                onActionRecorded = { _, totalCount ->
+                    tvCount.text = "Đã ghi nhận: $totalCount thao tác vào game!"
+                },
+                onStarted = {
+                    Toast.makeText(this, "🔴 Đang ghi! Bạn hãy vào game bấm Shop/Chiêu bình thường.", Toast.LENGTH_SHORT).show()
+                },
+                onError = { err ->
+                    Toast.makeText(this, "Lỗi: $err", Toast.LENGTH_LONG).show()
+                    cancelRealtimeComboRecording()
+                }
+            )
+        } catch (e: Throwable) {
+            Log.e("TurboOverlayService", "startRealtimeComboRecording error: ${e.message}")
+            cancelRealtimeComboRecording()
+        }
+    }
+
+    /**
+     * Dừng phiên ghi và tạo ngay nút Combo nổi trên màn hình game
+     */
+    private fun stopRealtimeComboRecording() {
+        recordingTimerJob?.cancel()
+        recordingTimerJob = null
+        removeViewSafely(recordingPillView)
+        recordingPillView = null
+
+        val actions = GameTurboRecorder.stopRecording()
+        if (actions.isEmpty()) {
+            Toast.makeText(this, "Chưa ghi nhận thao tác nào! Hãy chạm vào game trong lúc ghi.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (triggerButtons.size >= 5) {
+            Toast.makeText(this, "Đã đạt tối đa 5 nút combo! Hãy xóa bớt nút cũ trước.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val name = "R${triggerButtons.size + 1}"
+        val offset = (triggerButtons.size * 65)
+        val btnX = (screenWidth - 180).coerceAtLeast(60)
+        val btnY = ((screenHeight / 3) + offset).coerceIn(100, (screenHeight - 160).coerceAtLeast(100))
+
+        val triggerBtn = createFloatingTriggerInstance(
+            id = java.util.UUID.randomUUID().toString(),
+            name = name,
+            actions = actions,
+            posX = btnX,
+            posY = btnY,
+            speedMultiplier = 1.0f,
+            opacity = configStorage.globalOpacity
+        )
+        triggerButtons.add(triggerBtn)
+
+        configStorage.upsertTrigger(
+            SavedMacroTrigger(
+                id = triggerBtn.id,
+                name = name,
+                x = btnX,
+                y = btnY,
+                delayBetweenMs = 40,
+                repeatCount = 1,
+                opacityPercent = configStorage.globalOpacity,
+                actions = actions,
+                speedMultiplier = 1.0f
+            )
+        )
+
+        renderAssignedTriggersList()
+        Toast.makeText(this, "✅ Đã lưu Combo [$name] (${actions.size} thao tác)! Chạm nút nổi trên màn hình để xả combo!", Toast.LENGTH_LONG).show()
+    }
+
+    private fun cancelRealtimeComboRecording() {
+        recordingTimerJob?.cancel()
+        recordingTimerJob = null
+        removeViewSafely(recordingPillView)
+        recordingPillView = null
+        GameTurboRecorder.cancelRecording()
+        Toast.makeText(this, "Đã hủy ghi combo", Toast.LENGTH_SHORT).show()
+    }
+
+    /**
      * Mở game Liên Quân Mobile tự động
      */
     private fun launchLienQuanGame() {
@@ -532,7 +696,9 @@ class TurboOverlayService : Service() {
                     delayBetweenMs = btn.delayBetweenMs,
                     repeatCount = btn.repeatCount,
                     opacityPercent = percent,
-                    points = btn.points
+                    points = btn.points,
+                    actions = btn.actions,
+                    speedMultiplier = btn.speedMultiplier
                 )
             )
         }
@@ -569,18 +735,20 @@ class TurboOverlayService : Service() {
         if (savedList.isEmpty()) return
 
         savedList.take(5).forEach { saved ->
-            if (saved.points.isNotEmpty()) {
+            if (saved.points.isNotEmpty() || saved.actions.isNotEmpty()) {
                 val posX = saved.x.coerceIn(16, (screenWidth - 120).coerceAtLeast(16))
                 val posY = saved.y.coerceIn(50, (screenHeight - 120).coerceAtLeast(50))
                 val btn = createFloatingTriggerInstance(
                     id = saved.id,
                     name = saved.name,
                     points = saved.points,
+                    actions = saved.actions,
                     posX = posX,
                     posY = posY,
                     delay = saved.delayBetweenMs,
                     repeat = saved.repeatCount,
-                    opacity = saved.opacityPercent
+                    opacity = saved.opacityPercent,
+                    speedMultiplier = saved.speedMultiplier
                 )
                 triggerButtons.add(btn)
             }
@@ -594,12 +762,14 @@ class TurboOverlayService : Service() {
     private fun createFloatingTriggerInstance(
         id: String,
         name: String,
-        points: List<Pair<Float, Float>>,
+        points: List<Pair<Float, Float>> = emptyList(),
+        actions: List<MacroAction> = emptyList(),
         posX: Int,
         posY: Int,
-        delay: Long,
-        repeat: Int,
-        opacity: Int
+        delay: Long = 40,
+        repeat: Int = 1,
+        opacity: Int = 85,
+        speedMultiplier: Float = 1.0f
     ): FloatingTriggerView {
         lateinit var triggerBtn: FloatingTriggerView
 
@@ -609,17 +779,23 @@ class TurboOverlayService : Service() {
             id = id,
             name = name,
             points = points,
+            actions = actions,
             initialX = posX,
             initialY = posY,
             delayBetweenMs = delay,
             repeatCount = repeat,
             opacityPercent = opacity,
-            onTrigger = { pts, d, r ->
+            speedMultiplier = speedMultiplier,
+            onTrigger = { btn ->
                 if (!ShellExecutor.isEngineReady()) {
                     Toast.makeText(this@TurboOverlayService, "⚠️ Động cơ Shizuku chưa bật! Hãy mở app cấp quyền Shizuku.", Toast.LENGTH_LONG).show()
                 } else {
                     scope.launch(Dispatchers.IO) {
-                        val ok = ShellExecutor.executeCombo(pts, delayBetweenMs = d, repeatCount = r)
+                        val ok = if (btn.actions.isNotEmpty()) {
+                            ShellExecutor.executeActions(btn.actions, speedMultiplier = btn.speedMultiplier, repeatCount = btn.repeatCount)
+                        } else {
+                            ShellExecutor.executeCombo(btn.points, delayBetweenMs = btn.delayBetweenMs, repeatCount = btn.repeatCount)
+                        }
                         if (!ok) {
                             scope.launch(Dispatchers.Main) {
                                 Toast.makeText(this@TurboOverlayService, "⚠️ Không thể click tự động! Kiểm tra lại quyền Shizuku.", Toast.LENGTH_SHORT).show()
@@ -647,7 +823,9 @@ class TurboOverlayService : Service() {
                         delayBetweenMs = btn.delayBetweenMs,
                         repeatCount = btn.repeatCount,
                         opacityPercent = btn.opacityPercent,
-                        points = btn.points
+                        points = btn.points,
+                        actions = btn.actions,
+                        speedMultiplier = btn.speedMultiplier
                     )
                 )
             },
@@ -661,7 +839,9 @@ class TurboOverlayService : Service() {
                         delayBetweenMs = btn.delayBetweenMs,
                         repeatCount = btn.repeatCount,
                         opacityPercent = btn.opacityPercent,
-                        points = btn.points
+                        points = btn.points,
+                        actions = btn.actions,
+                        speedMultiplier = btn.speedMultiplier
                     )
                 )
                 renderAssignedTriggersList()
@@ -705,16 +885,26 @@ class TurboOverlayService : Service() {
 
             tvBadge.text = btn.name
             tvTitle.text = "Nút Combo [${btn.name}]"
-            tvSub.text = "${btn.points.size} chiêu • ${btn.delayBetweenMs}ms • ${btn.opacityPercent}% mờ"
+            val desc = if (btn.actions.isNotEmpty()) {
+                "${btn.actions.size} thao tác • ${btn.speedMultiplier}x tốc độ • ${btn.opacityPercent}% mờ"
+            } else {
+                "${btn.points.size} chiêu • ${btn.delayBetweenMs}ms • ${btn.opacityPercent}% mờ"
+            }
+            tvSub.text = desc
 
-            btnRestore.setOnClickListener {
-                val pts = ArrayList(btn.points)
-                btn.destroy()
-                triggerButtons.remove(btn)
-                configStorage.deleteTrigger(btn.id)
-                restorePinsFromCombo(pts)
-                renderAssignedTriggersList()
-                Toast.makeText(this, "🎯 Đã hiện lại ${pts.size} điểm ghim trên game! Bạn hãy kéo đặt lên chiêu.", Toast.LENGTH_LONG).show()
+            if (btn.actions.isNotEmpty() && btn.points.isEmpty()) {
+                btnRestore.visibility = View.GONE
+            } else {
+                btnRestore.visibility = View.VISIBLE
+                btnRestore.setOnClickListener {
+                    val pts = ArrayList(btn.points)
+                    btn.destroy()
+                    triggerButtons.remove(btn)
+                    configStorage.deleteTrigger(btn.id)
+                    restorePinsFromCombo(pts)
+                    renderAssignedTriggersList()
+                    Toast.makeText(this, "🎯 Đã hiện lại ${pts.size} điểm ghim trên game! Bạn hãy kéo đặt lên chiêu.", Toast.LENGTH_LONG).show()
+                }
             }
 
             btnDelete.setOnClickListener {
@@ -859,7 +1049,6 @@ class TurboOverlayService : Service() {
         )
         triggerButtons.add(triggerBtn)
 
-        // Tự động lưu cấu hình vĩnh viễn vào bộ nhớ
         configStorage.upsertTrigger(
             SavedMacroTrigger(
                 id = triggerBtn.id,
@@ -873,7 +1062,6 @@ class TurboOverlayService : Service() {
             )
         )
 
-        // Tự động dọn dẹp toàn bộ điểm ghim và thu gọn dock
         clearAllTargetPins()
         collapseDock()
         renderAssignedTriggersList()

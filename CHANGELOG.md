@@ -4,6 +4,24 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.2.0] - 2026-09-30
+### 🚀 ĐẬP ĐI XÂY LẠI TỪ SỐ 0: ĐỘNG CƠ GHI COMBO CHUẨN REDMI TURBO 4 PRO
+- **GHI THỜI GIAN THỰC KHÔNG HỀ CHẶN MÀN HÌNH GAME (REDMI TURBO / K70 STYLE)**:
+  - Tích hợp module `GameTurboRecorder`: Đọc trực tiếp luồng sự kiện cảm ứng từ kernel Linux (`/dev/input/event*`) ngầm qua Shizuku/Root.
+  - Toàn bộ màn hình game thông thoáng 100%: Game thủ mở Shop, bán giày, mua Liềm Đoạt Mệnh, kéo di chuyển chiêu hoàn toàn tự nhiên và game nhận 100%!
+  - Thanh trạng thái Dynamic Pill ở đỉnh màn hình: `[ 🔴 GHI COMBO 00:03 | ⏹ XONG & LƯU | ✕ HỦY ]` siêu nhỏ gọn, không che nút game.
+  - Tự động nhận diện độ phân giải phần cứng và xoay ngang Landscape (90° / 270° cho Liên Quân Mobile).
+- **NÚT NỔI COMBO [⚡ R1, R2...] KÍCH HOẠT SIÊU TỐC**:
+  - Nhấn nút nổi là tự động bắn chuỗi thao tác thực tế vào game với độ trễ siêu thấp 120Hz.
+  - Hỗ trợ tùy chỉnh tốc độ combo (1.0x, 2.0x, 3.0x), độ mờ (30%, 50%, 80%, 100%) và số lần lặp.
+- **CHỐNG SPAM NÚT & LƯU TRỮ VĨNH VIỄN**:
+  - Nút `[🗑️ XÓA TOÀN BỘ NÚT COMBO ĐÃ TẠO]` dọn sạch màn hình chỉ với 1 chạm.
+  - Giới hạn tối đa 5 nút, tự căn chỉnh vị trí tránh đè lên nhau.
+  - Lưu vĩnh viễn cấu hình vào `MacroConfigStorage` (SharedPreferences + JSON).
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.2.0.apk`.
+
+---
+
 ## [v2.1.0] - 2026-09-30
 ### 🚀 TÁI CẤU TRÚC TOÀN DIỆN: 100% TƯƠNG TÁC GAME, CHỐNG SPAM NÚT & TỐI ƯU CỰC ĐẠI
 - **KHẮC PHỤC TRIỆT ĐỂ LỖI BỊ CHẶN MÀN HÌNH & KHÔNG TƯƠNG TÁC ĐƯỢC VỚI GAME**:

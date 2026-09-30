@@ -46,31 +46,28 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.1.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.1.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.2.0' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.2.0' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.1.0)
+            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.2.0)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🚀 CẢI TIẾN TOÀN DIỆN & KHẮC PHỤC TRIỆT ĐỂ BẢN v2.1.0:
-            1. **KHẮC PHỤC 100% LỖI TƯƠNG TÁC GAME & KHÔNG BỊ CHẶN MÀN HÌNH**:
-               - Gỡ bỏ hoàn toàn bộ ghi đè màn hình cũ (TouchRecorderCanvas) - vốn là nguyên nhân nuốt cảm ứng, làm game không mở được Shop và không nhận chiêu.
-               - Chuyển sang cơ chế **Gán Ghim Trực Quan Game Turbo (Target Pin Mode)**: Màn hình game 100% trong suốt và tương tác tự nhiên! Người dùng thoải mái mở Shop, mở chiêu, di chuyển tướng trong game.
-               - Kéo điểm ① vào nút 'Bán', ② vào 'Giáp Hộ Mệnh', ③ vào nút 'Mua'. Chạm trực tiếp vào từng điểm ghim để test click ngay vào game!
-            2. **CHỐNG SPAM NÚT TRIỆT ĐỂ & NÚT XÓA TOÀN BỘ 1-CHẠM**:
-               - Bổ sung nút `[🗑️ XÓA TOÀN BỘ NÚT COMBO ĐÃ TẠO]` trên Game Turbo HUD: 1 chạm là dọn sạch toàn bộ nút trên màn hình và bộ nhớ.
-               - Giới hạn tối đa 5 nút combo, tự động dịch chuyển vị trí để không bao giờ bị xếp chồng đè lên nhau.
-               - Tự động dọn sạch các điểm ghim ngay sau khi tạo nút để màn hình game luôn gọn gàng.
-            3. **CẢI TIẾN CẢM ỨNG NÚT NỔI COMBO (FLOATING TRIGGER VIEW)**:
-               - Chạm nhanh dưới 350ms chắc chắn 100% xả combo vào game, không bao giờ bị nuốt chạm do ngón tay trượt nhẹ 10-15px khi combat.
-               - Nhấn giữ lâu trên 450ms để mở Menu cài đặt hoặc xóa nút.
-            4. **ĐỘNG CƠ SHELLEXECUTOR 120HZ TỐI ƯU CỰC ĐẠI**:
-               - Loại bỏ các câu lệnh sleep thập phân gây lỗi trên toybox Android, gom chuỗi `input swipe` sạch sẽ với `>/dev/null 2>&1`.
-               - Không tạo luồng Thread dư thừa, tránh nghẽn pipe buffer và phản hồi dưới 40ms.
-               - Đèn LED trạng thái Shizuku thời gian thực trên Header HUD: Xanh khi sẵn sàng, Đỏ khi chưa cấp (chạm vào là cấp quyền ngay).
+            #### 🚀 TÍNH NĂNG ĐỘT PHÁ MỚI - GHI COMBO CHUẨN REDMI TURBO 4 PRO:
+            1. **ĐẬP ĐI XÂY LẠI TỪ SỐ 0 - ĐỘNG CƠ GHI COMBO KERNEL LINUX KHÔNG CHẶN MÀN HÌNH**:
+               - Đọc luồng cảm ứng trực tiếp từ `/dev/input/event*` ngầm qua Shizuku/Root mà KHÔNG hề chiếm quyền cảm ứng của hệ thống.
+               - Trong lúc ghi: Game thủ di chuyển, mở Shop, mua đồ, bán đồ, bấm chiêu 100% bình thường vào game Liên Quân!
+               - Thanh điều khiển Capsule/Pill siêu gọn gàng ở đỉnh màn hình: `[ 🔴 GHI COMBO 00:03 | ⏹ XONG & LƯU | ✕ HỦY ]`.
+               - Tự động nhận diện độ phân giải phần cứng và tính toán xoay ngang Landscape (xoay 90° và 270°).
+            2. **NÚT NỔI COMBO [⚡ R1, R2...] XẢ CHIÊU 120HZ CỰC NHANH**:
+               - Nhấn nút nổi là tự động bắn chuỗi thao tác thực tế vào game với độ trễ siêu thấp.
+               - Hỗ trợ tùy chỉnh tốc độ combo (1.0x, 2.0x, 3.0x), độ mờ (30%, 50%, 80%, 100%) và số lần lặp.
+            3. **CHỐNG SPAM NÚT TRIỆT ĐỂ & QUẢN LÝ DỄ DÀNG**:
+               - Nút `[🗑️ XÓA TOÀN BỘ NÚT COMBO ĐÃ TẠO]` dọn sạch màn hình chỉ với 1 chạm.
+               - Giới hạn tối đa 5 nút, tự căn chỉnh vị trí tránh đè lên nhau.
+               - Hỗ trợ lưu trữ vĩnh viễn: tắt app mở lại vẫn giữ nguyên toàn bộ cấu hình.
 
             #### 📲 Tải về APK:
-            Tải file **`Macro-LienQuan-v2.1.0.apk`** ở mục **Assets** bên dưới.
+            Tải file **`Macro-LienQuan-v2.2.0.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

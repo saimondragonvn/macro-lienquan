@@ -1,204 +1,95 @@
-# Macro Gaming Phone (Fast Combo Controller) 🎮⚡
+# Macro Liên Quân Mobile - Game Turbo Pro (120Hz) 🎮⚡
 
-Dự án Android hoàn chỉnh bằng **Kotlin** hỗ trợ từ **Android 11 (API 30) đến Android 14+ (API 34+)**, cung cấp giải pháp ghi lại thao tác cảm ứng của game thủ, tăng tốc độ chuỗi thao tác (Speed Multiplier 1x – 10x), và **lưu thành NÚT MACRO NỔI độc lập trên màn hình** để kích hoạt combo tức thì.
+Ứng dụng **Game Turbo Combo Controller** độc quyền cho game thủ **Liên Quân Mobile (Arena of Valor)**, mô phỏng chuẩn xác tính năng **Combos trên dòng điện thoại Gaming cao cấp Redmi Turbo 4 Pro / K70 / Black Shark / ROG Phone**.
 
 ---
 
 ### 📥 Tải file APK cài đặt ngay:
-👉 **[Tải file APK chính thức (Macro-LienQuan-v1.1.0.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v1.1.0/Macro-LienQuan-v1.1.0.apk)**  
+👉 **[Tải file APK mới nhất (Macro-LienQuan-v2.2.0.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v2.2.0/Macro-LienQuan-v2.2.0.apk)**  
 👉 **[Xem toàn bộ các bản phát hành (Releases)](https://github.com/saimondragonvn/macro-lienquan/releases)**
 
 ---
 
-### ⚡ CÁCH CẤP QUYỀN 1-CHẠM KIỂU PANDA TOUCH PRO:
-App có **Trình hướng dẫn cài đặt 4 bước** tự động (không cần máy tính, không cần Root):
-1. Cài ứng dụng **Shizuku** từ Google Play → App dẫn đến đúng trang trên CH Play.
-2. Vào **Cài đặt điện thoại > Tùy chọn nhà phát triển > Bật "Gỡ lỗi không dây"** → App mở trực tiếp Developer Options.
-3. Mở Shizuku > **Ghép nối (Pairing)** qua mã 6 số Wi-Fi > Nhấn **Khởi động** → App mở trực tiếp Shizuku.
-4. Nhấn nút **`[⚡ Cấp TẤT CẢ quyền]`** → Tự động cấp Trợ năng, Vẽ màn hình, Pin, Restricted Settings!
+## 🚀 ĐẶC TÍNH NỔI BẬT CHUẨN REDMI TURBO 4 PRO
+
+1. **ĐẬP ĐI XÂY LẠI TỪ SỐ 0 - GHI THỜI GIAN THỰC KHÔNG HỀ CHẶN MÀN HÌNH**:
+   - Ứng dụng đọc luồng cảm ứng trực tiếp từ Linux kernel (`/dev/input/event*`) ngầm qua **Shizuku (Gỡ lỗi Wi-Fi ADB)** hoặc **Root (`su`)**.
+   - **HOÀN TOÀN KHÔNG CHẶN CẢM ỨNG MÀN HÌNH**: Khi bấm `[🔴 Bắt đầu ghi combo]`, màn hình game thông thoáng 100%! Game thủ tự do di chuyển analog, mở Shop, mua đồ, bán đồ, tung chiêu trong trận đấu thực tế và game nhận 100%!
+   - Bấm `[⏹ Xong & Lưu]` trên thanh Capsule ở mép trên màn hình là có ngay nút Combo.
+
+2. **NÚT NỔI KÍCH HOẠT COMBO [⚡ R1, R2...] SIÊU TỐC 120HZ**:
+   - Kéo thả tự do đến mọi vị trí thuận ngón tay (ngay cạnh nút đánh thường hoặc phím chiêu).
+   - **Chạm nhanh (<350ms)**: Bắn combo thao tác vào game tức thì với độ trễ cực thấp.
+   - **Nhấn giữ lâu (>450ms)**: Mở menu tùy chỉnh tốc độ phát lại (1x, 2x, 3x), độ mờ trong suốt (30% - 100%), số lần lặp, hoặc xóa nút.
+
+3. **GÁN GHIM TRỰC QUAN (TARGET PINS)**:
+   - Dễ dàng đặt các điểm ghim ①, ②, ③ trực tiếp lên nút game (ví dụ nút Shop, nút Giáp Hộ Mệnh, nút Mua).
+   - Chạm vào từng điểm ghim để test click ngay vào game!
+
+4. **CHỐNG SPAM NÚT TRIỆT ĐỂ & BỘ NHỚ LƯU TRỮ VĨNH VIỄN**:
+   - Nút `[🗑️ XÓA TOÀN BỘ NÚT COMBO ĐÃ TẠO]` dọn sạch màn hình chỉ với 1 chạm.
+   - Tối đa 5 nút combo, tự căn chỉnh so le để không bao giờ bị đè chồng lên nhau.
+   - Toàn bộ cấu hình và vị trí nút được lưu vĩnh viễn: tắt app hoặc khởi động lại điện thoại vẫn giữ nguyên.
+
+5. **100% KHÔNG DÙNG ACCESSIBILITY SERVICE (DỊCH VỤ TRỢ NĂNG)**:
+   - Hoàn toàn loại bỏ Accessibility Service, triệt tiêu nguy cơ bị hệ thống cảnh báo hoặc xung đột đa điểm cảm ứng khi kéo Joystick.
 
 ---
 
-### 📋 Hoặc dùng LADB (Chạy ADB ngay trên điện thoại không cần PC):
-Trong app có nút **`[📋 Lệnh Wi-Fi]`**, bấm để copy 5 dòng lệnh sau dán vào LADB hoặc máy tính:
-```bash
-appops set com.macrophone.gaming ACCESS_RESTRICTED_SETTINGS allow
-appops set com.macrophone.gaming SYSTEM_ALERT_WINDOW allow
-settings put secure enabled_accessibility_services com.macrophone.gaming/com.macrophone.gaming.service.MacroAccessibilityService
-settings put secure accessibility_enabled 1
-dumpsys deviceidle whitelist +com.macrophone.gaming
-```
+## ⚡ CÁCH KÍCH HOẠT SHIZUKU (GỠ LỖI WI-FI KHÔNG CẦN PC)
+
+App sử dụng động cơ đặc quyền Shizuku để mô phỏng ngón tay game thủ ở cấp độ phần cứng:
+
+1. Cài ứng dụng **Shizuku** từ Google Play Store.
+2. Vào **Cài đặt điện thoại > Tùy chọn nhà phát triển > Bật "Gỡ lỗi không dây" (Wireless debugging)**.
+3. Mở Shizuku > Chọn **Ghép nối (Pairing)** qua mã 6 số Wi-Fi > Nhấn **Khởi động (Start)**.
+4. Mở ứng dụng **Macro Liên Quân** > Bấm **Cấp quyền Shizuku** (hoặc đèn LED xanh trên thanh Game Turbo) > Chọn **Luôn cho phép**.
+5. Động cơ 120Hz sẵn sàng!
 
 ---
 
-> [!IMPORTANT]
-> **Đặc điểm cốt lõi**:
-> 1. **Ghi thao tác**: Ghi lại toàn bộ chuỗi bấm chiêu, vuốt, giữ và độ trễ trong trận đấu.
-> 2. **Chỉnh tốc độ**: Rút ngắn thời gian giữa các thao tác (ví dụ combo 1.5s tăng tốc 5x chỉ còn 0.3s).
-> 3. **Lưu thành NÚT MACRO NỔI**: Tạo một nút bấm tròn nhỏ gọn trên màn hình game. Bật/chạm nút là combo tự động kích hoạt.
-> 4. **Hoàn toàn không chặn cảm ứng khác (Multi-touch Co-existence)**: Trong lúc nút macro đang phát combo, **tay trái của bạn vẫn ghì giữ joystick chạy vòng quanh, tay phải vẫn vuốt góc nhìn hoặc bấm nút khác hoàn toàn bình thường**!
-
----
-
-## 🏛️ 1. Kiến trúc & Công nghệ cốt lõi
-
-- **Ngôn ngữ & Mô hình**: Kotlin, Clean Architecture kết hợp MVVM, Reactive StateFlow & Coroutines.
-- **Nút Macro Nổi độc lập (Floating Macro Trigger Buttons)**:
-  - Mỗi kịch bản combo có thể tạo một nút bấm nổi riêng biệt trên màn hình game (`FloatingMacroButton`: M1, M2, Fast Combo...).
-  - Kéo thả tự do đến góc tiện tay bấm nhất (cạnh nút đánh thường, cạnh phím chiêu).
-  - Cờ `FLAG_NOT_FOCUSABLE or FLAG_NOT_TOUCH_MODAL` giúp 100% diện tích màn hình còn lại không bị chặn cảm ứng.
-- **Mô phỏng cảm ứng**: Tận dụng `AccessibilityService` với `dispatchGesture()` và `GestureDescription.Builder`:
-  - `TAP`: Chạm siêu nhanh với thời lượng giải phóng Input Pointer tức thì (**20ms – 35ms**).
-  - `HOLD`: Nhấn giữ tại vị trí cụ thể theo thời gian tùy chỉnh.
-  - `SWIPE`: Vuốt theo quỹ đạo liên tục qua danh sách các điểm tọa độ $(X, Y)$.
-- **Hệ thống điều khiển**:
-  - Thanh tiện ích Dock nổi ghim viền (Smooth Edge Snapping).
-  - `TileService` (Quick Settings Tile): Bật/tắt thanh dock trực tiếp từ bảng thông báo hệ thống.
-  - **Emergency Stop**: Bấm phím **Volume Down** để ngắt tức thì phiên phát macro khi có biến.
-
----
-
-## 🚀 2. Quy trình sử dụng: Ghi thao tác ➔ Tăng tốc ➔ Tạo Nút Macro
-
-### Bước 1: Ghi thao tác cử chỉ (Record Session)
-- Bấm nút **Record** (🔴) trên thanh Dock.
-- Thực hiện chuỗi bấm chiêu trên màn hình (ví dụ: Chiêu 2 $\rightarrow$ Chiêu 1 $\rightarrow$ Đánh thường $\rightarrow$ Tốc biến).
-- Hệ thống ghi lại chính xác:
-  - Tọa độ $(X, Y)$ của từng điểm chạm (Down, Move, Up).
-  - Khoảng cách thời gian nghỉ giữa các lần bấm (Delay timing).
-- Bấm **Lưu Combo**.
-
-### Bước 2: Chỉnh tốc độ siêu tốc (Speed Multiplier)
-- Cửa sổ cài đặt hiện ra:
-  - Xem thống kê: *Thời gian ghi gốc: 1.50 giây (4 thao tác)*.
-  - Chọn hệ số tăng tốc: **1x, 2x, 3x, 5x, 10x**.
-  - Xem thời gian sau khi tăng tốc: *0.30 giây (Nhanh hơn 5 lần! ⚡)*.
-  - Chọn số lần lặp: 1 lần, 5 lần, hoặc Vô hạn.
-  - Đặt tên nút: Ví dụ "Combo 1".
-
-### Bước 3: Tạo Nút Macro Nổi trên màn hình game
-- Tích chọn *"Tạo nút Macro nổi trên màn hình game"* $\rightarrow$ Bấm **LƯU & TẠO NÚT**.
-- Ngay lập tức xuất hiện một **Nút Macro Nổi** (kích thước $56 \times 56\text{dp}$, viền LED Neon).
-- Người chơi kéo nút này đặt ngay cạnh ngón tay cái bên phải.
-
-### Bước 4: Chơi game & Kích hoạt Macro
-- Khi vào pha giao tranh: **Chạm 1 cái vào Nút Macro Nổi**!
-- Nút Macro chuyển sang màu xanh ngọc phát sáng và tự động xả combo với tốc độ thần tốc.
-- Trong lúc macro đang bấm chiêu, **tay trái của bạn vẫn dùng cần gạt Joystick di chuyển nhân vật bình thường** không hề bị ngắt quãng!
-- Chạm lại vào Nút Macro để dừng nếu muốn hủy ngang.
-
----
-
-## 📂 3. Cấu trúc thư mục dự án
+## 📂 Cấu trúc thư mục dự án
 
 ```
 macro-phone/
 ├── app/
 │   ├── build.gradle.kts
-│   ├── proguard-rules.pro
 │   └── src/main/
 │       ├── AndroidManifest.xml
 │       ├── java/com/macrophone/gaming/
 │       │   ├── MacroApp.kt
+│       │   ├── core/
+│       │   │   ├── GameTurboRecorder.kt       # Đọc luồng cảm ứng /dev/input kernel
+│       │   │   └── ShellExecutor.kt           # Động cơ Shizuku & Root siêu tốc 120Hz
 │       │   ├── data/
-│       │   │   ├── model/
-│       │   │   │   ├── GesturePoint.kt
-│       │   │   │   ├── MacroAction.kt
-│       │   │   │   ├── MacroSequence.kt
-│       │   │   │   ├── MacroState.kt
-│       │   │   │   ├── MacroType.kt
-│       │   │   │   └── PlaybackConfig.kt
-│       │   │   └── repository/
-│       │   │       └── MacroRepository.kt
-│       │   ├── domain/
-│       │   │   └── MacroManager.kt
+│       │   │   ├── MacroConfigStorage.kt      # Lưu trữ vĩnh viễn danh sách combo
+│       │   │   └── model/
 │       │   ├── service/
-│       │   │   ├── FloatingWidgetService.kt
-│       │   │   ├── MacroAccessibilityService.kt
-│       │   │   ├── NotificationActionReceiver.kt
-│       │   │   └── QuickSettingsTileService.kt
+│       │   │   ├── TurboOverlayService.kt     # Quản lý Dock Turbo & Capsule Ghi
+│       │   │   ├── QuickSettingsTileService.kt
+│       │   │   └── NotificationActionReceiver.kt
 │       │   ├── ui/
-│       │   │   ├── MainActivity.kt
-│       │   │   ├── MainViewModel.kt
-│       │   │   ├── adapter/
-│       │   │   │   └── MacroPresetAdapter.kt
+│       │   │   ├── MainActivity.kt            # Giao diện cấp quyền & khởi chạy
 │       │   │   └── overlay/
-│       │   │       ├── FloatingMacroButton.kt
-│       │   │       ├── TargetPointMarker.kt
-│       │   │       └── TouchRecorderCanvas.kt
+│       │   │       ├── FloatingTriggerView.kt # Nút nổi kích hoạt combo
+│       │   │       └── TargetPinView.kt       # Điểm ghim thủ công
 │       │   └── util/
-│       │       ├── GestureBuilder.kt
-│       │       ├── NotificationHelper.kt
-│       │       └── PermissionUtils.kt
+│       │       ├── ShizukuHelper.kt
+│       │       ├── PermissionUtils.kt
+│       │       └── NotificationHelper.kt
 │       └── res/
-│           ├── drawable/
-│           │   ├── bg_floating_macro_btn_idle.xml
-│           │   ├── bg_floating_macro_btn_active.xml
-│           │   ├── bg_floating_pill.xml
-│           │   ├── bg_target_point.xml
-│           │   ├── bg_dialog_card.xml
-│           │   └── ic_*.xml
 │           ├── layout/
 │           │   ├── activity_main.xml
-│           │   ├── view_floating_dock.xml
+│           │   ├── view_floating_dock.xml      # Thanh Game Turbo HUD
+│           │   ├── view_recording_pill.xml     # Capsule Ghi thao tác thời gian thực
 │           │   ├── view_floating_macro_button.xml
-│           │   ├── view_save_macro_dialog.xml
-│           │   ├── view_macro_settings_dialog.xml
-│           │   ├── view_target_point.xml
-│           │   └── view_touch_recorder.xml
-│           ├── values/
-│           │   ├── colors.xml (Cyberpunk Dark Theme)
-│           │   ├── strings.xml
-│           │   └── themes.xml
-│           └── xml/
-│               └── accessibility_service_config.xml
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradle.properties
-└── README.md
+│           │   └── view_trigger_config_dialog.xml
+│           └── values/
 ```
 
 ---
 
-## ⚙️ 4. Hướng dẫn cấp quyền trên Android 11+ đến Android 14+
+## 🛠️ Build & Phát hành
 
-Để ứng dụng hoạt động chính xác, cần cấp 3 quyền hệ thống cốt lõi:
-
-### 4.1 Cấp quyền qua giao diện ứng dụng:
-1. **Dịch vụ Trợ năng (Accessibility Service)**:
-   - Nhấn nút **Cấp quyền** tại mục Accessibility Service $\rightarrow$ Bật công tắc **Macro Gaming Combo Service**.
-2. **Quyền vẽ trên ứng dụng khác (Display over other apps)**:
-   - Nhấn nút **Cấp quyền** $\rightarrow$ Cho phép hiển thị trên ứng dụng khác.
-3. **Bỏ qua tối ưu hóa pin (Battery Optimization Exemption)**:
-   - Chọn "Không tối ưu hóa" để tránh bị hệ thống ngắt tiến trình ngầm.
-
-### 4.2 Cấp quyền nhanh qua lệnh ADB (Dành cho Developer / Tester):
-```bash
-# 1. Cấp quyền vẽ trên ứng dụng khác (SYSTEM_ALERT_WINDOW)
-adb shell appops set com.macrophone.gaming SYSTEM_ALERT_WINDOW allow
-
-# 2. Bật dịch vụ Trợ năng tự động
-adb shell settings put secure enabled_accessibility_services com.macrophone.gaming/com.macrophone.gaming.service.MacroAccessibilityService
-adb shell settings put secure accessibility_enabled 1
-
-# 3. Bỏ qua tối ưu pin
-adb shell dumpsys deviceidle whitelist +com.macrophone.gaming
-```
-
----
-
-## 🛠️ 5. Hướng dẫn Build & Chạy qua Gradle CLI
-
-### Lệnh biên dịch:
-```bash
-# Trên Windows PowerShell / Command Prompt:
-gradlew.bat assembleDebug
-
-# Trên Linux / macOS:
-./gradlew assembleDebug
-```
-
-File APK sau khi build thành công sẽ nằm tại:
-```
-app/build/outputs/apk/debug/app-debug.apk
-```
+Dự án được tự động biên dịch và tạo bản phát hành (Signed Release APK) qua **GitHub Actions**:
+- Mỗi khi đẩy code lên nhánh `main`, file APK sẽ tự động được ký chứng chỉ số và tải lên mục **Releases** với định danh phiên bản tương ứng.
