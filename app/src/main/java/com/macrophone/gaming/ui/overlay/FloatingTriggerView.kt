@@ -2,6 +2,7 @@ package com.macrophone.gaming.ui.overlay
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.Gravity
@@ -60,12 +61,16 @@ class FloatingTriggerView(
         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.TOP or Gravity.START
         x = initialX
         y = initialY
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
     }
 
     init {

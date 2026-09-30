@@ -4,6 +4,21 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.3.2] - 2026-09-30
+### 🚀 KHẮC PHỤC TRIỆT ĐỂ LỖI ĐÓNG MENU & TỰ DO ĐẶT NÚT COMBO Ở CHÍNH GIỮA MÀN HÌNH
+- **SỬA LỖI MENU KHÔNG TẮT ĐƯỢC**:
+  - Gỡ bỏ touch listener trên `header` từng nuốt sự kiện click của nút `[✕ Đóng]`, giúp nút đóng phản hồi tức thì 100%.
+  - Thêm tính năng **Chạm ra ngoài vùng hộp thoại (Click Outside to Dismiss)**: Chạm vào bất kỳ điểm nào trên nền màn hình bên ngoài bảng điều khiển sẽ đóng menu ngay lập tức.
+  - Hỗ trợ **Toggle qua Thanh Thông báo**: Chạm vào thông báo hoặc nút `[✕ ĐÓNG MENU]` khi menu đang mở sẽ đóng menu ngay lập tức.
+  - Cơ chế Dynamic Window Attachment: Khi menu đóng, toàn bộ View của dock được gỡ bỏ hoàn toàn khỏi `WindowManager` (`removeView`), triệt tiêu 100% nguy cơ tồn đọng cửa sổ vô hình chiếm diện tích.
+- **TỰ DO ĐẶT NÚT COMBO Ở GIỮA MÀN HÌNH VÀ MỌI TỌA ĐỘ**:
+  - Giải quyết nguyên nhân gốc rễ khiến nút combo không đặt được ở giữa màn hình: Do cửa sổ menu cũ nằm ngầm ở `Gravity.CENTER` chặn các điểm chạm ở giữa màn hình. Khi gỡ bỏ cửa sổ menu lúc đóng, vùng giữa màn hình hoàn toàn thông thoáng.
+  - Bổ sung cờ `FLAG_LAYOUT_IN_SCREEN` và cấu hình `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` trên `FloatingTriggerView` và `TargetPinView`, cho phép di chuyển và đặt nút ở bất kỳ tọa độ nào trên toàn bộ màn hình thực tế (giữa màn hình, góc trái, góc phải, thanh kỹ năng) mà không bị giới hạn viền hay giật về góc.
+  - Vị trí tạo mặc định của nút combo mới được đưa về vùng thuận ngón tay thay vì ép dính sát mép phải.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.3.2.apk`.
+
+---
+
 ## [v2.3.1] - 2026-09-30
 ### 🚀 ẨN HOÀN TOÀN ICON MÉP, MỞ MENU TIỆN ÍCH THÔNG BÁO (CIRCLE TO SEARCH), SỬA LỖI KÉO THẢ NHẢY LOẠN & CHỈNH TỐC ĐỘ BẰNG SỐ (TỐI ĐA 20X)
 - **ẨN HOÀN TOÀN ICON TAB SÉT TURBO Ở MÉP MÀN HÌNH**:

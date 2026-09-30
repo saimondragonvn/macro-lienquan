@@ -39,9 +39,10 @@ object NotificationHelper {
         context: Context,
         isButtonsHidden: Boolean = false,
         isRecording: Boolean = false,
-        activeComboName: String? = null
+        activeComboName: String? = null,
+        isMenuOpen: Boolean = false
     ): Notification {
-        // Chạm vào thông báo sẽ mở ngay Menu Game Turbo nổi (Chuẩn Circle to Search)!
+        // Chạm vào thông báo sẽ BẬT/TẮT ngay Menu Game Turbo nổi (Chuẩn Circle to Search)!
         val openMenuIntent = Intent(context, NotificationActionReceiver::class.java).apply {
             action = ACTION_OPEN_MENU
         }
@@ -52,7 +53,8 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // 1. Phím tắt: [⚡ MỞ MENU TURBO]
+        // 1. Phím tắt: [⚡ MỞ MENU] hoặc [✕ ĐÓNG MENU]
+        val menuActionTitle = if (isMenuOpen) "✕ ĐÓNG MENU" else "⚡ MỞ MENU"
         val menuActionPendingIntent = PendingIntent.getBroadcast(
             context,
             1,
@@ -86,6 +88,7 @@ object NotificationHelper {
 
         val title = when {
             isRecording -> "🔴 Game Turbo: ĐANG GHI COMBO..."
+            isMenuOpen -> "⚡ Game Turbo: MENU ĐANG MỞ"
             activeComboName != null -> "⚡ Đang xả combo: [$activeComboName]"
             isButtonsHidden -> "⚡ Game Turbo: ĐÃ ẨN NÚT (Chạm mở menu)"
             else -> "⚡ Game Turbo (Circle to Search Style)"
@@ -93,6 +96,7 @@ object NotificationHelper {
 
         val content = when {
             isRecording -> "Vào game thao tác bình thường, bấm Xong trên đỉnh màn hình để lưu"
+            isMenuOpen -> "Chạm thông báo hoặc bấm [✕ ĐÓNG MENU] để quay lại game"
             isButtonsHidden -> "Bấm [⚡ MỞ MENU] hoặc [👁️ HIỆN NÚT] để thao tác"
             else -> "Chạm thông báo hoặc bấm [⚡ MỞ MENU] để cài đặt & ghi combo"
         }
@@ -106,7 +110,7 @@ object NotificationHelper {
             .setContentIntent(openMenuPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .addAction(R.drawable.ic_macro_tile, "⚡ MỞ MENU", menuActionPendingIntent)
+            .addAction(R.drawable.ic_macro_tile, menuActionTitle, menuActionPendingIntent)
             .addAction(R.drawable.ic_speed, "🔴 Ghi Combo", recordPendingIntent)
             .addAction(R.drawable.ic_play, toggleLabel, togglePendingIntent)
             .addAction(R.drawable.ic_close, "✕ Tắt", closePendingIntent)

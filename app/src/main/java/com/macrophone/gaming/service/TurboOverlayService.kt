@@ -82,6 +82,7 @@ class TurboOverlayService : Service() {
 
     private var selectedSpeedDelay: Long = 30
     private var isOverlayHidden = false
+    private var isMenuOpen = false
 
     private var tvEngineStatusBadge: TextView? = null
     private var btnGlobalOpacity30: TextView? = null
@@ -158,7 +159,7 @@ class TurboOverlayService : Service() {
                 return START_NOT_STICKY
             }
             ACTION_OPEN_MENU -> {
-                openTurboMenu()
+                toggleTurboMenu()
                 return START_STICKY
             }
             ACTION_TOGGLE_VISIBILITY -> {
@@ -244,7 +245,8 @@ class TurboOverlayService : Service() {
                 context = this,
                 isButtonsHidden = isOverlayHidden,
                 isRecording = GameTurboRecorder.isRecording,
-                activeComboName = activeComboName
+                activeComboName = activeComboName,
+                isMenuOpen = isMenuOpen
             )
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.notify(NotificationHelper.NOTIFICATION_ID, notification)
@@ -263,28 +265,24 @@ class TurboOverlayService : Service() {
             dockView = inflater.inflate(R.layout.view_floating_dock, null)
 
             dockParams = WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                         WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = Gravity.CENTER
-                x = 0
-                y = 0
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                }
             }
-
-            // Cả tab mép và menu đều ẩn hoàn toàn theo yêu cầu -> không chiếm màn hình khi chơi game
-            dockView?.findViewById<View>(R.id.layoutCollapsed)?.visibility = View.GONE
-            dockView?.findViewById<View>(R.id.layoutExpanded)?.visibility = View.GONE
 
             (dockView as? android.view.ViewGroup)?.isMotionEventSplittingEnabled = true
             setupDockTouchAndDrag(dockView!!)
             setupDockButtons(dockView!!)
-
-            windowManager.addView(dockView, dockParams)
+            // Không addView vào windowManager ngay lúc khởi động, chỉ add khi mở menu!
         } catch (e: Throwable) {
             Log.e("TurboOverlayService", "initDockView error: ${e.message}", e)
             Toast.makeText(this, "Chưa cấp quyền 'Hiển thị trên ứng dụng khác'!", Toast.LENGTH_LONG).show()
@@ -293,7 +291,6 @@ class TurboOverlayService : Service() {
 
     private fun setupDockTouchAndDrag(root: View) {
         val ivExpandedDrag = root.findViewById<View>(R.id.ivExpandedDrag)
-        val header = root.findViewById<View>(R.id.layoutExpandedHeader)
 
         val createDrag = { targetView: View ->
             object : View.OnTouchListener {
@@ -349,14 +346,13 @@ class TurboOverlayService : Service() {
             }
         }
 
+        // CHỈ gán kéo panel cho icon kéo thả, KHÔNG gán lên toàn bộ header để tránh nuốt click nút Đóng
         ivExpandedDrag?.setOnTouchListener(createDrag(ivExpandedDrag))
-        header?.setOnTouchListener(createDrag(header))
     }
 
     fun openTurboMenu() {
-        val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
-        val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
-        layoutCollapsed?.visibility = View.GONE
+        if (isMenuOpen && dockView?.isAttachedToWindow == true) return
+        isMenuOpen = true
 
         if (isOverlayHidden) {
             isOverlayHidden = false
@@ -364,14 +360,25 @@ class TurboOverlayService : Service() {
             targetPins.forEach { it.view.visibility = View.VISIBLE }
         }
 
-        dockParams.gravity = Gravity.CENTER
-        dockParams.x = 0
-        dockParams.y = 0
-        updateViewSafely(dockView, dockParams)
+        dockView?.findViewById<View>(R.id.layoutExpanded)?.visibility = View.VISIBLE
+        dockView?.findViewById<View>(R.id.layoutCollapsed)?.visibility = View.GONE
 
-        layoutExpanded?.visibility = View.VISIBLE
         updateEngineBadge()
         renderAssignedTriggersList()
+
+        try {
+            if (dockView != null) {
+                if (dockView?.isAttachedToWindow != true) {
+                    windowManager.addView(dockView, dockParams)
+                } else {
+                    windowManager.updateViewLayout(dockView, dockParams)
+                }
+            }
+        } catch (e: Throwable) {
+            Log.e("TurboOverlayService", "openTurboMenu error: ${e.message}", e)
+        }
+
+        updateNotification()
 
         try {
             @Suppress("DEPRECATION")
@@ -381,10 +388,25 @@ class TurboOverlayService : Service() {
     }
 
     fun closeTurboMenu() {
-        val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
-        val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
-        layoutExpanded?.visibility = View.GONE
-        layoutCollapsed?.visibility = View.GONE
+        isMenuOpen = false
+        try {
+            if (dockView?.isAttachedToWindow == true) {
+                windowManager.removeViewImmediate(dockView)
+            }
+        } catch (_: Throwable) {
+            try {
+                windowManager.removeView(dockView)
+            } catch (_: Throwable) {}
+        }
+        updateNotification()
+    }
+
+    fun toggleTurboMenu() {
+        if (isMenuOpen && dockView?.isAttachedToWindow == true) {
+            closeTurboMenu()
+        } else {
+            openTurboMenu()
+        }
     }
 
     private fun updateEngineBadge() {
@@ -429,6 +451,18 @@ class TurboOverlayService : Service() {
         val btnToggleVisibility = root.findViewById<View>(R.id.btnToggleVisibility)
         val btnClearPoints = root.findViewById<View>(R.id.btnClearPoints)
         val btnCloseService = root.findViewById<View>(R.id.btnCloseService)
+
+        val dockRoot = root.findViewById<View>(R.id.dockRoot)
+
+        // Bấm ra ngoài vùng hộp thoại (vào nền mờ) để đóng menu tức thì
+        dockRoot?.setOnClickListener {
+            closeTurboMenu()
+        }
+
+        // Chặn sự kiện click xuyên qua bảng menu để không kích hoạt đóng ngoài ý muốn khi thao tác bên trong menu
+        layoutExpanded?.setOnClickListener {
+            // Chặn click
+        }
 
         // 0. Mở Liên Quân Mobile nhanh từ Game Turbo Dock
         btnLaunchGameFromDock?.setOnClickListener {
@@ -746,11 +780,10 @@ class TurboOverlayService : Service() {
                 val enteredSpeed = etSaveSpeedMultiplier?.text?.toString()?.toFloatOrNull() ?: chosenSpeed
                 val finalSpeed = enteredSpeed.coerceIn(0.5f, 20.0f)
 
-                val maxDim = Math.max(screenWidth, screenHeight).coerceAtLeast(1920)
-                val minDim = Math.min(screenWidth, screenHeight).coerceAtLeast(1080)
                 val offset = (triggerButtons.size * 65)
-                val btnX = (maxDim - 250).coerceAtLeast(100)
-                val btnY = ((minDim / 3) + offset).coerceIn(100, (minDim - 160).coerceAtLeast(100))
+                // Đặt mặc định ở vùng ngón tay thuận tiện, người dùng có thể tự do kéo tới mọi vị trí kể cả giữa màn hình
+                val btnX = (screenWidth * 0.70f).toInt().coerceAtLeast(60)
+                val btnY = ((screenHeight / 3) + offset).coerceIn(100, (screenHeight - 160).coerceAtLeast(100))
 
                 val triggerBtn = createFloatingTriggerInstance(
                     id = java.util.UUID.randomUUID().toString(),
@@ -897,8 +930,8 @@ class TurboOverlayService : Service() {
 
         savedList.take(5).forEach { saved ->
             if (saved.points.isNotEmpty() || saved.actions.isNotEmpty()) {
-                val posX = saved.x.coerceIn(0, maxDim - 50)
-                val posY = saved.y.coerceIn(0, maxDim - 50)
+                val posX = saved.x.coerceIn(0, maxDim)
+                val posY = saved.y.coerceIn(0, maxDim)
                 val btn = createFloatingTriggerInstance(
                     id = saved.id,
                     name = saved.name,
@@ -1210,7 +1243,7 @@ class TurboOverlayService : Service() {
         val points = targetPins.map { it.getCenterCoordinates() }
         val name = "C${triggerButtons.size + 1}"
         val offset = (triggerButtons.size * 65)
-        val btnX = (screenWidth - 180).coerceAtLeast(60)
+        val btnX = (screenWidth * 0.70f).toInt().coerceAtLeast(60)
         val btnY = ((screenHeight / 3) + offset).coerceIn(100, (screenHeight - 160).coerceAtLeast(100))
 
         val triggerBtn = createFloatingTriggerInstance(
@@ -1251,10 +1284,7 @@ class TurboOverlayService : Service() {
         points.forEach { (x, y) ->
             addNewTargetPin((x - offset).toInt(), (y - offset).toInt())
         }
-        val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
-        val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
-        layoutCollapsed?.visibility = View.GONE
-        layoutExpanded?.visibility = View.VISIBLE
+        openTurboMenu()
     }
 
     private fun clearAllTriggerButtons() {

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dockRoot"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#55000000"
+    android:clickable="true"
+    android:focusable="true">
 
     <!-- 1. Trạng thái THU GỌN (Game Turbo Edge Tab) -->
     <LinearLayout
@@ -42,9 +44,12 @@
     <!-- 2. Trạng thái MỞ RỘNG (Game Turbo HUD Control Center - Basic & Clean) -->
     <LinearLayout
         android:id="@+id/layoutExpanded"
-        android:layout_width="290dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:background="@drawable/bg_dialog_card"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical"
         android:padding="10dp"
         android:elevation="16dp"
@@ -95,14 +100,16 @@
             <TextView
                 android:id="@+id/btnCollapseDock"
                 android:layout_width="wrap_content"
-                android:layout_height="28dp"
+                android:layout_height="32dp"
                 android:background="@drawable/bg_turbo_btn_secondary"
                 android:gravity="center"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:text="✕ Đóng"
+                android:clickable="true"
+                android:focusable="true"
                 android:textColor="@color/amber_warning"
-                android:textSize="10.5sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -458,4 +465,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>
