@@ -46,34 +46,30 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.3.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.3.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.3.1' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.3.1' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.3.0)
+            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.3.1)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🚀 TÍNH NĂNG VÀ CẢI TIẾN TRỌNG TÂM TRÊN V2.3.0:
-            1. **GIAO DIỆN BASIC, TỐI GIẢN & MƯỢT MÀ**:
-               - Thiết kế lại toàn bộ màn hình chính (`activity_main`) và Game Turbo Dock (`view_floating_dock`) theo phong cách Cyberpunk tối giản, loại bỏ hoàn toàn các khối chữ hướng dẫn rườm rà.
-               - Các nút chức năng to rõ, bố cục trực quan, thao tác nhanh trong trận chỉ mất 1-2 giây.
-            2. **ĐIỀU KHIỂN NHANH TỪ THANH THÔNG BÁO (NOTIFICATION SHADE)**:
-               - Vuốt từ đỉnh màn hình xuống là có ngay 3 nút điều khiển trực tiếp:
-                 * `[👁️ ẨN NÚT]` / `[👁️ HIỆN NÚT]`: Ẩn/Hiện tức thì toàn bộ nút nổi mà không cần mở menu.
-                 * `[🔴 Ghi Combo]`: Bắt đầu phiên ghi combo thời gian thực trực tiếp từ thanh thông báo.
-                 * `[✕ Tắt Turbo]`: Đóng hoàn toàn dịch vụ Game Turbo ngay lập tức.
-            3. **TÙY CHỈNH TÊN COMBO & ĐỔI TÊN LINH HOẠT**:
-               - Hộp thoại lưu combo mới sau khi ghi: Cho phép game thủ đặt tên tùy thích (VD: "Florentino", "Đổi đồ 0.1s", "Raz", "Chiêu 1-2") và chọn tốc độ xả combo (1.0x, 1.5x, 2.0x).
-               - Đổi tên bất kỳ lúc nào qua nút `[✏️ Sửa]` trong danh sách hoặc trong menu cài đặt nút.
-            4. **NÚT ẨN MỜ (GHOST MODE TRONG SUỐT)**:
-               - Chuyển đổi nhanh các mức độ mờ: 30% (mờ sương, nhìn xuyên thấu không che tầm nhìn), 50%, 80%, 100%.
-               - Cho phép ẩn/hiện từng nút riêng biệt với nút `[👁️]` trong danh sách.
-            5. **KHẮC PHỤC TRIỆT ĐỂ LỖI LOẠN CẢM ỨNG & SAI TỌA ĐỘ KHI LƯU COMBO**:
-               - Đồng bộ frame cảm ứng phần cứng qua `SYN_REPORT`: Chỉ chốt tọa độ khi đã nhận đầy đủ sự kiện cảm ứng.
-               - Chuẩn hóa tỷ lệ tọa độ theo phân giải thực tế `getRealMetrics` và góc xoay ngang Landscape (90° và 270°).
-               - Tự động nhận diện cú chạm đơn lẻ (khoảng cách di chuyển < 25dp) là thao tác TAP tĩnh, hoàn toàn không bị trượt camera hay lệch joystick.
+            #### 🚀 TÍNH NĂNG VÀ CẢI TIẾN TRỌNG TÂM TRÊN V2.3.1:
+            1. **ẨN HOÀN TOÀN ICON TAB SÉT TURBO Ở MÉP MÀN HÌNH**:
+               - Loại bỏ hoàn toàn thanh tab nổi `[⚡ TURBO]` treo ở mép màn hình khi chơi game, giúp màn hình game sạch sẽ, thông thoáng 100%.
+            2. **MỞ MENU TURBO DẠNG TIỆN ÍCH THÔNG BÁO (CIRCLE TO SEARCH STYLE)**:
+               - Vuốt thanh thông báo của điện thoại xuống và chạm vào thông báo hoặc nút `[⚡ MỞ MENU]`, bảng điều khiển Game Turbo HUD sẽ lập tức hiện ra giữa màn hình.
+               - Bấm `[✕ Đóng]` là menu đóng hoàn toàn, không để lại bất kỳ icon nào trên màn hình.
+            3. **KHẮC PHỤC TRIỆT ĐỂ LỖI NÚT NHẢY LOẠN KHI KÉO THẢ**:
+               - Viết lại toàn bộ thuật toán dragging của Nút Combo và Điểm Ghim sử dụng tọa độ phần cứng `event.rawX` / `event.rawY`.
+               - Di chuyển nút cực kỳ mượt mà, bám dính 1:1 theo ngón tay, kéo thả cơ động đến bất kỳ vị trí nào trên màn hình mà không bị giật hay nhảy loạn.
+            4. **LƯU VỊ TRÍ NÚT CHUẨN XÁC, BẢO LƯU TỌA ĐỘ KHI XOAY NGANG**:
+               - Khắc phục lỗi clamp tọa độ theo chiều dọc portrait, đảm bảo tọa độ chiêu thức trong game ngang không bị ép sai hay biến mất.
+               - Ghi đĩa tức thì với cơ chế synchronous `commit()`, không bao giờ bị mất vị trí đã gán khi khởi động lại máy hay thoát game.
+            5. **CHỈNH TỐC ĐỘ CƠ ĐỘNG BẰNG SỐ (GIỚI HẠN TỐI ĐA 20X)**:
+               - Bổ sung ô nhập số tốc độ xả combo trực tiếp: Người dùng nhập 5 sẽ x5 tốc độ, nhập 10 sẽ x10 tốc độ (hỗ trợ từ 0.5x đến 20x).
+               - Kèm các phím chọn nhanh: 1x, 2x, 5x, 10x, 20x cả trong hộp thoại lưu combo lẫn menu cài đặt nút.
 
             #### 📲 Tải về APK:
-            Tải file **`Macro-LienQuan-v2.3.0.apk`** ở mục **Assets** bên dưới.
+            Tải file **`Macro-LienQuan-v2.3.1.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

@@ -92,6 +92,7 @@ class TurboOverlayService : Service() {
     companion object {
         const val ACTION_START = "com.macrophone.gaming.TURBO_START"
         const val ACTION_STOP = "com.macrophone.gaming.TURBO_STOP"
+        const val ACTION_OPEN_MENU = "com.macrophone.gaming.ACTION_OPEN_MENU"
         const val ACTION_TOGGLE_VISIBILITY = "com.macrophone.gaming.ACTION_TOGGLE_VISIBILITY"
         const val ACTION_START_RECORD = "com.macrophone.gaming.ACTION_START_RECORD"
 
@@ -109,6 +110,13 @@ class TurboOverlayService : Service() {
         fun stop(context: Context) {
             val intent = Intent(context, TurboOverlayService::class.java).apply {
                 action = ACTION_STOP
+            }
+            context.startService(intent)
+        }
+
+        fun openMenu(context: Context) {
+            val intent = Intent(context, TurboOverlayService::class.java).apply {
+                action = ACTION_OPEN_MENU
             }
             context.startService(intent)
         }
@@ -149,6 +157,10 @@ class TurboOverlayService : Service() {
                 stopSelf()
                 return START_NOT_STICKY
             }
+            ACTION_OPEN_MENU -> {
+                openTurboMenu()
+                return START_STICKY
+            }
             ACTION_TOGGLE_VISIBILITY -> {
                 toggleOverlayVisibility()
                 return START_STICKY
@@ -165,9 +177,6 @@ class TurboOverlayService : Service() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         updateScreenDimensions()
-        dockParams.x = dockParams.x.coerceIn(0, screenWidth - 100)
-        dockParams.y = dockParams.y.coerceIn(0, screenHeight - 100)
-        updateViewSafely(dockView, dockParams)
     }
 
     override fun onDestroy() {
@@ -245,7 +254,7 @@ class TurboOverlayService : Service() {
     }
 
     /**
-     * Khởi tạo Tab nổi Game Turbo (Pill) ở mép màn hình
+     * Khởi tạo Giao diện Game Turbo Control Panel (Mặc định ẨN HOÀN TOÀN, không để lại icon mép)
      */
     private fun initDockView() {
         try {
@@ -262,10 +271,14 @@ class TurboOverlayService : Service() {
                         WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                 PixelFormat.TRANSLUCENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.START
-                x = (screenWidth - 280).coerceAtLeast(16)
-                y = (screenHeight / 3).coerceAtLeast(100)
+                gravity = Gravity.CENTER
+                x = 0
+                y = 0
             }
+
+            // Cả tab mép và menu đều ẩn hoàn toàn theo yêu cầu -> không chiếm màn hình khi chơi game
+            dockView?.findViewById<View>(R.id.layoutCollapsed)?.visibility = View.GONE
+            dockView?.findViewById<View>(R.id.layoutExpanded)?.visibility = View.GONE
 
             (dockView as? android.view.ViewGroup)?.isMotionEventSplittingEnabled = true
             setupDockTouchAndDrag(dockView!!)
@@ -279,75 +292,55 @@ class TurboOverlayService : Service() {
     }
 
     private fun setupDockTouchAndDrag(root: View) {
-        val layoutCollapsed = root.findViewById<View>(R.id.layoutCollapsed)
         val ivExpandedDrag = root.findViewById<View>(R.id.ivExpandedDrag)
+        val header = root.findViewById<View>(R.id.layoutExpandedHeader)
 
         val createDrag = { targetView: View ->
             object : View.OnTouchListener {
                 private var startX = 0
                 private var startY = 0
-                private var touchX = 0f
-                private var touchY = 0f
+                private var initialTouchX = 0f
+                private var initialTouchY = 0f
                 private var isDragging = false
                 private var downTime = 0L
-                private var activePointerId = MotionEvent.INVALID_POINTER_ID
 
                 override fun onTouch(v: View, event: MotionEvent): Boolean {
                     when (event.actionMasked) {
-                        MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
-                            val actionIndex = event.actionIndex
-                            activePointerId = event.getPointerId(actionIndex)
+                        MotionEvent.ACTION_DOWN -> {
                             startX = dockParams.x
                             startY = dockParams.y
-                            touchX = event.getX(actionIndex) + dockParams.x
-                            touchY = event.getY(actionIndex) + dockParams.y
+                            initialTouchX = event.rawX
+                            initialTouchY = event.rawY
                             isDragging = false
                             downTime = System.currentTimeMillis()
                             return true
                         }
 
                         MotionEvent.ACTION_MOVE -> {
-                            val pIndex = if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
-                                event.findPointerIndex(activePointerId)
-                            } else {
-                                0
-                            }
-                            if (pIndex in 0 until event.pointerCount) {
-                                val curX = event.getX(pIndex) + dockParams.x
-                                val curY = event.getY(pIndex) + dockParams.y
-                                val dx = (curX - touchX).toInt()
-                                val dy = (curY - touchY).toInt()
+                            val dx = (event.rawX - initialTouchX).toInt()
+                            val dy = (event.rawY - initialTouchY).toInt()
 
-                                if (abs(dx) > 10 || abs(dy) > 10) {
-                                    isDragging = true
-                                    dockParams.x = startX + dx
-                                    dockParams.y = startY + dy
-                                    updateViewSafely(dockView, dockParams)
-                                }
+                            if (!isDragging && (abs(dx) > 10 || abs(dy) > 10)) {
+                                isDragging = true
+                            }
+                            if (isDragging) {
+                                dockParams.x = startX + dx
+                                dockParams.y = startY + dy
+                                updateViewSafely(dockView, dockParams)
                             }
                             return true
                         }
 
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-                            val actionIndex = event.actionIndex
-                            val pointerId = event.getPointerId(actionIndex)
-                            if (activePointerId == MotionEvent.INVALID_POINTER_ID || pointerId == activePointerId) {
-                                if (isDragging) {
-                                    val viewW = if (root.width > 0) root.width else 100
-                                    val center = dockParams.x + (viewW / 2)
-                                    val targetX = if (center < screenWidth / 2) 16 else (screenWidth - viewW - 16)
-                                    snapDock(dockParams.x, targetX)
-                                } else if (System.currentTimeMillis() - downTime < 400) {
-                                    targetView.performClick()
-                                }
-                                activePointerId = MotionEvent.INVALID_POINTER_ID
+                        MotionEvent.ACTION_UP -> {
+                            if (!isDragging && (System.currentTimeMillis() - downTime < 350)) {
+                                targetView.performClick()
                             }
+                            isDragging = false
                             return true
                         }
 
                         MotionEvent.ACTION_CANCEL -> {
                             isDragging = false
-                            activePointerId = MotionEvent.INVALID_POINTER_ID
                             return true
                         }
                     }
@@ -356,27 +349,42 @@ class TurboOverlayService : Service() {
             }
         }
 
-        layoutCollapsed?.setOnTouchListener(createDrag(layoutCollapsed))
         ivExpandedDrag?.setOnTouchListener(createDrag(ivExpandedDrag))
+        header?.setOnTouchListener(createDrag(header))
     }
 
-    private fun snapDock(fromX: Int, toX: Int) {
-        val anim = ValueAnimator.ofInt(fromX, toX).apply {
-            duration = 180
-            addUpdateListener {
-                dockParams.x = it.animatedValue as Int
-                updateViewSafely(dockView, dockParams)
-            }
+    fun openTurboMenu() {
+        val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
+        val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
+        layoutCollapsed?.visibility = View.GONE
+
+        if (isOverlayHidden) {
+            isOverlayHidden = false
+            triggerButtons.forEach { it.view.visibility = View.VISIBLE }
+            targetPins.forEach { it.view.visibility = View.VISIBLE }
         }
-        anim.start()
+
+        dockParams.gravity = Gravity.CENTER
+        dockParams.x = 0
+        dockParams.y = 0
+        updateViewSafely(dockView, dockParams)
+
+        layoutExpanded?.visibility = View.VISIBLE
+        updateEngineBadge()
+        renderAssignedTriggersList()
+
+        try {
+            @Suppress("DEPRECATION")
+            val closeDialogs = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+            sendBroadcast(closeDialogs)
+        } catch (_: Throwable) {}
     }
 
-    private fun collapseDock() {
+    fun closeTurboMenu() {
         val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
         val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
         layoutExpanded?.visibility = View.GONE
-        layoutCollapsed?.visibility = View.VISIBLE
-        layoutCollapsed?.alpha = 0.85f
+        layoutCollapsed?.visibility = View.GONE
     }
 
     private fun updateEngineBadge() {
@@ -425,7 +433,7 @@ class TurboOverlayService : Service() {
         // 0. Mở Liên Quân Mobile nhanh từ Game Turbo Dock
         btnLaunchGameFromDock?.setOnClickListener {
             launchLienQuanGame()
-            collapseDock()
+            closeTurboMenu()
         }
 
         // Bấm vào Đèn LED trạng thái Shizuku để mở màn hình cấp quyền
@@ -434,7 +442,7 @@ class TurboOverlayService : Service() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)
-            collapseDock()
+            closeTurboMenu()
         }
 
         // 🔴 BẮT ĐẦU GHI COMBO THỜI GIAN THỰC (CHUẨN REDMI GAME TURBO)
@@ -442,23 +450,14 @@ class TurboOverlayService : Service() {
             startRealtimeComboRecording()
         }
 
-        // 1. Mở rộng khi chạm vào tab mép
+        // 1. Mở rộng khi chạm vào tab mép (nếu có kích hoạt)
         layoutCollapsed?.setOnClickListener {
-            if (isOverlayHidden) {
-                isOverlayHidden = false
-                targetPins.forEach { it.view.visibility = View.VISIBLE }
-                triggerButtons.forEach { it.view.visibility = View.VISIBLE }
-                layoutCollapsed.alpha = 1.0f
-            }
-            layoutCollapsed.visibility = View.GONE
-            layoutExpanded.visibility = View.VISIBLE
-            updateEngineBadge()
-            renderAssignedTriggersList()
+            openTurboMenu()
         }
 
-        // 2. Thu gọn về mép màn hình
-        btnCollapseDock?.setOnClickListener { collapseDock() }
-        btnBottomCollapse?.setOnClickListener { collapseDock() }
+        // 2. Đóng hoàn toàn menu Turbo
+        btnCollapseDock?.setOnClickListener { closeTurboMenu() }
+        btnBottomCollapse?.setOnClickListener { closeTurboMenu() }
 
         // 3. Tùy chọn tốc độ xả combo
         val updateSpeedUI = {
@@ -553,11 +552,11 @@ class TurboOverlayService : Service() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)
-            collapseDock()
+            closeTurboMenu()
             return
         }
 
-        collapseDock()
+        closeTurboMenu()
 
         try {
             val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
@@ -666,9 +665,13 @@ class TurboOverlayService : Service() {
 
             val tvSummary = dialogView.findViewById<TextView>(R.id.tvSaveComboSummary)
             val etName = dialogView.findViewById<android.widget.EditText>(R.id.etSaveComboName)
-            val btnSpeed10 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed10)
-            val btnSpeed15 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed15)
-            val btnSpeed20 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed20)
+            val tvSpeedLiveBadge = dialogView.findViewById<TextView>(R.id.tvSpeedLiveBadge)
+            val etSaveSpeedMultiplier = dialogView.findViewById<android.widget.EditText>(R.id.etSaveSpeedMultiplier)
+            val btnSaveSpeed1 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed1)
+            val btnSaveSpeed2 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed2)
+            val btnSaveSpeed5 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed5)
+            val btnSaveSpeed10 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed10)
+            val btnSaveSpeed20 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed20)
             val btnConfirm = dialogView.findViewById<TextView>(R.id.btnSaveComboConfirm)
             val btnCancel = dialogView.findViewById<TextView>(R.id.btnSaveComboCancel)
 
@@ -679,19 +682,52 @@ class TurboOverlayService : Service() {
 
             var chosenSpeed = 1.0f
             val updateSpeedBtns = {
-                btnSpeed10.setBackgroundResource(if (chosenSpeed == 1.0f) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
-                btnSpeed10.setTextColor(ContextCompat.getColor(this, if (chosenSpeed == 1.0f) R.color.bg_dark else R.color.text_primary))
+                val formatted = if (chosenSpeed % 1f == 0f) "${chosenSpeed.toInt()}" else "$chosenSpeed"
+                tvSpeedLiveBadge?.text = "x$formatted"
 
-                btnSpeed15.setBackgroundResource(if (chosenSpeed == 1.5f) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
-                btnSpeed15.setTextColor(ContextCompat.getColor(this, if (chosenSpeed == 1.5f) R.color.bg_dark else R.color.text_primary))
+                val is1 = chosenSpeed == 1.0f
+                val is2 = chosenSpeed == 2.0f
+                val is5 = chosenSpeed == 5.0f
+                val is10 = chosenSpeed == 10.0f
+                val is20 = chosenSpeed == 20.0f
 
-                btnSpeed20.setBackgroundResource(if (chosenSpeed == 2.0f) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
-                btnSpeed20.setTextColor(ContextCompat.getColor(this, if (chosenSpeed == 2.0f) R.color.bg_dark else R.color.text_primary))
+                btnSaveSpeed1?.setBackgroundResource(if (is1) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSaveSpeed1?.setTextColor(ContextCompat.getColor(this, if (is1) R.color.bg_dark else R.color.text_primary))
+
+                btnSaveSpeed2?.setBackgroundResource(if (is2) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSaveSpeed2?.setTextColor(ContextCompat.getColor(this, if (is2) R.color.bg_dark else R.color.text_primary))
+
+                btnSaveSpeed5?.setBackgroundResource(if (is5) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSaveSpeed5?.setTextColor(ContextCompat.getColor(this, if (is5) R.color.bg_dark else R.color.text_primary))
+
+                btnSaveSpeed10?.setBackgroundResource(if (is10) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSaveSpeed10?.setTextColor(ContextCompat.getColor(this, if (is10) R.color.bg_dark else R.color.text_primary))
+
+                btnSaveSpeed20?.setBackgroundResource(if (is20) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSaveSpeed20?.setTextColor(ContextCompat.getColor(this, if (is20) R.color.bg_dark else R.color.text_primary))
             }
 
-            btnSpeed10.setOnClickListener { chosenSpeed = 1.0f; updateSpeedBtns() }
-            btnSpeed15.setOnClickListener { chosenSpeed = 1.5f; updateSpeedBtns() }
-            btnSpeed20.setOnClickListener { chosenSpeed = 2.0f; updateSpeedBtns() }
+            etSaveSpeedMultiplier?.setText("1")
+            updateSpeedBtns()
+
+            etSaveSpeedMultiplier?.addTextChangedListener(object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val num = s?.toString()?.toFloatOrNull()
+                    if (num != null && num > 0) {
+                        chosenSpeed = num.coerceIn(0.5f, 20.0f)
+                        val formatted = if (chosenSpeed % 1f == 0f) "${chosenSpeed.toInt()}" else "$chosenSpeed"
+                        tvSpeedLiveBadge?.text = "x$formatted"
+                    }
+                }
+                override fun afterTextChanged(s: android.text.Editable?) {}
+            })
+
+            btnSaveSpeed1?.setOnClickListener { chosenSpeed = 1.0f; etSaveSpeedMultiplier?.setText("1"); updateSpeedBtns() }
+            btnSaveSpeed2?.setOnClickListener { chosenSpeed = 2.0f; etSaveSpeedMultiplier?.setText("2"); updateSpeedBtns() }
+            btnSaveSpeed5?.setOnClickListener { chosenSpeed = 5.0f; etSaveSpeedMultiplier?.setText("5"); updateSpeedBtns() }
+            btnSaveSpeed10?.setOnClickListener { chosenSpeed = 10.0f; etSaveSpeedMultiplier?.setText("10"); updateSpeedBtns() }
+            btnSaveSpeed20?.setOnClickListener { chosenSpeed = 20.0f; etSaveSpeedMultiplier?.setText("20"); updateSpeedBtns() }
 
             val closeDialog = {
                 try {
@@ -707,9 +743,14 @@ class TurboOverlayService : Service() {
                 val enteredName = etName.text?.toString()?.trim() ?: ""
                 val comboName = if (enteredName.isNotEmpty()) enteredName else defaultName
 
+                val enteredSpeed = etSaveSpeedMultiplier?.text?.toString()?.toFloatOrNull() ?: chosenSpeed
+                val finalSpeed = enteredSpeed.coerceIn(0.5f, 20.0f)
+
+                val maxDim = Math.max(screenWidth, screenHeight).coerceAtLeast(1920)
+                val minDim = Math.min(screenWidth, screenHeight).coerceAtLeast(1080)
                 val offset = (triggerButtons.size * 65)
-                val btnX = (screenWidth - 180).coerceAtLeast(60)
-                val btnY = ((screenHeight / 3) + offset).coerceIn(100, (screenHeight - 160).coerceAtLeast(100))
+                val btnX = (maxDim - 250).coerceAtLeast(100)
+                val btnY = ((minDim / 3) + offset).coerceIn(100, (minDim - 160).coerceAtLeast(100))
 
                 val triggerBtn = createFloatingTriggerInstance(
                     id = java.util.UUID.randomUUID().toString(),
@@ -717,7 +758,7 @@ class TurboOverlayService : Service() {
                     actions = actions,
                     posX = btnX,
                     posY = btnY,
-                    speedMultiplier = chosenSpeed,
+                    speedMultiplier = finalSpeed,
                     opacity = configStorage.globalOpacity
                 )
                 triggerButtons.add(triggerBtn)
@@ -732,13 +773,13 @@ class TurboOverlayService : Service() {
                         repeatCount = 1,
                         opacityPercent = configStorage.globalOpacity,
                         actions = actions,
-                        speedMultiplier = chosenSpeed
+                        speedMultiplier = finalSpeed
                     )
                 )
 
                 renderAssignedTriggersList()
                 closeDialog()
-                Toast.makeText(this, "✅ Đã lưu Combo [$comboName] (${actions.size} thao tác)! Chạm nút nổi trên màn hình để xả combo!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "✅ Đã lưu Combo [$comboName] ($finalSpeed x tốc độ)! Chạm nút nổi trên màn hình để xả combo!", Toast.LENGTH_LONG).show()
             }
 
             btnCancel.setOnClickListener {
@@ -852,10 +893,12 @@ class TurboOverlayService : Service() {
         val savedList = configStorage.loadAllTriggers()
         if (savedList.isEmpty()) return
 
+        val maxDim = Math.max(screenWidth, screenHeight).coerceAtLeast(1920)
+
         savedList.take(5).forEach { saved ->
             if (saved.points.isNotEmpty() || saved.actions.isNotEmpty()) {
-                val posX = saved.x.coerceIn(16, (screenWidth - 120).coerceAtLeast(16))
-                val posY = saved.y.coerceIn(50, (screenHeight - 120).coerceAtLeast(50))
+                val posX = saved.x.coerceIn(0, maxDim - 50)
+                val posY = saved.y.coerceIn(0, maxDim - 50)
                 val btn = createFloatingTriggerInstance(
                     id = saved.id,
                     name = saved.name,
@@ -866,7 +909,7 @@ class TurboOverlayService : Service() {
                     delay = saved.delayBetweenMs,
                     repeat = saved.repeatCount,
                     opacity = saved.opacityPercent,
-                    speedMultiplier = saved.speedMultiplier
+                    speedMultiplier = saved.speedMultiplier.coerceIn(0.5f, 20.0f)
                 )
                 triggerButtons.add(btn)
             }
@@ -1067,18 +1110,17 @@ class TurboOverlayService : Service() {
         val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
         val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
 
+        layoutCollapsed?.visibility = View.GONE
+
         if (isOverlayHidden) {
             targetPins.forEach { it.view.visibility = View.GONE }
             triggerButtons.forEach { it.view.visibility = View.GONE }
             layoutExpanded?.visibility = View.GONE
-            layoutCollapsed?.visibility = View.VISIBLE
-            layoutCollapsed?.alpha = 0.25f
-            Toast.makeText(this, "👁️ Đã ẩn toàn bộ nút! Vuốt thanh thông báo hoặc chạm mép để hiện lại.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "👁️ Đã ẩn toàn bộ nút trên màn hình!", Toast.LENGTH_SHORT).show()
         } else {
             targetPins.forEach { it.view.visibility = View.VISIBLE }
             triggerButtons.forEach { it.view.visibility = View.VISIBLE }
-            layoutCollapsed?.alpha = 1.0f
-            Toast.makeText(this, "👁️ Đã hiện lại các nút Game Turbo!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "👁️ Đã hiện lại các nút Combo!", Toast.LENGTH_SHORT).show()
         }
         updateNotification()
     }
@@ -1197,7 +1239,7 @@ class TurboOverlayService : Service() {
         )
 
         clearAllTargetPins()
-        collapseDock()
+        closeTurboMenu()
         renderAssignedTriggersList()
         Toast.makeText(this, "✅ Đã tạo nút [$name]! Chạm nút để xả combo, nhấn giữ để chỉnh sửa.", Toast.LENGTH_LONG).show()
     }

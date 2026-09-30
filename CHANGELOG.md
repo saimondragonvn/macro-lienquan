@@ -4,6 +4,26 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.3.1] - 2026-09-30
+### 🚀 ẨN HOÀN TOÀN ICON MÉP, MỞ MENU TIỆN ÍCH THÔNG BÁO (CIRCLE TO SEARCH), SỬA LỖI KÉO THẢ NHẢY LOẠN & CHỈNH TỐC ĐỘ BẰNG SỐ (TỐI ĐA 20X)
+- **ẨN HOÀN TOÀN ICON TAB SÉT TURBO Ở MÉP MÀN HÌNH**:
+  - Không còn icon tab nổi `[⚡ TURBO]` treo ở mép màn hình khi chơi game, loại bỏ 100% cảm giác vướng mắt và không cản trở thao tác ngón tay.
+- **MỞ MENU TURBO DẠNG TIỆN ÍCH THÔNG BÁO (CIRCLE TO SEARCH STYLE)**:
+  - Vuốt thanh thông báo Android xuống và chạm vào thông báo hoặc nút `[⚡ MỞ MENU]`, bảng điều khiển Game Turbo HUD sẽ lập tức bung ra giữa màn hình.
+  - Bấm `[✕ Đóng]` là menu đóng hoàn toàn, không để lại bất kỳ icon nào trên màn hình.
+- **KHẮC PHỤC TRIỆT ĐỂ LỖI NÚT NHẢY LOẠN KHI KÉO THẢ (BUTTER-SMOOTH DRAGGING)**:
+  - Viết lại toàn bộ thuật toán dragging của Nút Combo và Điểm Ghim sử dụng tọa độ phần cứng `event.rawX` / `event.rawY`.
+  - Di chuyển nút cực kỳ mượt mà, bám dính 1:1 theo ngón tay, kéo thả cơ động đến bất kỳ vị trí nào trên màn hình (giữa màn hình, cạnh nút đánh thường, v.v.) mà không bị giật, rung lắc hay nhảy loạn.
+- **LƯU VỊ TRÍ NÚT CHUẨN XÁC, BẢO LƯU TỌA ĐỘ KHI XOAY NGANG**:
+  - Khắc phục lỗi clamp tọa độ theo chiều dọc portrait, đảm bảo tọa độ chiêu thức trong game ngang không bị ép sai hay biến mất.
+  - Ghi đĩa tức thì với cơ chế synchronous `commit()`, không bao giờ bị mất vị trí đã gán khi khởi động lại máy hay xoay màn hình.
+- **CHỈNH TỐC ĐỘ CƠ ĐỘNG BẰNG SỐ (GIỚI HẠN TỐI ĐA 20X)**:
+  - Bổ sung ô nhập số tốc độ xả combo trực tiếp: Người dùng nhập 5 sẽ x5 tốc độ, nhập 10 sẽ x10 tốc độ (hỗ trợ từ 0.5x đến 20x).
+  - Kèm các phím chọn nhanh: 1x, 2x, 5x, 10x, 20x cả trong hộp thoại lưu combo lẫn menu cài đặt nút.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.3.1.apk`.
+
+---
+
 ## [v2.3.0] - 2026-09-30
 ### 🚀 GIAO DIỆN BASIC TỐI GIẢN, ĐIỀU KHIỂN TỪ THANH THÔNG BÁO, ĐỔI TÊN COMBO & SỬA LỖI LOẠN CẢM ỨNG
 - **GIAO DIỆN BASIC, TỐI GIẢN & MƯỢT MÀ**:

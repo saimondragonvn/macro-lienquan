@@ -53,15 +53,16 @@ class QuickSettingsTileService : TileService() {
             return
         }
 
-        // 2. Chuyển đổi trạng thái bật/tắt TurboOverlayService
+        // 2. Chuyển đổi trạng thái hoặc mở ngay Menu Game Turbo
         val isRunning = TurboOverlayService.isRunning
         if (isRunning) {
-            TurboOverlayService.stop(this)
+            TurboOverlayService.openMenu(this)
         } else {
             TurboOverlayService.start(this)
+            TurboOverlayService.openMenu(this)
         }
 
-        updateTileState(!isRunning)
+        updateTileState(true)
     }
 
     private fun updateTileState(overrideRunning: Boolean? = null) {

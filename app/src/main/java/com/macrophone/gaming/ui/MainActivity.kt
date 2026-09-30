@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 TurboOverlayService.start(this)
-                Toast.makeText(this, "Đã bật Game Turbo HUD! Nhìn vào mép màn hình để thấy tab [⚡ TURBO].", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Đã bật Game Turbo! Vuốt thông báo xuống & bấm [⚡ MỞ MENU] để cài đặt & ghi combo.", Toast.LENGTH_LONG).show()
             }
             binding.root.postDelayed({ refreshStatuses() }, 300)
         }

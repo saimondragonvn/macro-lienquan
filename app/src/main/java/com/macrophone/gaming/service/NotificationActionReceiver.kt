@@ -15,6 +15,9 @@ class NotificationActionReceiver : BroadcastReceiver() {
             NotificationHelper.ACTION_CLOSE -> {
                 TurboOverlayService.stop(context)
             }
+            NotificationHelper.ACTION_OPEN_MENU -> {
+                TurboOverlayService.openMenu(context)
+            }
             NotificationHelper.ACTION_TOGGLE_VISIBILITY -> {
                 TurboOverlayService.toggleVisibility(context)
             }

@@ -153,74 +153,61 @@ class FloatingTriggerView(
 
     private fun setupTouchListener() {
         view.setOnTouchListener(object : View.OnTouchListener {
-            private var startX = 0
-            private var startY = 0
-            private var touchStartX = 0f
-            private var touchStartY = 0f
+            private var initialX = 0
+            private var initialY = 0
+            private var initialTouchX = 0f
+            private var initialTouchY = 0f
             private var isDragging = false
             private var downTime = 0L
-            private var activePointerId = MotionEvent.INVALID_POINTER_ID
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when (event.actionMasked) {
-                    MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
-                        val actionIndex = event.actionIndex
-                        activePointerId = event.getPointerId(actionIndex)
-                        startX = params.x
-                        startY = params.y
-                        touchStartX = event.getX(actionIndex) + params.x
-                        touchStartY = event.getY(actionIndex) + params.y
+                    MotionEvent.ACTION_DOWN -> {
+                        initialX = params.x
+                        initialY = params.y
+                        initialTouchX = event.rawX
+                        initialTouchY = event.rawY
                         isDragging = false
                         downTime = System.currentTimeMillis()
                         return true
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        val pointerIndex = if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
-                            event.findPointerIndex(activePointerId)
-                        } else {
-                            0
-                        }
-                        if (pointerIndex in 0 until event.pointerCount) {
-                            val curX = event.getX(pointerIndex) + params.x
-                            val curY = event.getY(pointerIndex) + params.y
-                            val dx = (curX - touchStartX).toInt()
-                            val dy = (curY - touchStartY).toInt()
-                            val dragThreshold = (18 * context.resources.displayMetrics.density).toInt()
+                        val dx = event.rawX - initialTouchX
+                        val dy = event.rawY - initialTouchY
+                        val dragThreshold = 8 * context.resources.displayMetrics.density
 
-                            if (abs(dx) > dragThreshold || abs(dy) > dragThreshold) {
-                                isDragging = true
-                                params.x = startX + dx
-                                params.y = startY + dy
-                                if (view.isAttachedToWindow) {
-                                    try {
-                                        windowManager.updateViewLayout(view, params)
-                                    } catch (_: Throwable) {}
-                                }
+                        if (!isDragging && (abs(dx) > dragThreshold || abs(dy) > dragThreshold)) {
+                            isDragging = true
+                        }
+
+                        if (isDragging) {
+                            params.x = (initialX + dx).toInt()
+                            params.y = (initialY + dy).toInt()
+                            if (view.isAttachedToWindow) {
+                                try {
+                                    windowManager.updateViewLayout(view, params)
+                                } catch (_: Throwable) {}
                             }
                         }
                         return true
                     }
 
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-                        val actionIndex = event.actionIndex
-                        val pointerId = event.getPointerId(actionIndex)
-                        if (activePointerId == MotionEvent.INVALID_POINTER_ID || pointerId == activePointerId) {
-                            val duration = System.currentTimeMillis() - downTime
-                            if (!isDragging && duration < 350) {
-                                // 1. Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME NGAY TỨC THÌ!
-                                flashFeedback()
-                                onTrigger(this@FloatingTriggerView)
-                            } else if (duration >= 450 && !isDragging) {
-                                // 2. Nhấn giữ lâu mà không kéo -> Mở Menu Cài Đặt Combo!
-                                vibrate(60)
-                                showConfigDialog()
-                            } else if (isDragging) {
-                                // 3. Kéo thả di chuyển vị trí nút
-                                onPositionChanged?.invoke(this@FloatingTriggerView)
-                            }
-                            activePointerId = MotionEvent.INVALID_POINTER_ID
+                    MotionEvent.ACTION_UP -> {
+                        val duration = System.currentTimeMillis() - downTime
+                        if (isDragging) {
+                            // 3. Kéo thả di chuyển vị trí nút -> Lưu vị trí ngay lập tức!
+                            onPositionChanged?.invoke(this@FloatingTriggerView)
+                        } else if (duration < 350) {
+                            // 1. Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME NGAY TỨC THÌ!
+                            flashFeedback()
+                            onTrigger(this@FloatingTriggerView)
+                        } else if (duration >= 450) {
+                            // 2. Nhấn giữ lâu mà không kéo -> Mở Menu Cài Đặt Combo!
+                            vibrate(60)
+                            showConfigDialog()
                         }
+                        isDragging = false
                         return true
                     }
 
@@ -229,7 +216,6 @@ class FloatingTriggerView(
                             onPositionChanged?.invoke(this@FloatingTriggerView)
                         }
                         isDragging = false
-                        activePointerId = MotionEvent.INVALID_POINTER_ID
                         return true
                     }
                 }
@@ -283,6 +269,89 @@ class FloatingTriggerView(
                 "${actions.size} thao tác thực tế • Game Turbo 120Hz"
             } else {
                 "${points.size} chiêu đã gán • Tọa độ chuẩn Liên Quân"
+            }
+
+            val tvDialogSpeedBadge = configDialogView!!.findViewById<TextView>(R.id.tvDialogSpeedBadge)
+            val etDialogSpeedMultiplier = configDialogView!!.findViewById<android.widget.EditText>(R.id.etDialogSpeedMultiplier)
+            val btnConfigSpeed1 = configDialogView!!.findViewById<TextView>(R.id.btnConfigSpeed1)
+            val btnConfigSpeed2 = configDialogView!!.findViewById<TextView>(R.id.btnConfigSpeed2)
+            val btnConfigSpeed5 = configDialogView!!.findViewById<TextView>(R.id.btnConfigSpeed5)
+            val btnConfigSpeed10 = configDialogView!!.findViewById<TextView>(R.id.btnConfigSpeed10)
+            val btnConfigSpeed20 = configDialogView!!.findViewById<TextView>(R.id.btnConfigSpeed20)
+
+            val updateSpeedMultiplierUI = {
+                val formatted = if (speedMultiplier % 1f == 0f) "${speedMultiplier.toInt()}" else "$speedMultiplier"
+                tvDialogSpeedBadge?.text = "x$formatted"
+
+                val is1 = speedMultiplier == 1.0f
+                val is2 = speedMultiplier == 2.0f
+                val is5 = speedMultiplier == 5.0f
+                val is10 = speedMultiplier == 10.0f
+                val is20 = speedMultiplier == 20.0f
+
+                btnConfigSpeed1?.setBackgroundResource(if (is1) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnConfigSpeed1?.setTextColor(ContextCompat.getColor(context, if (is1) R.color.bg_dark else R.color.text_primary))
+
+                btnConfigSpeed2?.setBackgroundResource(if (is2) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnConfigSpeed2?.setTextColor(ContextCompat.getColor(context, if (is2) R.color.bg_dark else R.color.text_primary))
+
+                btnConfigSpeed5?.setBackgroundResource(if (is5) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnConfigSpeed5?.setTextColor(ContextCompat.getColor(context, if (is5) R.color.bg_dark else R.color.text_primary))
+
+                btnConfigSpeed10?.setBackgroundResource(if (is10) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnConfigSpeed10?.setTextColor(ContextCompat.getColor(context, if (is10) R.color.bg_dark else R.color.text_primary))
+
+                btnConfigSpeed20?.setBackgroundResource(if (is20) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnConfigSpeed20?.setTextColor(ContextCompat.getColor(context, if (is20) R.color.bg_dark else R.color.text_primary))
+            }
+
+            val initialSpeedStr = if (speedMultiplier % 1f == 0f) "${speedMultiplier.toInt()}" else "$speedMultiplier"
+            etDialogSpeedMultiplier?.setText(initialSpeedStr)
+            updateSpeedMultiplierUI()
+
+            etDialogSpeedMultiplier?.addTextChangedListener(object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val num = s?.toString()?.toFloatOrNull()
+                    if (num != null && num > 0) {
+                        speedMultiplier = num.coerceIn(0.5f, 20.0f)
+                        val formatted = if (speedMultiplier % 1f == 0f) "${speedMultiplier.toInt()}" else "$speedMultiplier"
+                        tvDialogSpeedBadge?.text = "x$formatted"
+                        onConfigChanged?.invoke(this@FloatingTriggerView)
+                    }
+                }
+                override fun afterTextChanged(s: android.text.Editable?) {}
+            })
+
+            btnConfigSpeed1?.setOnClickListener {
+                speedMultiplier = 1.0f
+                etDialogSpeedMultiplier?.setText("1")
+                updateSpeedMultiplierUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+            btnConfigSpeed2?.setOnClickListener {
+                speedMultiplier = 2.0f
+                etDialogSpeedMultiplier?.setText("2")
+                updateSpeedMultiplierUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+            btnConfigSpeed5?.setOnClickListener {
+                speedMultiplier = 5.0f
+                etDialogSpeedMultiplier?.setText("5")
+                updateSpeedMultiplierUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+            btnConfigSpeed10?.setOnClickListener {
+                speedMultiplier = 10.0f
+                etDialogSpeedMultiplier?.setText("10")
+                updateSpeedMultiplierUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+            btnConfigSpeed20?.setOnClickListener {
+                speedMultiplier = 20.0f
+                etDialogSpeedMultiplier?.setText("20")
+                updateSpeedMultiplierUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
             }
 
             val updateDelayUI = {

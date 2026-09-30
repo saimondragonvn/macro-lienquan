@@ -55,21 +55,21 @@ class MacroConfigStorage(context: Context) {
     }
 
     /**
-     * Lưu toàn bộ danh sách nút Macro
+     * Lưu toàn bộ danh sách nút Macro (ghi đĩa ngay lập tức bằng commit)
      */
     fun saveAllTriggers(triggers: List<SavedMacroTrigger>) {
         try {
             val json = gson.toJson(triggers)
-            prefs.edit().putString(KEY_SAVED_TRIGGERS, json).apply()
+            prefs.edit().putString(KEY_SAVED_TRIGGERS, json).commit()
         } catch (_: Throwable) {}
     }
 
     /**
-     * Thêm hoặc cập nhật một nút macro
+     * Thêm hoặc cập nhật một nút macro chính xác theo ID
      */
     fun upsertTrigger(trigger: SavedMacroTrigger) {
         val list = loadAllTriggers()
-        val index = list.indexOfFirst { it.id == trigger.id || it.name == trigger.name }
+        val index = list.indexOfFirst { it.id == trigger.id }
         if (index >= 0) {
             list[index] = trigger
         } else {
@@ -79,7 +79,7 @@ class MacroConfigStorage(context: Context) {
     }
 
     /**
-     * Xóa một nút macro theo tên hoặc ID
+     * Xóa một nút macro theo ID hoặc tên
      */
     fun deleteTrigger(identifier: String) {
         val list = loadAllTriggers()
@@ -93,7 +93,7 @@ class MacroConfigStorage(context: Context) {
      * Xóa toàn bộ nút macro đã lưu
      */
     fun clearAllTriggers() {
-        prefs.edit().remove(KEY_SAVED_TRIGGERS).apply()
+        prefs.edit().remove(KEY_SAVED_TRIGGERS).commit()
     }
 
     /**

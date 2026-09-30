@@ -18,7 +18,7 @@
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:elevation="14dp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/ivCollapsedHandle"
@@ -448,8 +448,8 @@
                     android:layout_marginTop="5dp"
                     android:background="@drawable/bg_turbo_btn_secondary"
                     android:gravity="center"
-                    android:text="— THU GỌN VỀ MÉP"
-                    android:textColor="@color/cyan_neon"
+                    android:text="✕ ĐÓNG MENU TURBO"
+                    android:textColor="@color/amber_warning"
                     android:textSize="10sp"
                     android:textStyle="bold" />
 

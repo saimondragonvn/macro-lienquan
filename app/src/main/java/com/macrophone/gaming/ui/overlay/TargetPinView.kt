@@ -58,69 +58,56 @@ class TargetPinView(
 
     private fun setupTouchListener() {
         view.setOnTouchListener(object : View.OnTouchListener {
-            private var startX = 0
-            private var startY = 0
-            private var touchStartX = 0f
-            private var touchStartY = 0f
+            private var initialX = 0
+            private var initialY = 0
+            private var initialTouchX = 0f
+            private var initialTouchY = 0f
             private var isDragging = false
             private var downTime = 0L
-            private var activePointerId = MotionEvent.INVALID_POINTER_ID
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when (event.actionMasked) {
-                    MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
-                        val actionIndex = event.actionIndex
-                        activePointerId = event.getPointerId(actionIndex)
-                        startX = params.x
-                        startY = params.y
-                        touchStartX = event.getX(actionIndex) + params.x
-                        touchStartY = event.getY(actionIndex) + params.y
+                    MotionEvent.ACTION_DOWN -> {
+                        initialX = params.x
+                        initialY = params.y
+                        initialTouchX = event.rawX
+                        initialTouchY = event.rawY
                         isDragging = false
                         downTime = System.currentTimeMillis()
                         return true
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        val pointerIndex = if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
-                            event.findPointerIndex(activePointerId)
-                        } else {
-                            0
-                        }
-                        if (pointerIndex in 0 until event.pointerCount) {
-                            val curX = event.getX(pointerIndex) + params.x
-                            val curY = event.getY(pointerIndex) + params.y
-                            val dx = (curX - touchStartX).toInt()
-                            val dy = (curY - touchStartY).toInt()
+                        val dx = event.rawX - initialTouchX
+                        val dy = event.rawY - initialTouchY
+                        val dragThreshold = 6 * context.resources.displayMetrics.density
 
-                            if (abs(dx) > 6 || abs(dy) > 6) {
-                                isDragging = true
-                                params.x = startX + dx
-                                params.y = startY + dy
-                                if (view.isAttachedToWindow) {
-                                    try {
-                                        windowManager.updateViewLayout(view, params)
-                                    } catch (_: Throwable) {}
-                                }
+                        if (!isDragging && (abs(dx) > dragThreshold || abs(dy) > dragThreshold)) {
+                            isDragging = true
+                        }
+
+                        if (isDragging) {
+                            params.x = (initialX + dx).toInt()
+                            params.y = (initialY + dy).toInt()
+                            if (view.isAttachedToWindow) {
+                                try {
+                                    windowManager.updateViewLayout(view, params)
+                                } catch (_: Throwable) {}
                             }
                         }
                         return true
                     }
 
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-                        val actionIndex = event.actionIndex
-                        val pointerId = event.getPointerId(actionIndex)
-                        if (activePointerId == MotionEvent.INVALID_POINTER_ID || pointerId == activePointerId) {
-                            if (!isDragging && System.currentTimeMillis() - downTime < 350) {
-                                onPinClicked?.invoke(this@TargetPinView)
-                            }
-                            activePointerId = MotionEvent.INVALID_POINTER_ID
+                    MotionEvent.ACTION_UP -> {
+                        if (!isDragging && System.currentTimeMillis() - downTime < 350) {
+                            onPinClicked?.invoke(this@TargetPinView)
                         }
+                        isDragging = false
                         return true
                     }
 
                     MotionEvent.ACTION_CANCEL -> {
                         isDragging = false
-                        activePointerId = MotionEvent.INVALID_POINTER_ID
                         return true
                     }
                 }

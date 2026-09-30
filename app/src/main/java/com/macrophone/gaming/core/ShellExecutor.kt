@@ -217,7 +217,7 @@ object ShellExecutor {
     ): Boolean {
         if (actions.isEmpty()) return false
 
-        val mult = speedMultiplier.coerceIn(0.5f, 10.0f)
+        val mult = speedMultiplier.coerceIn(0.5f, 20.0f)
         val sb = StringBuilder()
         val totalLoops = repeatCount.coerceIn(1, 5)
         for (r in 0 until totalLoops) {

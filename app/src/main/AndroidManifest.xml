@@ -76,8 +76,9 @@
             android:name=".service.NotificationActionReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.macrophone.gaming.ACTION_PLAY" />
-                <action android:name="com.macrophone.gaming.ACTION_STOP" />
+                <action android:name="com.macrophone.gaming.ACTION_OPEN_MENU" />
+                <action android:name="com.macrophone.gaming.ACTION_TOGGLE_VISIBILITY" />
+                <action android:name="com.macrophone.gaming.ACTION_START_RECORD" />
                 <action android:name="com.macrophone.gaming.ACTION_CLOSE" />
             </intent-filter>
         </receiver>
