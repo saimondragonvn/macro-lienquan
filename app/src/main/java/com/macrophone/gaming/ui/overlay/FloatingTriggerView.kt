@@ -28,7 +28,7 @@ class FloatingTriggerView(
     private val context: Context,
     private val windowManager: WindowManager,
     val id: String = java.util.UUID.randomUUID().toString(),
-    val name: String,
+    var name: String,
     val points: List<Pair<Float, Float>> = emptyList(),
     val actions: List<MacroAction> = emptyList(),
     initialX: Int,
@@ -87,6 +87,68 @@ class FloatingTriggerView(
     fun updateOpacity(percent: Int) {
         opacityPercent = percent.coerceIn(20, 100)
         view.alpha = opacityPercent / 100f
+    }
+
+    fun setVisible(visible: Boolean) {
+        view.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
+    fun rename(newName: String) {
+        val trimmed = newName.trim()
+        if (trimmed.isNotEmpty()) {
+            name = trimmed
+            tvLabel.text = name.take(4)
+            onConfigChanged?.invoke(this)
+        }
+    }
+
+    fun showRenameDialog() {
+        try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(context, R.style.Theme_MacroGaming)
+            val dialogView = LayoutInflater.from(themedContext).inflate(R.layout.view_rename_dialog, null)
+
+            val dialogParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.CENTER
+            }
+
+            val etInput = dialogView.findViewById<android.widget.EditText>(R.id.etRenameInput)
+            val btnConfirm = dialogView.findViewById<TextView>(R.id.btnRenameConfirm)
+            val btnCancel = dialogView.findViewById<TextView>(R.id.btnRenameCancel)
+
+            etInput?.setText(name)
+            etInput?.selectAll()
+
+            val closeRenameDialog = {
+                try {
+                    if (dialogView.isAttachedToWindow) {
+                        windowManager.removeViewImmediate(dialogView)
+                    } else {
+                        windowManager.removeView(dialogView)
+                    }
+                } catch (_: Throwable) {}
+            }
+
+            btnConfirm?.setOnClickListener {
+                val newName = etInput?.text?.toString()?.trim() ?: ""
+                if (newName.isNotEmpty()) {
+                    rename(newName)
+                    Toast.makeText(context, "✅ Đã đổi tên thành: $name", Toast.LENGTH_SHORT).show()
+                }
+                closeRenameDialog()
+            }
+
+            btnCancel?.setOnClickListener {
+                closeRenameDialog()
+            }
+
+            windowManager.addView(dialogView, dialogParams)
+        } catch (_: Throwable) {}
     }
 
     private fun setupTouchListener() {
@@ -317,6 +379,12 @@ class FloatingTriggerView(
                 updateOpacity(100)
                 updateOpacityUI()
                 onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+
+            val btnDialogRename = configDialogView!!.findViewById<TextView>(R.id.btnDialogRename)
+            btnDialogRename?.setOnClickListener {
+                dismissConfigDialog()
+                showRenameDialog()
             }
 
             btnDialogTestRun?.setOnClickListener {

@@ -17,8 +17,8 @@ object NotificationHelper {
     const val CHANNEL_ID = "macro_gaming_channel"
     const val NOTIFICATION_ID = 1001
 
-    const val ACTION_PLAY = "com.macrophone.gaming.ACTION_PLAY"
-    const val ACTION_STOP = "com.macrophone.gaming.ACTION_STOP"
+    const val ACTION_TOGGLE_VISIBILITY = "com.macrophone.gaming.ACTION_TOGGLE_VISIBILITY"
+    const val ACTION_START_RECORD = "com.macrophone.gaming.ACTION_START_RECORD"
     const val ACTION_CLOSE = "com.macrophone.gaming.ACTION_CLOSE"
 
     fun createNotificationChannel(context: Context) {
@@ -36,8 +36,9 @@ object NotificationHelper {
 
     fun buildNotification(
         context: Context,
-        macroState: MacroState,
-        macroName: String?
+        isButtonsHidden: Boolean = false,
+        isRecording: Boolean = false,
+        activeComboName: String? = null
     ): Notification {
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -49,26 +50,29 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val playIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-            action = ACTION_PLAY
+        // 1. Nút Ẩn/Hiện Nút Nổi
+        val toggleIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = ACTION_TOGGLE_VISIBILITY
         }
-        val playPendingIntent = PendingIntent.getBroadcast(
+        val togglePendingIntent = PendingIntent.getBroadcast(
             context,
             1,
-            playIntent,
+            toggleIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val stopIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-            action = ACTION_STOP
+        // 2. Nút Bắt đầu ghi Combo
+        val recordIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = ACTION_START_RECORD
         }
-        val stopPendingIntent = PendingIntent.getBroadcast(
+        val recordPendingIntent = PendingIntent.getBroadcast(
             context,
             2,
-            stopIntent,
+            recordIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // 3. Nút Tắt Game Turbo hoàn toàn
         val closeIntent = Intent(context, NotificationActionReceiver::class.java).apply {
             action = ACTION_CLOSE
         }
@@ -79,28 +83,31 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val title = when (macroState) {
-            MacroState.PLAYING -> context.getString(R.string.notif_title_playing, macroName ?: "Combo")
-            MacroState.RECORDING -> context.getString(R.string.notif_title_recording)
-            else -> context.getString(R.string.notif_title_ready)
+        val title = when {
+            isRecording -> "🔴 Game Turbo: ĐANG GHI COMBO..."
+            activeComboName != null -> "⚡ Đang xả combo: [$activeComboName]"
+            isButtonsHidden -> "⚡ Game Turbo: ĐÃ ẨN NÚT (Chạm để hiện)"
+            else -> "⚡ Game Turbo Pro (120Hz Fast Combo)"
         }
 
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val content = when {
+            isRecording -> "Vào game thao tác bình thường, bấm Xong trên đỉnh màn hình để lưu"
+            isButtonsHidden -> "Bấm [👁️ HIỆN NÚT] bên dưới để mở lại nút combo trên màn hình"
+            else -> "Bấm [👁️ ẨN NÚT] để giấu nút • [🔴 GHI COMBO] để tạo combo mới"
+        }
+
+        val toggleLabel = if (isButtonsHidden) "👁️ HIỆN NÚT" else "👁️ ẨN NÚT"
+
+        return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_macro_tile)
             .setContentTitle(title)
-            .setContentText("Kích hoạt combo nhanh cho game")
+            .setContentText(content)
             .setContentIntent(openAppPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-
-        if (macroState == MacroState.PLAYING) {
-            builder.addAction(R.drawable.ic_stop, context.getString(R.string.notif_action_stop), stopPendingIntent)
-        } else if (macroState != MacroState.RECORDING) {
-            builder.addAction(R.drawable.ic_play, context.getString(R.string.notif_action_play), playPendingIntent)
-        }
-
-        builder.addAction(R.drawable.ic_close, context.getString(R.string.notif_action_close), closePendingIntent)
-
-        return builder.build()
+            .addAction(R.drawable.ic_play, toggleLabel, togglePendingIntent)
+            .addAction(R.drawable.ic_speed, "🔴 Ghi Combo", recordPendingIntent)
+            .addAction(R.drawable.ic_close, "✕ Tắt Turbo", closePendingIntent)
+            .build()
     }
 }

@@ -66,7 +66,9 @@ object GameTurboRecorder {
             var currentPath = ""
             var hasMtPositionX = false
             var hasMtPositionY = false
+            var minX = 0
             var maxX = 1080
+            var minY = 0
             var maxY = 2400
 
             var line: String? = reader.readLine()
@@ -76,21 +78,35 @@ object GameTurboRecorder {
                     currentPath = trimmed.substringAfterLast(" ").trim()
                     hasMtPositionX = false
                     hasMtPositionY = false
+                    minX = 0
+                    maxX = 0
+                    minY = 0
+                    maxY = 0
                 }
                 // Tìm kiếm ABS_MT_POSITION_X (0035) và ABS_MT_POSITION_Y (0036)
                 if (trimmed.contains("0035") || trimmed.contains("ABS_MT_POSITION_X")) {
                     hasMtPositionX = true
                     val maxVal = extractMaxVal(trimmed)
-                    if (maxVal > 0) maxX = maxVal
+                    if (maxVal > 0) {
+                        minX = extractMinVal(trimmed)
+                        maxX = maxVal
+                    }
                 }
                 if (trimmed.contains("0036") || trimmed.contains("ABS_MT_POSITION_Y")) {
                     hasMtPositionY = true
                     val maxVal = extractMaxVal(trimmed)
-                    if (maxVal > 0) maxY = maxVal
+                    if (maxVal > 0) {
+                        minY = extractMinVal(trimmed)
+                        maxY = maxVal
+                    }
                 }
 
                 if (hasMtPositionX && hasMtPositionY && currentPath.isNotEmpty()) {
-                    touchDevice = TouchDevice(currentPath, 0, maxX, 0, maxY)
+                    val finalMinX = minX
+                    val finalMaxX = if (maxX > 0) maxX else 1080
+                    val finalMinY = minY
+                    val finalMaxY = if (maxY > 0) maxY else 2400
+                    touchDevice = TouchDevice(currentPath, finalMinX, finalMaxX, finalMinY, finalMaxY)
                     break
                 }
                 line = reader.readLine()
@@ -101,6 +117,12 @@ object GameTurboRecorder {
         }
 
         return touchDevice
+    }
+
+    private fun extractMinVal(line: String): Int {
+        val minRegex = Regex("""min\s+(\d+)""")
+        val match = minRegex.find(line)
+        return match?.groupValues?.get(1)?.toIntOrNull() ?: 0
     }
 
     private fun extractMaxVal(line: String): Int {
@@ -127,11 +149,12 @@ object GameTurboRecorder {
         }
 
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = wm.defaultDisplay
-        val rotation = display.rotation
-        val metrics = context.resources.displayMetrics
-        val screenW = metrics.widthPixels
-        val screenH = metrics.heightPixels
+        val realMetrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        wm.defaultDisplay.getRealMetrics(realMetrics)
+        val screenW = realMetrics.widthPixels
+        val screenH = realMetrics.heightPixels
+        val density = realMetrics.density
 
         // Tự động quét thiết bị cảm ứng
         val device = detectTouchDevice()
@@ -157,13 +180,22 @@ object GameTurboRecorder {
                 val reader = BufferedReader(InputStreamReader(proc.inputStream))
                 var curRawX = 0f
                 var curRawY = 0f
+                var hasReceivedCoord = false
+
+                var isPendingDown = false
                 var isFingerDown = false
+                var isPendingUp = false
+
                 var touchDownTime = 0L
                 var lastTouchUpTime = 0L
                 var downScreenX = 0f
                 var downScreenY = 0f
+                var latestScreenX = 0f
+                var latestScreenY = 0f
 
+                val devMinX = device?.minX ?: 0
                 val devMaxX = device?.maxX ?: max(screenW, screenH)
+                val devMinY = device?.minY ?: 0
                 val devMaxY = device?.maxY ?: max(screenW, screenH)
 
                 while (isActive && isRecording) {
@@ -174,37 +206,58 @@ object GameTurboRecorder {
                     // 1. Nhận diện tọa độ X
                     if (trimmed.contains("ABS_MT_POSITION_X")) {
                         val hexStr = trimmed.split(Regex("\\s+")).last()
-                        val raw = hexStr.toLongOrNull(16)?.toFloat() ?: curRawX
-                        curRawX = raw
+                        val raw = hexStr.toLongOrNull(16)?.toFloat()
+                        if (raw != null) {
+                            curRawX = raw
+                            hasReceivedCoord = true
+                        }
                     }
 
                     // 2. Nhận diện tọa độ Y
                     if (trimmed.contains("ABS_MT_POSITION_Y")) {
                         val hexStr = trimmed.split(Regex("\\s+")).last()
-                        val raw = hexStr.toLongOrNull(16)?.toFloat() ?: curRawY
-                        curRawY = raw
-                    }
-
-                    // 3. Nhận diện Chạm xuống (TOUCH DOWN)
-                    val isDownEvent = (trimmed.contains("BTN_TOUCH") && (trimmed.contains("DOWN") || trimmed.endsWith("00000001") || trimmed.endsWith(" 1"))) ||
-                            (trimmed.contains("ABS_MT_TRACKING_ID") && !trimmed.contains("ffffffff") && !trimmed.endsWith("-1"))
-                    if (isDownEvent) {
-                        if (!isFingerDown) {
-                            isFingerDown = true
-                            touchDownTime = now
-
-                            // Chuyển đổi tọa độ phần cứng sang tọa độ hiển thị màn hình game (chuẩn xoay ngang)
-                            val (sx, sy) = mapRawToScreen(curRawX, curRawY, devMaxX, devMaxY, screenW, screenH, rotation)
-                            downScreenX = sx
-                            downScreenY = sy
+                        val raw = hexStr.toLongOrNull(16)?.toFloat()
+                        if (raw != null) {
+                            curRawY = raw
+                            hasReceivedCoord = true
                         }
                     }
 
+                    // 3. Nhận diện Chạm xuống (TOUCH DOWN)
+                    val isDownSignal = (trimmed.contains("BTN_TOUCH") && (trimmed.contains("DOWN") || trimmed.endsWith("00000001") || trimmed.endsWith(" 1"))) ||
+                            (trimmed.contains("ABS_MT_TRACKING_ID") && !trimmed.contains("ffffffff") && !trimmed.endsWith("-1"))
+                    if (isDownSignal && !isFingerDown) {
+                        isPendingDown = true
+                        touchDownTime = now
+                    }
+
                     // 4. Nhận diện Nhấc tay (TOUCH UP)
-                    val isUpEvent = (trimmed.contains("BTN_TOUCH") && (trimmed.contains("UP") || trimmed.endsWith("00000000") || trimmed.endsWith(" 0"))) ||
+                    val isUpSignal = (trimmed.contains("BTN_TOUCH") && (trimmed.contains("UP") || trimmed.endsWith("00000000") || trimmed.endsWith(" 0"))) ||
                             (trimmed.contains("ABS_MT_TRACKING_ID") && (trimmed.contains("ffffffff") || trimmed.endsWith("-1")))
-                    if (isUpEvent) {
-                        if (isFingerDown) {
+                    if (isUpSignal && (isFingerDown || isPendingDown)) {
+                        isPendingUp = true
+                    }
+
+                    // 5. CHỐT FRAME CẢM ỨNG (SYN_REPORT) - KHẮC PHỤC TRIỆT ĐỂ LỖI LOẠN CẢM ỨNG
+                    if (trimmed.contains("SYN_REPORT")) {
+                        val curRotation = wm.defaultDisplay.rotation
+
+                        if (isPendingDown && hasReceivedCoord) {
+                            isPendingDown = false
+                            isFingerDown = true
+                            val (sx, sy) = mapRawToScreen(curRawX, curRawY, devMinX, devMaxX, devMinY, devMaxY, screenW, screenH, curRotation)
+                            downScreenX = sx
+                            downScreenY = sy
+                            latestScreenX = sx
+                            latestScreenY = sy
+                        } else if (isFingerDown && hasReceivedCoord) {
+                            val (sx, sy) = mapRawToScreen(curRawX, curRawY, devMinX, devMaxX, devMinY, devMaxY, screenW, screenH, curRotation)
+                            latestScreenX = sx
+                            latestScreenY = sy
+                        }
+
+                        if (isPendingUp && isFingerDown) {
+                            isPendingUp = false
                             isFingerDown = false
                             val duration = max(35L, now - touchDownTime)
                             val delayBefore = if (lastTouchUpTime > 0L) {
@@ -214,22 +267,21 @@ object GameTurboRecorder {
                             }
                             lastTouchUpTime = now
 
-                            val (upScreenX, upScreenY) = mapRawToScreen(curRawX, curRawY, devMaxX, devMaxY, screenW, screenH, rotation)
-                            val distance = hypot((upScreenX - downScreenX).toDouble(), (upScreenY - downScreenY).toDouble()).toFloat()
+                            val distance = hypot((latestScreenX - downScreenX).toDouble(), (latestScreenY - downScreenY).toDouble()).toFloat()
 
-                            val action = if (distance > (30f * metrics.density)) {
-                                // Thao tác Vuốt (SWIPE)
+                            val action = if (distance > (25f * density)) {
+                                // Thao tác Vuốt thực sự (SWIPE)
                                 MacroAction(
                                     type = MacroType.SWIPE,
                                     points = listOf(
                                         GesturePoint(downScreenX, downScreenY, touchDownTime),
-                                        GesturePoint(upScreenX, upScreenY, now)
+                                        GesturePoint(latestScreenX, latestScreenY, now)
                                     ),
                                     durationMs = duration.coerceIn(50L, 500L),
                                     delayBeforeMs = delayBefore
                                 )
                             } else if (duration > 350L) {
-                                // Thao tác Giữ (HOLD)
+                                // Thao tác Giữ (HOLD) tại điểm chạm
                                 MacroAction(
                                     type = MacroType.HOLD,
                                     points = listOf(GesturePoint(downScreenX, downScreenY, touchDownTime)),
@@ -237,7 +289,7 @@ object GameTurboRecorder {
                                     delayBeforeMs = delayBefore
                                 )
                             } else {
-                                // Thao tác Chạm (TAP) chuẩn xác cho game
+                                // Thao tác Chạm (TAP) - ĐÚNG 1 TỌA ĐỘ DUY NHẤT, KHÔNG BỊ TRƯỢT LỆCH!
                                 MacroAction(
                                     type = MacroType.TAP,
                                     points = listOf(GesturePoint(downScreenX, downScreenY, touchDownTime)),
@@ -264,38 +316,59 @@ object GameTurboRecorder {
     }
 
     /**
-     * Chuyển đổi tọa độ cảm ứng thô từ phần cứng sang tọa độ Pixel hiển thị màn hình
-     * Tự động bù trừ khi xoay ngang (Landscape trong Liên Quân Mobile)
+     * Chuyển đổi tọa độ cảm ứng thô từ phần cứng sang tọa độ Pixel hiển thị màn hình game
+     * Tự động nhận diện cạnh ngắn / cạnh dài và góc xoay ngang (Landscape Liên Quân Mobile)
      */
     private fun mapRawToScreen(
         rawX: Float,
         rawY: Float,
+        minX: Int,
         maxX: Int,
+        minY: Int,
         maxY: Int,
         screenW: Int,
         screenH: Int,
         rotation: Int
     ): Pair<Float, Float> {
-        val normX = (rawX / maxX.toFloat()).coerceIn(0f, 1f)
-        val normY = (rawY / maxY.toFloat()).coerceIn(0f, 1f)
+        val spanX = max(1, maxX - minX).toFloat()
+        val spanY = max(1, maxY - minY).toFloat()
+
+        // Phân biệt cạnh ngắn (Width portrait) và cạnh dài (Height portrait) của cảm ứng phần cứng
+        val isXShort = spanX <= spanY
+        val rawShort = if (isXShort) (rawX - minX) else (rawY - minY)
+        val rawLong = if (isXShort) (rawY - minY) else (rawX - minX)
+        val spanShort = if (isXShort) spanX else spanY
+        val spanLong = if (isXShort) spanY else spanX
+
+        val normShort = (rawShort / spanShort).coerceIn(0f, 1f)
+        val normLong = (rawLong / spanLong).coerceIn(0f, 1f)
+
+        // Đảm bảo displayWidth là cạnh dài và displayHeight là cạnh ngắn khi trong game Liên Quân
+        val dispW = max(screenW, screenH).toFloat()
+        val dispH = min(screenW, screenH).toFloat()
 
         return when (rotation) {
             Surface.ROTATION_90 -> {
-                // Xoay ngang 90 độ (chuẩn game thủ cầm máy Liên Quân)
-                val sx = normY * screenW
-                val sy = (1f - normX) * screenH
+                // Game thủ xoay ngang (camera/loa bên tay trái - mặc định Liên Quân)
+                val sx = normLong * dispW
+                val sy = (1f - normShort) * dispH
                 Pair(sx, sy)
             }
             Surface.ROTATION_270 -> {
-                // Xoay ngang ngược 270 độ
-                val sx = (1f - normY) * screenW
-                val sy = normX * screenH
+                // Game thủ xoay ngang ngược (camera bên tay phải)
+                val sx = (1f - normLong) * dispW
+                val sy = normShort * dispH
+                Pair(sx, sy)
+            }
+            Surface.ROTATION_180 -> {
+                val sx = (1f - normShort) * dispH
+                val sy = (1f - normLong) * dispW
                 Pair(sx, sy)
             }
             else -> {
                 // Màn hình dọc
-                val sx = normX * screenW
-                val sy = normY * screenH
+                val sx = normShort * dispH
+                val sy = normLong * dispW
                 Pair(sx, sy)
             }
         }

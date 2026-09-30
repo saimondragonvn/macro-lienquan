@@ -242,11 +242,23 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp" />
 
+    <TextView
+        android:id="@+id/btnDialogRename"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_turbo_btn_secondary"
+        android:gravity="center"
+        android:text="✏️ ĐỔI TÊN NÚT COMBO NÀY"
+        android:textColor="@color/cyan_neon"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
     <!-- Action buttons -->
     <TextView
         android:id="@+id/btnDialogTestRun"
         android:layout_width="match_parent"
         android:layout_height="38dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_turbo_btn_secondary"
         android:gravity="center"
         android:text="▶️ THỬ CHẠY COMBO VÀO GAME"

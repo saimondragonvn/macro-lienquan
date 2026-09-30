@@ -16,20 +16,20 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Gaming Header -->
+            <!-- Sleek Gaming Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginBottom="16dp">
 
                 <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:background="@drawable/bg_floating_pill"
-                    android:padding="10dp"
+                    android:padding="9dp"
                     android:src="@drawable/ic_macro_tile"
                     app:tint="@color/cyan_neon"
                     android:contentDescription="Logo" />
@@ -37,7 +37,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -46,7 +46,7 @@
                         android:layout_height="wrap_content"
                         android:text="GAME TURBO PRO"
                         android:textColor="@color/cyan_neon"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.04" />
 
@@ -55,10 +55,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Thiết bị: Infinix Note 30 • 120Hz Fast Combo"
-                        android:textColor="@color/emerald_play"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
+                        android:text="Thiết bị: Chuẩn 120Hz Fast Combo"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10.5sp" />
                 </LinearLayout>
 
                 <TextView
@@ -72,45 +71,43 @@
                     android:paddingBottom="5dp"
                     android:text="SẴN SÀNG"
                     android:textColor="@color/emerald_play"
-                    android:textSize="11sp"
+                    android:textSize="10.5sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Nút 1-Chạm Mở Liên Quân Mobile Kèm Game Turbo (Xiaomi/RedMagic Turbo Mode) -->
+            <!-- Main Actions -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLaunchTurboAndGame"
+                android:id="@+id/btnToggleTurbo"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="54dp"
                 android:layout_marginBottom="10dp"
-                android:backgroundTint="@color/emerald_play"
-                app:cornerRadius="14dp"
-                android:text="🚀 MỞ LIÊN QUÂN MOBILE (TURBO MODE)"
+                android:backgroundTint="@color/cyan_neon"
+                app:cornerRadius="12dp"
+                android:text="⚡ BẬT GAME TURBO HUD"
                 android:textColor="@color/bg_dark"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.03" />
 
-            <!-- Nút Bật/Tắt Game Turbo To và Nổi Bật Nhất -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnToggleTurbo"
+                android:id="@+id/btnLaunchTurboAndGame"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="50dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/cyan_neon"
-                app:cornerRadius="14dp"
-                android:text="⚡ BẬT GAME TURBO HUD"
+                android:backgroundTint="@color/emerald_play"
+                app:cornerRadius="12dp"
+                android:text="🚀 MỞ LIÊN QUÂN MOBILE"
                 android:textColor="@color/bg_dark"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.04" />
+                android:textSize="13.5sp"
+                android:textStyle="bold" />
 
-            <!-- Card 1: Quyền Cửa Sổ Nổi (Overlay Window) -->
+            <!-- Card 1: Quyền Cửa Sổ Nổi (Overlay) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="10dp"
                 app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="14dp"
+                app:cardCornerRadius="12dp"
                 app:strokeColor="@color/stroke_border"
                 app:strokeWidth="1dp">
 
@@ -118,7 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="14dp">
+                    android:padding="12dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -126,21 +123,13 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:src="@drawable/ic_macro_tile"
-                            app:tint="@color/cyan_neon"
-                            android:contentDescription="Overlay Icon" />
-
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:text="1. CỬA SỔ NỔI TRÊN GAME"
                             android:textColor="@color/text_primary"
-                            android:textSize="13sp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -149,26 +138,19 @@
                             android:layout_height="wrap_content"
                             android:text="CHƯA CẤP"
                             android:textColor="@color/amber_warning"
-                            android:textSize="11sp"
+                            android:textSize="10.5sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="Hiển thị thanh công cụ Game Turbo mép màn hình khi chơi game Liên Quân."
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGrantOverlay"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_height="38dp"
+                        android:layout_marginTop="8dp"
                         android:backgroundTint="@color/bg_surface_elevated"
                         app:strokeColor="@color/cyan_neon"
                         app:strokeWidth="1dp"
+                        app:cornerRadius="8dp"
                         android:text="Cấp quyền Hiển thị trên ứng dụng khác"
                         android:textColor="@color/cyan_neon"
                         android:textSize="11sp"
@@ -176,21 +158,21 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 2: Động cơ Game Turbo (Shizuku & Root) -->
+            <!-- Card 2: Động cơ Shizuku / Root -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="14dp"
                 app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="14dp"
+                app:cardCornerRadius="12dp"
                 app:strokeColor="@color/purple_accent"
-                app:strokeWidth="1.2dp">
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="14dp">
+                    android:padding="12dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -198,21 +180,13 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:src="@drawable/ic_speed"
-                            app:tint="@color/purple_accent"
-                            android:contentDescription="Turbo Icon" />
-
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
-                            android:text="2. ĐỘNG CƠ SHIZUKU / ROOT"
+                            android:text="2. ĐỘNG CƠ SHIZUKU / ROOT (120Hz)"
                             android:textColor="@color/purple_accent"
-                            android:textSize="13sp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -221,31 +195,24 @@
                             android:layout_height="wrap_content"
                             android:text="CHƯA CẤP"
                             android:textColor="@color/amber_warning"
-                            android:textSize="11sp"
+                            android:textSize="10.5sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="Tự động click combo chiêu siêu tốc 120Hz không cần Trợ năng. Kích hoạt qua Shizuku (Gỡ lỗi Wi-Fi) hoặc Root trên giả lập."
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
-
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_height="38dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnGrantShizuku"
                             android:layout_width="0dp"
-                            android:layout_height="40dp"
+                            android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
                             android:backgroundTint="@color/purple_accent"
+                            app:cornerRadius="8dp"
                             android:text="⚡ Cấp quyền Shizuku"
                             android:textColor="@color/white"
                             android:textSize="11sp"
@@ -254,11 +221,12 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnCopyAdb"
                             android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_weight="0.9"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.85"
                             android:backgroundTint="@color/bg_surface_elevated"
                             app:strokeColor="@color/purple_accent"
                             app:strokeWidth="1dp"
+                            app:cornerRadius="8dp"
                             android:text="📋 Sao chép ADB"
                             android:textColor="@color/purple_accent"
                             android:textSize="11sp" />
@@ -266,13 +234,12 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- Hướng dẫn sử dụng trong game (Game Turbo Guide) -->
+            <!-- Hướng dẫn sử dụng Basic & Gọn gàng -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="14dp"
+                app:cardCornerRadius="12dp"
                 app:strokeColor="@color/stroke_border"
                 app:strokeWidth="1dp">
 
@@ -280,23 +247,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="14dp">
+                    android:padding="12dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🎮 HƯỚNG DẪN 3 BƯỚC DÙNG TRONG GAME"
+                        android:text="🎮 HƯỚNG DẪN 3 BƯỚC NHANH"
                         android:textColor="@color/emerald_play"
-                        android:textSize="12sp"
+                        android:textSize="11.5sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="1️⃣ Bấm 'BẬT GAME TURBO HUD' ở trên rồi vào game Liên Quân Mobile.\n\n2️⃣ Chạm vào tab nhỏ [⚡ TURBO] ở mép màn hình để mở bảng điều khiển.\n\n3️⃣ Bấm [+ Ghim Điểm] để kéo các điểm (1, 2, 3...) vào nút chiêu, sau đó bấm [🚀 TẠO NÚT BẤM TURBO] là có ngay nút tròn trên màn hình. Chạm nút tròn để xả combo!"
-                        android:textColor="@color/text_primary"
-                        android:textSize="11sp"
+                        android:layout_marginTop="6dp"
+                        android:text="• Bấm [BẬT GAME TURBO HUD] rồi vào game Liên Quân Mobile.\n• Chạm tab [⚡ TURBO] mép màn hình để Ghi Combo hoặc Ghim điểm.\n• Vuốt thanh thông báo xuống để Ẩn/Hiện nút hoặc Tắt Turbo 1-chạm!"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10.5sp"
                         android:lineSpacingExtra="3dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

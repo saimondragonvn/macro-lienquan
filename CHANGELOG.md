@@ -4,6 +4,30 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.3.0] - 2026-09-30
+### 🚀 GIAO DIỆN BASIC TỐI GIẢN, ĐIỀU KHIỂN TỪ THANH THÔNG BÁO, ĐỔI TÊN COMBO & SỬA LỖI LOẠN CẢM ỨNG
+- **GIAO DIỆN BASIC, TỐI GIẢN & MƯỢT MÀ**:
+  - Thiết kế lại toàn bộ màn hình chính (`activity_main.xml`) và Game Turbo Dock (`view_floating_dock.xml`) theo phong cách Cyberpunk tối giản, loại bỏ hoàn toàn các khối chữ hướng dẫn rườm rà.
+  - Các nút chức năng to rõ, bố cục trực quan, thao tác nhanh trong trận chỉ mất 1-2 giây.
+- **ĐIỀU KHIỂN NHANH TỪ THANH THÔNG BÁO (NOTIFICATION SHADE)**:
+  - Vuốt từ đỉnh màn hình xuống là có ngay 3 nút điều khiển trực tiếp:
+    * `[👁️ ẨN NÚT]` / `[👁️ HIỆN NÚT]`: Ẩn/Hiện tức thì toàn bộ nút nổi mà không cần mở menu.
+    * `[🔴 Ghi Combo]`: Bắt đầu phiên ghi combo thời gian thực trực tiếp từ thanh thông báo.
+    * `[✕ Tắt Turbo]`: Đóng hoàn toàn dịch vụ Game Turbo ngay lập tức.
+- **TÙY CHỈNH TÊN COMBO & ĐỔI TÊN LINH HOẠT**:
+  - Hộp thoại lưu combo mới sau khi ghi (`view_save_combo_dialog`): Cho phép game thủ đặt tên tùy thích (VD: "Florentino", "Đổi đồ 0.1s", "Raz", "Chiêu 1-2") và chọn tốc độ xả combo (1.0x, 1.5x, 2.0x).
+  - Đổi tên bất kỳ lúc nào qua nút `[✏️ Sửa]` trong danh sách hoặc trong menu cài đặt nút (`view_rename_dialog`).
+- **NÚT ẨN MỜ (GHOST MODE TRONG SUỐT)**:
+  - Chuyển đổi nhanh các mức độ mờ: 30% (mờ sương, nhìn xuyên thấu không che tầm nhìn), 50%, 80%, 100%.
+  - Cho phép ẩn/hiện từng nút riêng biệt với nút `[👁️]` trong danh sách.
+- **KHẮC PHỤC TRIỆT ĐỂ LỖI LOẠN CẢM ỨNG & SAI TỌA ĐỘ KHI LƯU COMBO**:
+  - Đồng bộ frame cảm ứng phần cứng qua `SYN_REPORT`: Chỉ chốt tọa độ khi đã nhận đầy đủ sự kiện cảm ứng, khắc phục triệt để lỗi tọa độ bị đọc nhầm thành (0, 0) gây trượt swipe loạn xạ.
+  - Chuẩn hóa tỷ lệ tọa độ theo phân giải thực tế `getRealMetrics` và góc xoay ngang Landscape (90° và 270°).
+  - Tự động nhận diện cú chạm đơn lẻ (khoảng cách di chuyển < 25dp) là thao tác TAP tĩnh, hoàn toàn không bị trượt camera hay lệch joystick.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.3.0.apk`.
+
+---
+
 ## [v2.2.0] - 2026-09-30
 ### 🚀 ĐẬP ĐI XÂY LẠI TỪ SỐ 0: ĐỘNG CƠ GHI COMBO CHUẨN REDMI TURBO 4 PRO
 - **GHI THỜI GIAN THỰC KHÔNG HỀ CHẶN MÀN HÌNH GAME (REDMI TURBO / K70 STYLE)**:

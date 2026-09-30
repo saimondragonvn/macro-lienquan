@@ -1,6 +1,7 @@
 package com.macrophone.gaming.service
 
 import android.animation.ValueAnimator
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -91,6 +92,8 @@ class TurboOverlayService : Service() {
     companion object {
         const val ACTION_START = "com.macrophone.gaming.TURBO_START"
         const val ACTION_STOP = "com.macrophone.gaming.TURBO_STOP"
+        const val ACTION_TOGGLE_VISIBILITY = "com.macrophone.gaming.ACTION_TOGGLE_VISIBILITY"
+        const val ACTION_START_RECORD = "com.macrophone.gaming.ACTION_START_RECORD"
 
         @Volatile
         var isRunning = false
@@ -106,6 +109,20 @@ class TurboOverlayService : Service() {
         fun stop(context: Context) {
             val intent = Intent(context, TurboOverlayService::class.java).apply {
                 action = ACTION_STOP
+            }
+            context.startService(intent)
+        }
+
+        fun toggleVisibility(context: Context) {
+            val intent = Intent(context, TurboOverlayService::class.java).apply {
+                action = ACTION_TOGGLE_VISIBILITY
+            }
+            context.startService(intent)
+        }
+
+        fun startRecord(context: Context) {
+            val intent = Intent(context, TurboOverlayService::class.java).apply {
+                action = ACTION_START_RECORD
             }
             context.startService(intent)
         }
@@ -127,9 +144,19 @@ class TurboOverlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == ACTION_STOP) {
-            stopSelf()
-            return START_NOT_STICKY
+        when (intent?.action) {
+            ACTION_STOP -> {
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            ACTION_TOGGLE_VISIBILITY -> {
+                toggleOverlayVisibility()
+                return START_STICKY
+            }
+            ACTION_START_RECORD -> {
+                startRealtimeComboRecording()
+                return START_STICKY
+            }
         }
         updateEngineBadge()
         return START_STICKY
@@ -173,9 +200,9 @@ class TurboOverlayService : Service() {
         try {
             NotificationHelper.createNotificationChannel(this)
             val notification = NotificationHelper.buildNotification(
-                this,
-                MacroState.IDLE,
-                "Game Turbo Pro (120Hz)"
+                context = this,
+                isButtonsHidden = isOverlayHidden,
+                isRecording = false
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -199,6 +226,21 @@ class TurboOverlayService : Service() {
             }
         } catch (e: Throwable) {
             Log.e("TurboOverlayService", "startForegroundSafe: ${e.message}")
+        }
+    }
+
+    private fun updateNotification(activeComboName: String? = null) {
+        try {
+            val notification = NotificationHelper.buildNotification(
+                context = this,
+                isButtonsHidden = isOverlayHidden,
+                isRecording = GameTurboRecorder.isRecording,
+                activeComboName = activeComboName
+            )
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.notify(NotificationHelper.NOTIFICATION_ID, notification)
+        } catch (e: Throwable) {
+            Log.w("TurboOverlayService", "updateNotification failed: ${e.message}")
         }
     }
 
@@ -568,6 +610,7 @@ class TurboOverlayService : Service() {
                     tvCount.text = "Đã ghi nhận: $totalCount thao tác vào game!"
                 },
                 onStarted = {
+                    updateNotification()
                     Toast.makeText(this, "🔴 Đang ghi! Bạn hãy vào game bấm Shop/Chiêu bình thường.", Toast.LENGTH_SHORT).show()
                 },
                 onError = { err ->
@@ -582,7 +625,7 @@ class TurboOverlayService : Service() {
     }
 
     /**
-     * Dừng phiên ghi và tạo ngay nút Combo nổi trên màn hình game
+     * Dừng phiên ghi và mở hộp thoại cho phép nhập tên Combo và chọn tốc độ
      */
     private fun stopRealtimeComboRecording() {
         recordingTimerJob?.cancel()
@@ -591,6 +634,8 @@ class TurboOverlayService : Service() {
         recordingPillView = null
 
         val actions = GameTurboRecorder.stopRecording()
+        updateNotification()
+
         if (actions.isEmpty()) {
             Toast.makeText(this, "Chưa ghi nhận thao tác nào! Hãy chạm vào game trong lúc ghi.", Toast.LENGTH_SHORT).show()
             return
@@ -601,38 +646,110 @@ class TurboOverlayService : Service() {
             return
         }
 
-        val name = "R${triggerButtons.size + 1}"
-        val offset = (triggerButtons.size * 65)
-        val btnX = (screenWidth - 180).coerceAtLeast(60)
-        val btnY = ((screenHeight / 3) + offset).coerceIn(100, (screenHeight - 160).coerceAtLeast(100))
+        showSaveComboDialog(actions)
+    }
 
-        val triggerBtn = createFloatingTriggerInstance(
-            id = java.util.UUID.randomUUID().toString(),
-            name = name,
-            actions = actions,
-            posX = btnX,
-            posY = btnY,
-            speedMultiplier = 1.0f,
-            opacity = configStorage.globalOpacity
-        )
-        triggerButtons.add(triggerBtn)
+    private fun showSaveComboDialog(actions: List<MacroAction>) {
+        try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+            val dialogView = LayoutInflater.from(themedContext).inflate(R.layout.view_save_combo_dialog, null)
 
-        configStorage.upsertTrigger(
-            SavedMacroTrigger(
-                id = triggerBtn.id,
-                name = name,
-                x = btnX,
-                y = btnY,
-                delayBetweenMs = 40,
-                repeatCount = 1,
-                opacityPercent = configStorage.globalOpacity,
-                actions = actions,
-                speedMultiplier = 1.0f
-            )
-        )
+            val dialogParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.CENTER
+            }
 
-        renderAssignedTriggersList()
-        Toast.makeText(this, "✅ Đã lưu Combo [$name] (${actions.size} thao tác)! Chạm nút nổi trên màn hình để xả combo!", Toast.LENGTH_LONG).show()
+            val tvSummary = dialogView.findViewById<TextView>(R.id.tvSaveComboSummary)
+            val etName = dialogView.findViewById<android.widget.EditText>(R.id.etSaveComboName)
+            val btnSpeed10 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed10)
+            val btnSpeed15 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed15)
+            val btnSpeed20 = dialogView.findViewById<TextView>(R.id.btnSaveSpeed20)
+            val btnConfirm = dialogView.findViewById<TextView>(R.id.btnSaveComboConfirm)
+            val btnCancel = dialogView.findViewById<TextView>(R.id.btnSaveComboCancel)
+
+            val defaultName = "C${triggerButtons.size + 1}"
+            etName.setText(defaultName)
+            etName.selectAll()
+            tvSummary.text = "Đã ghi nhận ${actions.size} thao tác chuẩn xác"
+
+            var chosenSpeed = 1.0f
+            val updateSpeedBtns = {
+                btnSpeed10.setBackgroundResource(if (chosenSpeed == 1.0f) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSpeed10.setTextColor(ContextCompat.getColor(this, if (chosenSpeed == 1.0f) R.color.bg_dark else R.color.text_primary))
+
+                btnSpeed15.setBackgroundResource(if (chosenSpeed == 1.5f) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSpeed15.setTextColor(ContextCompat.getColor(this, if (chosenSpeed == 1.5f) R.color.bg_dark else R.color.text_primary))
+
+                btnSpeed20.setBackgroundResource(if (chosenSpeed == 2.0f) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnSpeed20.setTextColor(ContextCompat.getColor(this, if (chosenSpeed == 2.0f) R.color.bg_dark else R.color.text_primary))
+            }
+
+            btnSpeed10.setOnClickListener { chosenSpeed = 1.0f; updateSpeedBtns() }
+            btnSpeed15.setOnClickListener { chosenSpeed = 1.5f; updateSpeedBtns() }
+            btnSpeed20.setOnClickListener { chosenSpeed = 2.0f; updateSpeedBtns() }
+
+            val closeDialog = {
+                try {
+                    if (dialogView.isAttachedToWindow) {
+                        windowManager.removeViewImmediate(dialogView)
+                    } else {
+                        windowManager.removeView(dialogView)
+                    }
+                } catch (_: Throwable) {}
+            }
+
+            btnConfirm.setOnClickListener {
+                val enteredName = etName.text?.toString()?.trim() ?: ""
+                val comboName = if (enteredName.isNotEmpty()) enteredName else defaultName
+
+                val offset = (triggerButtons.size * 65)
+                val btnX = (screenWidth - 180).coerceAtLeast(60)
+                val btnY = ((screenHeight / 3) + offset).coerceIn(100, (screenHeight - 160).coerceAtLeast(100))
+
+                val triggerBtn = createFloatingTriggerInstance(
+                    id = java.util.UUID.randomUUID().toString(),
+                    name = comboName,
+                    actions = actions,
+                    posX = btnX,
+                    posY = btnY,
+                    speedMultiplier = chosenSpeed,
+                    opacity = configStorage.globalOpacity
+                )
+                triggerButtons.add(triggerBtn)
+
+                configStorage.upsertTrigger(
+                    SavedMacroTrigger(
+                        id = triggerBtn.id,
+                        name = comboName,
+                        x = btnX,
+                        y = btnY,
+                        delayBetweenMs = 40,
+                        repeatCount = 1,
+                        opacityPercent = configStorage.globalOpacity,
+                        actions = actions,
+                        speedMultiplier = chosenSpeed
+                    )
+                )
+
+                renderAssignedTriggersList()
+                closeDialog()
+                Toast.makeText(this, "✅ Đã lưu Combo [$comboName] (${actions.size} thao tác)! Chạm nút nổi trên màn hình để xả combo!", Toast.LENGTH_LONG).show()
+            }
+
+            btnCancel.setOnClickListener {
+                closeDialog()
+                Toast.makeText(this, "Đã hủy lưu combo", Toast.LENGTH_SHORT).show()
+            }
+
+            windowManager.addView(dialogView, dialogParams)
+        } catch (e: Throwable) {
+            Log.e("TurboOverlayService", "showSaveComboDialog error: ${e.message}")
+        }
     }
 
     private fun cancelRealtimeComboRecording() {
@@ -641,6 +758,7 @@ class TurboOverlayService : Service() {
         removeViewSafely(recordingPillView)
         recordingPillView = null
         GameTurboRecorder.cancelRecording()
+        updateNotification()
         Toast.makeText(this, "Đã hủy ghi combo", Toast.LENGTH_SHORT).show()
     }
 
@@ -880,10 +998,12 @@ class TurboOverlayService : Service() {
             val tvBadge = itemView.findViewById<TextView>(R.id.tvTriggerBadge)
             val tvTitle = itemView.findViewById<TextView>(R.id.tvTriggerTitle)
             val tvSub = itemView.findViewById<TextView>(R.id.tvTriggerSub)
+            val btnRename = itemView.findViewById<TextView>(R.id.btnTriggerRename)
+            val btnToggle = itemView.findViewById<TextView>(R.id.btnTriggerToggle)
             val btnRestore = itemView.findViewById<TextView>(R.id.btnTriggerRestorePins)
             val btnDelete = itemView.findViewById<TextView>(R.id.btnTriggerDelete)
 
-            tvBadge.text = btn.name
+            tvBadge.text = btn.name.take(4)
             tvTitle.text = "Nút Combo [${btn.name}]"
             val desc = if (btn.actions.isNotEmpty()) {
                 "${btn.actions.size} thao tác • ${btn.speedMultiplier}x tốc độ • ${btn.opacityPercent}% mờ"
@@ -891,6 +1011,19 @@ class TurboOverlayService : Service() {
                 "${btn.points.size} chiêu • ${btn.delayBetweenMs}ms • ${btn.opacityPercent}% mờ"
             }
             tvSub.text = desc
+
+            btnRename?.setOnClickListener {
+                btn.showRenameDialog()
+            }
+
+            val isVisible = btn.view.visibility == View.VISIBLE
+            btnToggle?.text = if (isVisible) "👁️" else "🙈"
+            btnToggle?.setOnClickListener {
+                val nowVis = btn.view.visibility == View.VISIBLE
+                btn.setVisible(!nowVis)
+                btnToggle.text = if (!nowVis) "👁️" else "🙈"
+                Toast.makeText(this, if (!nowVis) "Đã hiện nút [${btn.name}]" else "Đã ẩn nút [${btn.name}]", Toast.LENGTH_SHORT).show()
+            }
 
             if (btn.actions.isNotEmpty() && btn.points.isEmpty()) {
                 btnRestore.visibility = View.GONE
@@ -939,14 +1072,15 @@ class TurboOverlayService : Service() {
             triggerButtons.forEach { it.view.visibility = View.GONE }
             layoutExpanded?.visibility = View.GONE
             layoutCollapsed?.visibility = View.VISIBLE
-            layoutCollapsed?.alpha = 0.35f
-            Toast.makeText(this, "Đã ẩn toàn bộ nút! Chạm mép màn hình để hiện lại.", Toast.LENGTH_SHORT).show()
+            layoutCollapsed?.alpha = 0.25f
+            Toast.makeText(this, "👁️ Đã ẩn toàn bộ nút! Vuốt thanh thông báo hoặc chạm mép để hiện lại.", Toast.LENGTH_SHORT).show()
         } else {
             targetPins.forEach { it.view.visibility = View.VISIBLE }
             triggerButtons.forEach { it.view.visibility = View.VISIBLE }
             layoutCollapsed?.alpha = 1.0f
-            Toast.makeText(this, "Đã hiện lại các nút Game Turbo!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "👁️ Đã hiện lại các nút Game Turbo!", Toast.LENGTH_SHORT).show()
         }
+        updateNotification()
     }
 
     private fun addNewTargetPin(x: Int? = null, y: Int? = null) {
