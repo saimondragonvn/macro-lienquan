@@ -4,6 +4,21 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.2.5] - 2026-09-30
+### 🛡️ Khắc Phục Triệt Để Lỗi Crash ("Ứng Dụng Đã Dừng") & Hoàn Thiện Cảm Ứng Game Turbo
+- **KHẮC PHỤC 100% NGUYÊN NHÂN CRASH VĂNG APP ("ỨNG DỤNG ĐÃ DỪNG")**:
+  - Gỡ bỏ thẻ `<provider>` Shizuku thủ công chứa quyền hệ thống `INTERACT_ACROSS_USERS_FULL` trong `AndroidManifest.xml`.
+  - Đây chính là nguyên nhân cốt lõi khiến ứng dụng bị Android ném ngoại lệ `SecurityException: Permission Denial` và dừng ngay lập tức khi mở app hoặc khi kích hoạt Shizuku.
+  - Sử dụng Shizuku Provider tiêu chuẩn từ thư viện gốc, tương thích hoàn toàn trên Infinix Note 30 (XOS 13/14), Xiaomi/Redmi, Samsung và các trình giả lập PC (LDPlayer, Nox, BlueStacks).
+- **SỬA LỖI CẢM ỨNG & KÉO THẢ GAME TURBO HUD**:
+  - Sửa lỗi dispatch `onTouch` trả về `false` ở sự kiện `ACTION_DOWN` trong `FloatingWidgetService`, đảm bảo sự kiện chạm và kéo luôn được nhận diện 100%.
+  - Chạm nhẹ vào tab mép màn hình `[⚡ TURBO]` là mở ngay Control Center; vuốt là kéo dock mượt mà và tự động hút dính vào mép màn hình.
+- **TỐI ƯU HÓA TIẾN TRÌNH SHELL ĐẶC QUYỀN**:
+  - Gọi trực tiếp `Shizuku.newProcess()` kết hợp lớp bọc ngoại lệ an toàn đa tầng, loại bỏ hoàn toàn hiện tượng nghẽn phản hồi.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.2.5.apk`.
+
+---
+
 ## [v1.2.4] - 2026-09-30
 ### 🚀 Loại Bỏ Hoàn Toàn Trợ Năng & Nâng Cấp Game Turbo HUD (Redmi/Xiaomi/RedMagic Style)
 - **LOẠI BỎ 100% DỊCH VỤ TRỢ NĂNG (ACCESSIBILITY SERVICE)**:

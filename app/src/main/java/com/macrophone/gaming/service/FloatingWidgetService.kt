@@ -333,25 +333,25 @@ class FloatingWidgetService : Service() {
                             initialTouchY = event.rawY
                             isDragging = false
                             downTime = System.currentTimeMillis()
-                            return false
+                            return true
                         }
 
                         MotionEvent.ACTION_MOVE -> {
                             val dx = (event.rawX - initialTouchX).toInt()
                             val dy = (event.rawY - initialTouchY).toInt()
 
-                            if (abs(dx) > 12 || abs(dy) > 12) {
+                            if (abs(dx) > 10 || abs(dy) > 10) {
                                 isDragging = true
                                 dockParams.x = initialX + dx
                                 dockParams.y = initialY + dy
                                 updateViewLayoutSafely(dockView, dockParams)
                             }
-                            return isDragging
+                            return true
                         }
 
                         MotionEvent.ACTION_UP -> {
                             if (isDragging) {
-                                val viewWidth = root.width
+                                val viewWidth = if (root.width > 0) root.width else 100
                                 val middle = screenWidth / 2
                                 val currentCenterX = dockParams.x + (viewWidth / 2)
                                 val targetX = if (currentCenterX < middle) 16 else (screenWidth - viewWidth - 16)
@@ -359,11 +359,10 @@ class FloatingWidgetService : Service() {
                                 return true
                             }
                             val duration = System.currentTimeMillis() - downTime
-                            if (duration < 300 && targetView == collapsed) {
+                            if (duration < 400) {
                                 targetView.performClick()
-                                return true
                             }
-                            return false
+                            return true
                         }
                     }
                     return false

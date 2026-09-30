@@ -46,26 +46,28 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.4' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.4' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.5' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.5' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile (Game Turbo HUD & Fast Combo) - Bản Release v1.2.4
+            ### 🎮 Macro Liên Quân Mobile (Game Turbo HUD & 120Hz Fast Combo) - Bản Release v1.2.5
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🚀 ĐỘT PHÁ NÂNG CẤP TRONG BẢN v1.2.4:
-            1. **LOẠI BỎ HOÀN TOÀN DỊCH VỤ TRỢ NĂNG (ACCESSIBILITY SERVICE)**:
-               - Xóa sạch 100% mã nguồn Trợ năng, không còn thông báo yêu cầu quyền Trợ năng, không lo "Cài đặt bị hạn chế" làm phiền.
-               - Động cơ thực thi chuyển sang 100% Shizuku / Gỡ lỗi qua Wi-Fi / Root: Chạy trực tiếp bằng privileged shell binder (`input tap X Y; sleep ...`) với độ trễ siêu thấp 0ms, không lag, không văng app.
-            2. **GIAO DIỆN GAME TURBO HUD (REDMI / XIAOMI / REDMAGIC STYLE)**:
-               - Dock nổi mép màn hình: Thu gọn thành tab nhỏ gọn `[⚡ TURBO]`, chạm là mở bảng điều khiển Game Turbo HUD.
-               - Tính năng **Gán Vị Trí Chiêu (Target Combo)**: Bấm `[+ Ghim Điểm]`, kéo thả các điểm (1, 2, 3...) vào nút chiêu trong game, sau đó bấm `[🚀 TẠO NÚT BẤM TURBO]` là có ngay nút tròn trên màn hình.
-               - Tính năng **Ghi Thao Tác (Macro Recorder)**: Bổ sung nút **[🔴 BẮT ĐẦU GHI (START)]** to rõ ràng, hiển thị thanh điều khiển với nút **[⏹️ DỪNG GHI (STOP)]**, nút Hoàn tác `[↩ Xóa]`, tự động tạo nút tròn Turbo ngay khi dừng ghi!
-            3. **KHẮC PHỤC TRIỆT ĐỂ LỖI CRASH TRÊN INFINIX NOTE 30 / ANDROID 13 & 14**:
-               - Loại bỏ hoàn toàn MaterialButton trong các cửa sổ overlay của Service (nguyên nhân gây lỗi theme style và crash "Ứng dụng đã dừng").
-               - Nâng cấp cơ chế đóng View an toàn với kiểm tra `isAttachedToWindow`.
+            #### 🚀 KHẮC PHỤC TRIỆT ĐỂ LỖI CRASH VÀ NÂNG CẤP TOÀN DIỆN TRONG BẢN v1.2.5:
+            1. **KHẮC PHỤC 100% NGUYÊN NHÂN CRASH VĂNG APP ("ỨNG DỤNG ĐÃ DỪNG")**:
+               - Loại bỏ thẻ `<provider>` Shizuku thủ công chứa quyền hệ thống `INTERACT_ACROSS_USERS_FULL` trong Manifest (nguyên nhân chính gây `SecurityException: Permission Denial` làm ứng dụng lập tức bị hệ điều hành dừng khi Shizuku kết nối).
+               - Tự động dùng Shizuku Provider chính quy từ thư viện gốc, tương thích hoàn hảo mọi dòng máy (Infinix Note 30, Xiaomi, Samsung và các giả lập PC).
+            2. **KHẮC PHỤC LỖI CẢM ỨNG & KÉO THẢ GAME TURBO HUD**:
+               - Sửa lỗi dispatch `onTouch` trả về `false` ở sự kiện `ACTION_DOWN` khiến dock nổi bị liệt cảm ứng hoặc không mở được trên một số máy.
+               - Giờ đây chỉ cần 1 chạm nhẹ vào tab mép màn hình `[⚡ TURBO]` là mở ngay Control Center, vuốt là kéo mượt mà và tự hút dính vào mép viền.
+            3. **LOẠI BỎ 100% DỊCH VỤ TRỢ NĂNG (ACCESSIBILITY SERVICE)**:
+               - Xóa sạch mã nguồn Trợ năng, không còn thông báo yêu cầu quyền Trợ năng hay "Cài đặt bị hạn chế" làm phiền.
+               - Động cơ thực thi chuyển sang 100% Shizuku / Gỡ lỗi qua Wi-Fi / Root: Chạy trực tiếp bằng privileged shell binder (`input tap X Y; sleep ...`) với độ trễ 0ms.
+            4. **GAME TURBO HUD THEO PHONG CÁCH REDMI / XIAOMI / REDMAGIC**:
+               - **Gán vị trí chiêu (Target points)**: Bấm `[+ Ghim Điểm]`, kéo thả các điểm (1, 2, 3...) vào nút chiêu trong game, sau đó bấm `[🚀 TẠO NÚT BẤM TURBO]` để tạo nút tròn nổi `[⚡]`.
+               - **Ghi thao tác (Touch Recorder)**: Nút `[🔴 BẮT ĐẦU GHI (START)]` và `[⏹️ DỪNG GHI (STOP)]` rõ ràng với visual marker số thứ tự trực quan trên màn hình.
 
             #### 📲 Hướng dẫn cài đặt APK:
-            1. Tải file **`Macro-LienQuan-v1.2.4.apk`** ở mục **Assets** bên dưới.
+            1. Tải file **`Macro-LienQuan-v1.2.5.apk`** ở mục **Assets** bên dưới.
             2. Cài đặt vào điện thoại hoặc trình giả lập PC.
             3. Khởi động Shizuku (hoặc Root), mở app và tận hưởng tốc độ Game Turbo!
           draft: false

@@ -152,14 +152,18 @@ object ShizukuHelper {
         // 1. Thử qua Shizuku nếu đang chạy và đã cấp quyền
         if (isShizukuRunning() && hasShizukuPermission()) {
             try {
-                val method = Shizuku::class.java.getDeclaredMethod(
-                    "newProcess",
-                    Array<String>::class.java,
-                    Array<String>::class.java,
-                    String::class.java
-                )
-                method.isAccessible = true
-                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
+                val proc = try {
+                    Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+                } catch (_: Throwable) {
+                    val method = Shizuku::class.java.getDeclaredMethod(
+                        "newProcess",
+                        Array<String>::class.java,
+                        Array<String>::class.java,
+                        String::class.java
+                    )
+                    method.isAccessible = true
+                    method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
+                }
                 if (proc != null) {
                     val finished = proc.waitFor(3, TimeUnit.SECONDS)
                     val code = if (finished) proc.exitValue() else -1
