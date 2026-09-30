@@ -4,6 +4,25 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.0.2] - 2026-09-30
+### 🚀 Nâng Cấp Trải Nghiệm Gameplay: Menu Cài Đặt Combo & Khắc Phục Lỗi Ẩn Menu
+- **KHẮC PHỤC TRIỆT ĐỂ LỖI KHÔNG ẨN ĐƯỢC MENU**:
+  - Tách biệt vùng kéo di chuyển thanh dock (`ivExpandedDrag`) khỏi tiêu đề để nút `[✕ Thu Gọn]` nhận diện click ngay tức khắc 100%.
+  - Bổ sung nút `[— THU GỌN VỀ MÉP MÀN HÌNH]` lớn ở đáy bảng điều khiển, tiện tay chạm là thu gọn về tab mép.
+  - Kích hoạt tính năng `[👁️ Ẩn/Hiện]`: 1 chạm để tạm ẩn toàn bộ các nút nổi trên màn hình khi giao tranh trong game, chạm vào mép màn hình là hiện lại.
+- **MENU CHỈNH SỬA COMBO TRỰC TIẾP TRÊN MÀN HÌNH GAME**:
+  - Khi nhấn giữ lâu nút tròn `[⚡ C1]`, tự động bật **Menu Cài Đặt Combo**:
+    - Chọn tốc độ xả chiêu tức thời: `30ms (Sát thủ)`, `60ms (Chuẩn)`, `120ms (Chậm)`.
+    - Chọn số lần kích hoạt combo: `1 lần`, `2 lần`, `3 lần`.
+    - Nút `[🎯 Hiện lại điểm ghim trên game]`: Tự động bung lại các điểm ①, ②, ③ lên các nút chiêu của game để bạn kéo chỉnh lại vị trí trực tiếp!
+    - Nút `[▶️ Thử chạy combo vào game]`: Thử nghiệm xả combo ngay tại chỗ!
+- **TƯƠNG TÁC GAME HOÀN TOÀN TỰ NHIÊN**:
+  - Khi kéo các điểm ghim ①, ②, ③, bạn có thể chạm trực tiếp vào từng điểm ghim để test thử chiêu đó ngay trong game!
+  - Vùng màn hình game không bị chặn cảm ứng, đảm bảo bạn vừa di chuyển tướng vừa ngắm chiêu bình thường.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.0.2.apk`.
+
+---
+
 ## [v2.0.1] - 2026-09-30
 ### 🛡️ Khắc Phục Lỗi Cấp Quyền Shizuku, Lỗi Crash Game Turbo HUD & Gỡ Bỏ Hướng Dẫn 3 Chấm (⋮)
 - **KHẮC PHỤC TRIỆT ĐỂ LỖI CẤP QUYỀN SHIZUKU**:

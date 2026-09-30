@@ -140,16 +140,19 @@ object ShellExecutor {
     /**
      * Thực thi chuỗi Combo các điểm chạm (input tap X Y) siêu tốc 120Hz
      */
-    fun executeCombo(points: List<Pair<Float, Float>>, delayBetweenMs: Long = 40): Boolean {
+    fun executeCombo(points: List<Pair<Float, Float>>, delayBetweenMs: Long = 40, repeatCount: Int = 1): Boolean {
         if (points.isEmpty()) return false
 
         val sb = StringBuilder()
-        for (i in points.indices) {
-            val (x, y) = points[i]
-            sb.append("input tap ").append(x.toInt()).append(" ").append(y.toInt()).append("; ")
-            if (i < points.size - 1 && delayBetweenMs > 0) {
-                val sec = String.format(Locale.US, "%.3f", delayBetweenMs / 1000.0)
-                sb.append("sleep ").append(sec).append("; ")
+        val totalLoops = repeatCount.coerceIn(1, 10)
+        for (r in 0 until totalLoops) {
+            for (i in points.indices) {
+                val (x, y) = points[i]
+                sb.append("input tap ").append(x.toInt()).append(" ").append(y.toInt()).append("; ")
+                if ((i < points.size - 1 || r < totalLoops - 1) && delayBetweenMs > 0) {
+                    val sec = String.format(Locale.US, "%.3f", delayBetweenMs / 1000.0)
+                    sb.append("sleep ").append(sec).append("; ")
+                }
             }
         }
 

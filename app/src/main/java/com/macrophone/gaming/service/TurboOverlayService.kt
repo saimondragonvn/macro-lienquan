@@ -208,9 +208,12 @@ class TurboOverlayService : Service() {
         }
     }
 
+    private var selectedSpeedDelay: Long = 30
+    private var isOverlayHidden = false
+
     private fun setupDockTouchAndDrag(root: View) {
         val layoutCollapsed = root.findViewById<View>(R.id.layoutCollapsed)
-        val layoutExpandedHeader = root.findViewById<View>(R.id.layoutExpandedHeader)
+        val ivExpandedDrag = root.findViewById<View>(R.id.ivExpandedDrag)
 
         val createDrag = { targetView: View ->
             object : View.OnTouchListener {
@@ -266,7 +269,7 @@ class TurboOverlayService : Service() {
         }
 
         layoutCollapsed?.setOnTouchListener(createDrag(layoutCollapsed))
-        layoutExpandedHeader?.setOnTouchListener(createDrag(layoutExpandedHeader))
+        ivExpandedDrag?.setOnTouchListener(createDrag(ivExpandedDrag))
     }
 
     private fun snapDock(fromX: Int, toX: Int) {
@@ -280,79 +283,165 @@ class TurboOverlayService : Service() {
         anim.start()
     }
 
+    private fun collapseDock() {
+        val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
+        val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
+        layoutExpanded?.visibility = View.GONE
+        layoutCollapsed?.visibility = View.VISIBLE
+        layoutCollapsed?.alpha = 0.85f
+    }
+
     private fun setupDockButtons(root: View) {
         val layoutCollapsed = root.findViewById<View>(R.id.layoutCollapsed)
         val layoutExpanded = root.findViewById<View>(R.id.layoutExpanded)
         val btnCollapseDock = root.findViewById<View>(R.id.btnCollapseDock)
+        val btnBottomCollapse = root.findViewById<View>(R.id.btnBottomCollapse)
 
         val btnAddPoint = root.findViewById<View>(R.id.btnAddPoint)
         val btnRemovePoint = root.findViewById<View>(R.id.btnRemovePoint)
         val btnPlayTest = root.findViewById<View>(R.id.btnPlayTest)
         val btnCreateMacroBtn = root.findViewById<View>(R.id.btnCreateMacroBtn)
+
+        val btnSpeedFast = root.findViewById<TextView>(R.id.btnSpeedFast)
+        val btnSpeedNormal = root.findViewById<TextView>(R.id.btnSpeedNormal)
+        val btnSpeedSlow = root.findViewById<TextView>(R.id.btnSpeedSlow)
+
         val btnStartRecord = root.findViewById<View>(R.id.btnStartRecord)
+        val btnToggleVisibility = root.findViewById<View>(R.id.btnToggleVisibility)
         val btnClearPoints = root.findViewById<View>(R.id.btnClearPoints)
         val btnCloseService = root.findViewById<View>(R.id.btnCloseService)
 
-        // Tab thu gọn -> Bấm để mở Game Turbo HUD
+        // 1. Mở rộng khi chạm vào tab mép
         layoutCollapsed?.setOnClickListener {
+            if (isOverlayHidden) {
+                isOverlayHidden = false
+                targetPins.forEach { it.view.visibility = View.VISIBLE }
+                triggerButtons.forEach { it.view.visibility = View.VISIBLE }
+                layoutCollapsed.alpha = 1.0f
+            }
             layoutCollapsed.visibility = View.GONE
             layoutExpanded.visibility = View.VISIBLE
         }
 
-        // Đóng panel -> Thu gọn về Tab mép
+        // 2. Thu gọn về mép màn hình
         btnCollapseDock?.setOnClickListener {
-            layoutExpanded.visibility = View.GONE
-            layoutCollapsed.visibility = View.VISIBLE
+            collapseDock()
+        }
+        btnBottomCollapse?.setOnClickListener {
+            collapseDock()
         }
 
-        // Thêm Điểm Ghim ①, ②, ③...
+        // 3. Tùy chọn tốc độ xả combo
+        val updateSpeedUI = {
+            btnSpeedFast?.setBackgroundResource(if (selectedSpeedDelay <= 35) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+            btnSpeedFast?.setTextColor(ContextCompat.getColor(this, if (selectedSpeedDelay <= 35) R.color.bg_dark else R.color.text_primary))
+
+            btnSpeedNormal?.setBackgroundResource(if (selectedSpeedDelay in 36..80) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+            btnSpeedNormal?.setTextColor(ContextCompat.getColor(this, if (selectedSpeedDelay in 36..80) R.color.bg_dark else R.color.text_primary))
+
+            btnSpeedSlow?.setBackgroundResource(if (selectedSpeedDelay > 80) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+            btnSpeedSlow?.setTextColor(ContextCompat.getColor(this, if (selectedSpeedDelay > 80) R.color.bg_dark else R.color.text_primary))
+        }
+
+        updateSpeedUI()
+
+        btnSpeedFast?.setOnClickListener {
+            selectedSpeedDelay = 30
+            updateSpeedUI()
+        }
+        btnSpeedNormal?.setOnClickListener {
+            selectedSpeedDelay = 60
+            updateSpeedUI()
+        }
+        btnSpeedSlow?.setOnClickListener {
+            selectedSpeedDelay = 120
+            updateSpeedUI()
+        }
+
+        // 4. Thêm Điểm Ghim ①, ②, ③...
         btnAddPoint?.setOnClickListener {
             addNewTargetPin()
         }
 
-        // Bớt Điểm Ghim cuối
+        // 5. Bớt Điểm Ghim cuối
         btnRemovePoint?.setOnClickListener {
             removeLastTargetPin()
         }
 
-        // Thử chạy ngay chuỗi điểm ghim
+        // 6. Thử chạy ngay chuỗi điểm ghim
         btnPlayTest?.setOnClickListener {
             executeTargetPinsNow()
         }
 
-        // 🚀 TẠO NÚT BẤM TURBO ĐỘC LẬP TỪ CÁC ĐIỂM GHIM
+        // 7. 🚀 TẠO NÚT BẤM TURBO ĐỘC LẬP TỪ CÁC ĐIỂM GHIM
         btnCreateMacroBtn?.setOnClickListener {
             createTriggerButtonFromPins()
-            layoutExpanded.visibility = View.GONE
-            layoutCollapsed.visibility = View.VISIBLE
         }
 
-        // 🔴 BẮT ĐẦU GHI THAO TÁC TRỰC TIẾP
+        // 8. 🔴 BẮT ĐẦU GHI THAO TÁC TRỰC TIẾP
         btnStartRecord?.setOnClickListener {
             openRecordOverlay()
         }
 
-        // Xóa hết điểm ghim
+        // 9. 👁️ Ẩn/Hiện toàn bộ nút
+        btnToggleVisibility?.setOnClickListener {
+            toggleOverlayVisibility()
+        }
+
+        // 10. Xóa hết điểm ghim
         btnClearPoints?.setOnClickListener {
             clearAllTargetPins()
             Toast.makeText(this, "Đã xóa toàn bộ điểm ghim", Toast.LENGTH_SHORT).show()
         }
 
-        // Tắt Turbo Service
+        // 11. Tắt Turbo Service
         btnCloseService?.setOnClickListener {
             stopSelf()
         }
     }
 
-    private fun addNewTargetPin() {
-        val index = targetPins.size + 1
-        val initialX = (screenWidth / 2) - 80 + (targetPins.size * 30)
-        val initialY = (screenHeight / 2) - 100 + (targetPins.size * 40)
+    private fun toggleOverlayVisibility() {
+        isOverlayHidden = !isOverlayHidden
+        val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
+        val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
 
-        val pin = TargetPinView(this, windowManager, index, initialX, initialY)
+        if (isOverlayHidden) {
+            targetPins.forEach { it.view.visibility = View.GONE }
+            triggerButtons.forEach { it.view.visibility = View.GONE }
+            layoutExpanded?.visibility = View.GONE
+            layoutCollapsed?.visibility = View.VISIBLE
+            layoutCollapsed?.alpha = 0.35f
+            Toast.makeText(this, "Đã ẩn toàn bộ nút! Chạm vào mép màn hình để hiện lại.", Toast.LENGTH_SHORT).show()
+        } else {
+            targetPins.forEach { it.view.visibility = View.VISIBLE }
+            triggerButtons.forEach { it.view.visibility = View.VISIBLE }
+            layoutCollapsed?.alpha = 1.0f
+            Toast.makeText(this, "Đã hiện lại các nút Game Turbo!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun addNewTargetPin(x: Int? = null, y: Int? = null) {
+        val index = targetPins.size + 1
+        val initialX = x ?: ((screenWidth / 2) - 80 + (targetPins.size * 30))
+        val initialY = y ?: ((screenHeight / 2) - 100 + (targetPins.size * 40))
+
+        val pin = TargetPinView(
+            context = this,
+            windowManager = windowManager,
+            index = index,
+            initialX = initialX,
+            initialY = initialY,
+            onPinClicked = { p ->
+                val (cx, cy) = p.getCenterCoordinates()
+                scope.launch(Dispatchers.IO) {
+                    ShellExecutor.executeCommand("input tap ${cx.toInt()} ${cy.toInt()}")
+                }
+                Toast.makeText(this@TurboOverlayService, "▶ Đã thử kích hoạt Điểm #${p.index} vào game!", Toast.LENGTH_SHORT).show()
+            }
+        )
         targetPins.add(pin)
 
-        Toast.makeText(this, "Đã thêm Điểm #$index. Hãy kéo đặt lên nút chiêu!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Đã thêm Điểm #$index. Kéo đặt lên chiêu và chạm vào điểm để test thử!", Toast.LENGTH_SHORT).show()
     }
 
     private fun removeLastTargetPin() {
@@ -376,7 +465,7 @@ class TurboOverlayService : Service() {
 
         val points = targetPins.map { it.getCenterCoordinates() }
         scope.launch(Dispatchers.IO) {
-            val ok = ShellExecutor.executeCombo(points, delayBetweenMs = 40)
+            val ok = ShellExecutor.executeCombo(points, delayBetweenMs = selectedSpeedDelay, repeatCount = 1)
             if (!ok) {
                 scope.launch(Dispatchers.Main) {
                     Toast.makeText(this@TurboOverlayService, "Cần cấp quyền Shizuku hoặc Root để tự động click!", Toast.LENGTH_LONG).show()
@@ -406,10 +495,15 @@ class TurboOverlayService : Service() {
             points = points,
             initialX = btnX,
             initialY = btnY,
-            onTrigger = { pts ->
+            delayBetweenMs = selectedSpeedDelay,
+            repeatCount = 1,
+            onTrigger = { pts, delay, repeat ->
                 scope.launch(Dispatchers.IO) {
-                    ShellExecutor.executeCombo(pts, delayBetweenMs = 40)
+                    ShellExecutor.executeCombo(pts, delayBetweenMs = delay, repeatCount = repeat)
                 }
+            },
+            onRestorePins = { restoredPoints ->
+                restorePinsFromCombo(restoredPoints)
             },
             onDelete = { btn ->
                 triggerButtons.remove(btn)
@@ -419,7 +513,19 @@ class TurboOverlayService : Service() {
         triggerButtons.add(triggerBtn)
 
         clearAllTargetPins()
-        Toast.makeText(this, "✅ Đã tạo nút tròn [$name]! Chạm vào nút để xả combo tức thì.", Toast.LENGTH_LONG).show()
+        collapseDock()
+        Toast.makeText(this, "✅ Đã tạo nút [$name]! Chạm nút để xả combo, nhấn giữ để chỉnh combo.", Toast.LENGTH_LONG).show()
+    }
+
+    private fun restorePinsFromCombo(points: List<Pair<Float, Float>>) {
+        clearAllTargetPins()
+        points.forEach { (x, y) ->
+            addNewTargetPin((x - 22).toInt(), (y - 22).toInt())
+        }
+        val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
+        val layoutExpanded = dockView?.findViewById<View>(R.id.layoutExpanded)
+        layoutCollapsed?.visibility = View.GONE
+        layoutExpanded?.visibility = View.VISIBLE
     }
 
     private fun clearAllTriggerButtons() {
@@ -489,18 +595,24 @@ class TurboOverlayService : Service() {
                     points = points,
                     initialX = btnX,
                     initialY = btnY,
-                    onTrigger = { pts ->
+                    delayBetweenMs = selectedSpeedDelay,
+                    repeatCount = 1,
+                    onTrigger = { pts, delay, repeat ->
                         scope.launch(Dispatchers.IO) {
-                            ShellExecutor.executeCombo(pts, delayBetweenMs = 40)
+                            ShellExecutor.executeCombo(pts, delayBetweenMs = delay, repeatCount = repeat)
                         }
+                    },
+                    onRestorePins = { restoredPoints ->
+                        restorePinsFromCombo(restoredPoints)
                     },
                     onDelete = { btn ->
                         triggerButtons.remove(btn)
+                        Toast.makeText(this, "Đã xóa nút Combo", Toast.LENGTH_SHORT).show()
                     }
                 )
                 triggerButtons.add(triggerBtn)
 
-                Toast.makeText(this, "✅ Đã tạo nút tròn [$name] từ ${points.size} thao tác ghi!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "✅ Đã tạo nút [$name]! Chạm nút để xả combo, nhấn giữ để chỉnh combo.", Toast.LENGTH_LONG).show()
             }
 
             dockView?.visibility = View.GONE

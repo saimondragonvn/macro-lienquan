@@ -11,6 +11,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.macrophone.gaming.R
 import kotlin.math.abs
@@ -19,7 +20,7 @@ import kotlin.math.abs
  * Nút Tròn Kích Hoạt Combo Nổi Trên Màn Hình Game (Floating Trigger Button):
  * - Kéo thả tự do đến mọi vị trí thuận ngón tay (gần nút đánh thường hoặc góc phải).
  * - CHẠM VÀO NÚT: Bắn ngay chuỗi combo chiêu đã gán với độ trễ siêu thấp 0ms!
- * - NHẤN GIỮ LÂU: Bật/tắt nút xóa (✕) để dọn dẹp khi không muốn dùng nữa.
+ * - NHẤN GIỮ LÂU: Mở Menu Cài Đặt Combo (Tốc độ delay, Lặp lại, Hiện lại ghim trên game, Xóa).
  */
 class FloatingTriggerView(
     private val context: Context,
@@ -28,7 +29,10 @@ class FloatingTriggerView(
     val points: List<Pair<Float, Float>>,
     initialX: Int,
     initialY: Int,
-    private val onTrigger: (List<Pair<Float, Float>>) -> Unit,
+    var delayBetweenMs: Long = 40,
+    var repeatCount: Int = 1,
+    private val onTrigger: (List<Pair<Float, Float>>, Long, Int) -> Unit,
+    private val onRestorePins: ((List<Pair<Float, Float>>) -> Unit)? = null,
     private val onDelete: (FloatingTriggerView) -> Unit
 ) {
 
@@ -39,6 +43,8 @@ class FloatingTriggerView(
     private val ivIcon: ImageView = view.findViewById(R.id.ivMacroBtnIcon)
     private val ivDelete: ImageView = view.findViewById(R.id.ivMacroBtnDelete)
     private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+
+    private var configDialogView: View? = null
 
     val params: WindowManager.LayoutParams = WindowManager.LayoutParams(
         WindowManager.LayoutParams.WRAP_CONTENT,
@@ -108,13 +114,13 @@ class FloatingTriggerView(
                     MotionEvent.ACTION_UP -> {
                         val duration = System.currentTimeMillis() - downTime
                         if (!isDragging && duration < 400) {
-                            // Chạm nhanh -> KÍCH HOẠT COMBO!
+                            // Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME!
                             flashFeedback()
-                            onTrigger(points)
-                        } else if (!isDragging && duration >= 500) {
-                            // Nhấn giữ lâu -> Hiển thị nút xóa
-                            vibrate(80)
-                            ivDelete.visibility = if (ivDelete.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                            onTrigger(points, delayBetweenMs, repeatCount)
+                        } else if (!isDragging && duration >= 450) {
+                            // Nhấn giữ lâu -> Mở Menu Cài Đặt Combo!
+                            vibrate(60)
+                            showConfigDialog()
                         }
                         return true
                     }
@@ -122,6 +128,137 @@ class FloatingTriggerView(
                 return false
             }
         })
+    }
+
+    private fun showConfigDialog() {
+        if (configDialogView != null) return
+
+        try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(context, R.style.Theme_MacroGaming)
+            configDialogView = LayoutInflater.from(themedContext).inflate(R.layout.view_trigger_config_dialog, null)
+
+            val dialogParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.CENTER
+            }
+
+            val tvDialogComboName = configDialogView!!.findViewById<TextView>(R.id.tvDialogComboName)
+            val tvDialogPointsSummary = configDialogView!!.findViewById<TextView>(R.id.tvDialogPointsSummary)
+            val btnDialogClose = configDialogView!!.findViewById<TextView>(R.id.btnDialogClose)
+
+            val btnOptDelayFast = configDialogView!!.findViewById<TextView>(R.id.btnOptDelayFast)
+            val btnOptDelayNormal = configDialogView!!.findViewById<TextView>(R.id.btnOptDelayNormal)
+            val btnOptDelaySlow = configDialogView!!.findViewById<TextView>(R.id.btnOptDelaySlow)
+
+            val btnRepeat1 = configDialogView!!.findViewById<TextView>(R.id.btnRepeat1)
+            val btnRepeat2 = configDialogView!!.findViewById<TextView>(R.id.btnRepeat2)
+            val btnRepeat3 = configDialogView!!.findViewById<TextView>(R.id.btnRepeat3)
+
+            val btnDialogTestRun = configDialogView!!.findViewById<TextView>(R.id.btnDialogTestRun)
+            val btnDialogRestorePins = configDialogView!!.findViewById<TextView>(R.id.btnDialogRestorePins)
+            val btnDialogDelete = configDialogView!!.findViewById<TextView>(R.id.btnDialogDelete)
+
+            tvDialogComboName?.text = "CÀI ĐẶT COMBO [$name]"
+            tvDialogPointsSummary?.text = "${points.size} chiêu đã gán • Tọa độ chuẩn Liên Quân"
+
+            val updateDelayUI = {
+                btnOptDelayFast?.setBackgroundResource(if (delayBetweenMs <= 35) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnOptDelayFast?.setTextColor(ContextCompat.getColor(context, if (delayBetweenMs <= 35) R.color.bg_dark else R.color.text_primary))
+
+                btnOptDelayNormal?.setBackgroundResource(if (delayBetweenMs in 36..80) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnOptDelayNormal?.setTextColor(ContextCompat.getColor(context, if (delayBetweenMs in 36..80) R.color.bg_dark else R.color.text_primary))
+
+                btnOptDelaySlow?.setBackgroundResource(if (delayBetweenMs > 80) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnOptDelaySlow?.setTextColor(ContextCompat.getColor(context, if (delayBetweenMs > 80) R.color.bg_dark else R.color.text_primary))
+            }
+
+            val updateRepeatUI = {
+                btnRepeat1?.setBackgroundResource(if (repeatCount == 1) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnRepeat1?.setTextColor(ContextCompat.getColor(context, if (repeatCount == 1) R.color.bg_dark else R.color.text_primary))
+
+                btnRepeat2?.setBackgroundResource(if (repeatCount == 2) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnRepeat2?.setTextColor(ContextCompat.getColor(context, if (repeatCount == 2) R.color.bg_dark else R.color.text_primary))
+
+                btnRepeat3?.setBackgroundResource(if (repeatCount >= 3) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnRepeat3?.setTextColor(ContextCompat.getColor(context, if (repeatCount >= 3) R.color.bg_dark else R.color.text_primary))
+            }
+
+            updateDelayUI()
+            updateRepeatUI()
+
+            btnOptDelayFast?.setOnClickListener {
+                delayBetweenMs = 30
+                updateDelayUI()
+            }
+            btnOptDelayNormal?.setOnClickListener {
+                delayBetweenMs = 60
+                updateDelayUI()
+            }
+            btnOptDelaySlow?.setOnClickListener {
+                delayBetweenMs = 120
+                updateDelayUI()
+            }
+
+            btnRepeat1?.setOnClickListener {
+                repeatCount = 1
+                updateRepeatUI()
+            }
+            btnRepeat2?.setOnClickListener {
+                repeatCount = 2
+                updateRepeatUI()
+            }
+            btnRepeat3?.setOnClickListener {
+                repeatCount = 3
+                updateRepeatUI()
+            }
+
+            btnDialogTestRun?.setOnClickListener {
+                flashFeedback()
+                onTrigger(points, delayBetweenMs, repeatCount)
+                Toast.makeText(context, "▶ Đang bắn combo vào game!", Toast.LENGTH_SHORT).show()
+            }
+
+            btnDialogRestorePins?.setOnClickListener {
+                dismissConfigDialog()
+                destroy()
+                onRestorePins?.invoke(points)
+                Toast.makeText(context, "🎯 Đã hiện lại các điểm ghim trên game! Bạn hãy kéo chỉnh vị trí chiêu theo ý muốn.", Toast.LENGTH_LONG).show()
+            }
+
+            btnDialogDelete?.setOnClickListener {
+                dismissConfigDialog()
+                destroy()
+                onDelete(this)
+                Toast.makeText(context, "Đã xóa nút combo", Toast.LENGTH_SHORT).show()
+            }
+
+            btnDialogClose?.setOnClickListener {
+                dismissConfigDialog()
+            }
+
+            windowManager.addView(configDialogView, dialogParams)
+        } catch (e: Throwable) {
+            dismissConfigDialog()
+        }
+    }
+
+    private fun dismissConfigDialog() {
+        if (configDialogView != null) {
+            try {
+                if (configDialogView!!.isAttachedToWindow) {
+                    windowManager.removeViewImmediate(configDialogView)
+                } else {
+                    windowManager.removeView(configDialogView)
+                }
+            } catch (_: Throwable) {}
+            configDialogView = null
+        }
     }
 
     private fun flashFeedback() {
@@ -143,6 +280,7 @@ class FloatingTriggerView(
     }
 
     fun destroy() {
+        dismissConfigDialog()
         try {
             if (view.isAttachedToWindow) {
                 windowManager.removeViewImmediate(view)

@@ -46,30 +46,29 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.1' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.1' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.2' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.2' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.0.1)
+            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.0.2)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🛠️ CÁC CẢI TIẾN VÀ BẢN VÁ QUAN TRỌNG TRONG v2.0.1:
-            1. **KHẮC PHỤC TRIỆT ĐỂ LỖI CẤP QUYỀN SHIZUKU**:
-               - Bổ sung `rikka.shizuku.ShizukuProvider` vào `AndroidManifest.xml` giúp truyền Binder IPC an toàn giữa Shizuku Manager và ứng dụng.
-               - Tự động nhận diện kết nối Shizuku qua `addBinderReceivedListenerSticky`.
-               - Hỗ trợ 1-chạm mở app Shizuku nếu dịch vụ chưa chạy trên máy.
-            2. **KHẮC PHỤC LỖI CRASH KHI BẬT GAME TURBO HUD**:
-               - Loại bỏ hoàn toàn các thuộc tính theme phụ thuộc (`?attr/selectableItemBackgroundBorderless`, `android:tint`) trong layout overlay.
-               - Đảm bảo toàn bộ View cửa sổ nổi được render an toàn với `ContextThemeWrapper(context, R.style.Theme_MacroGaming)`.
-               - Bọc try-catch tuyệt đối cho `WindowManager.addView` và `startForeground`.
-            3. **GỠ BỎ HƯỚNG DẪN 3 CHẤM (⋮) GÂY NHẦM LẪN TRÊN INFINIX NOTE 30**:
-               - Vì ứng dụng đã loại bỏ hoàn toàn Trợ năng (Accessibility Service), hệ thống Android/XOS không bao giờ giới hạn hay hiển thị menu 3 chấm.
-               - Giao diện tinh gọn chỉ còn 2 bước rõ ràng: Cấp Cửa sổ nổi và Động cơ Shizuku / Root.
-            4. **GAME TURBO HUD 120HZ**:
-               - Gán vị trí chiêu: Kéo các điểm (1, 2, 3...) vào nút chiêu $\rightarrow$ Bấm `[🚀 TẠO NÚT BẤM TURBO]`.
-               - Nút tròn `[⚡]` hiển thị trên màn hình: Chạm để xả combo với độ trễ 0ms!
+            #### 🚀 CẢI TIẾN TRẢI NGHIỆM GAMEPLAY & MENU COMBO v2.0.2:
+            1. **KHẮC PHỤC TRIỆT ĐỂ LỖI KHÔNG ẨN ĐƯỢC MENU**:
+               - Tách riêng nút kéo thanh dock (`ivExpandedDrag`) khỏi tiêu đề để nút `[✕ Thu Gọn]` nhận diện click ngay tức khắc 100%.
+               - Bổ sung nút `[— THU GỌN VỀ MÉP MÀN HÌNH]` lớn ở đáy bảng điều khiển.
+               - Kích hoạt tính năng `[👁️ Ẩn/Hiện]`: 1 chạm để tạm ẩn toàn bộ các nút nổi trên màn hình khi combat, chạm vào mép để hiện lại.
+            2. **MENU CHỈNH SỬA COMBO TRỰC TIẾP TRÊN MÀN HÌNH GAME**:
+               - Nhấn giữ lâu nút tròn `[⚡ C1]` để mở **Menu Cài Đặt Combo**:
+                 - Tùy chỉnh tốc độ xả chiêu: `30ms (Sát thủ)`, `60ms (Chuẩn)`, `120ms (Chậm)`.
+                 - Số lần lặp lại: `1 lần`, `2 lần`, `3 lần`.
+                 - Nút `[🎯 Hiện lại điểm ghim trên game]`: Tự động bung lại các điểm ①, ②, ③ lên các nút chiêu của game để bạn kéo chỉnh vị trí trực tiếp!
+                 - Nút `[▶️ Thử chạy combo vào game]`: Thử nghiệm xả combo ngay tại chỗ!
+            3. **TƯƠNG TÁC GAME HOÀN TOÀN TỰ NHIÊN**:
+               - Khi gắn các điểm ghim ①, ②, ③, bạn chạm vào từng điểm để test thử chiêu đó ngay trong game!
+               - Toàn bộ vùng màn hình game không bị chặn cảm ứng, đảm bảo bạn vừa di chuyển tướng vừa ngắm chiêu bình thường.
 
             #### 📲 Tải về APK:
-            Tải file **`Macro-LienQuan-v2.0.1.apk`** ở mục **Assets** bên dưới.
+            Tải file **`Macro-LienQuan-v2.0.2.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

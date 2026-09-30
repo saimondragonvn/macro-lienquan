@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialogRoot"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_card"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:elevation="20dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_speed"
+            android:contentDescription="Turbo Icon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvDialogComboName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CÀI ĐẶT COMBO [C1]"
+                android:textColor="@color/cyan_neon"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDialogPointsSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 điểm chiêu đã gán"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnDialogClose"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="✕"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/stroke_border"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Tốc độ xả chiêu (Độ trễ Delay) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚡ Tốc độ xả chiêu (Độ trễ):"
+        android:textColor="@color/text_primary"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnOptDelayFast"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_turbo_btn_primary"
+            android:gravity="center"
+            android:text="30ms (Sát thủ)"
+            android:textColor="@color/bg_dark"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnOptDelayNormal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="60ms (Chuẩn)"
+            android:textColor="@color/text_primary"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/btnOptDelaySlow"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="120ms (Chậm)"
+            android:textColor="@color/text_primary"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <!-- Số lần lặp lại combo -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="🔁 Số lần kích hoạt:"
+        android:textColor="@color/text_primary"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnRepeat1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_turbo_btn_primary"
+            android:gravity="center"
+            android:text="1 lần"
+            android:textColor="@color/bg_dark"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnRepeat2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="2 lần"
+            android:textColor="@color/text_primary"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/btnRepeat3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="3 lần"
+            android:textColor="@color/text_primary"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/stroke_border"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Action buttons -->
+    <TextView
+        android:id="@+id/btnDialogTestRun"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_turbo_btn_secondary"
+        android:gravity="center"
+        android:text="▶️ THỬ CHẠY COMBO VÀO GAME"
+        android:textColor="@color/emerald_play"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/btnDialogRestorePins"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_turbo_btn_secondary"
+        android:gravity="center"
+        android:text="🎯 HIỆN LẠI ĐIỂM GHIM TRÊN GAME ĐỂ CHỈNH"
+        android:textColor="@color/cyan_neon"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/btnDialogDelete"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_turbo_btn_secondary"
+        android:gravity="center"
+        android:text="🗑️ XÓA NÚT COMBO NÀY"
+        android:textColor="@color/crimson_stop"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

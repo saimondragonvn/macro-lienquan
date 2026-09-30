@@ -97,14 +97,18 @@
                     android:textSize="10sp" />
             </LinearLayout>
 
-            <ImageView
+            <TextView
                 android:id="@+id/btnCollapseDock"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
                 android:background="@drawable/bg_turbo_btn_secondary"
-                android:padding="5dp"
-                android:src="@drawable/ic_close"
-                android:contentDescription="Collapse Panel" />
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="✕ Thu Gọn"
+                android:textColor="@color/amber_warning"
+                android:textSize="11sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <View
@@ -187,6 +191,59 @@
             android:textColor="@color/bg_dark"
             android:textSize="11sp"
             android:textStyle="bold" />
+
+        <!-- Chọn tốc độ xả chiêu combo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏱️ Tốc độ:"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/btnSpeedFast"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="3dp"
+                android:background="@drawable/bg_turbo_btn_primary"
+                android:gravity="center"
+                android:text="30ms"
+                android:textColor="@color/bg_dark"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnSpeedNormal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="3dp"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="60ms"
+                android:textColor="@color/text_primary"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/btnSpeedSlow"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="120ms"
+                android:textColor="@color/text_primary"
+                android:textSize="10sp" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -274,6 +331,19 @@
                 android:textColor="@color/crimson_stop"
                 android:textSize="10sp" />
         </LinearLayout>
+
+        <!-- Nút thu gọn to, dễ bấm ở dưới đáy bảng điều khiển -->
+        <TextView
+            android:id="@+id/btnBottomCollapse"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="— THU GỌN VỀ MÉP MÀN HÌNH"
+            android:textColor="@color/cyan_neon"
+            android:textSize="11sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

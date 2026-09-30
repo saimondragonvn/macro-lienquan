@@ -23,6 +23,7 @@ class TargetPinView(
     var index: Int,
     initialX: Int,
     initialY: Int,
+    private val onPinClicked: ((TargetPinView) -> Unit)? = null,
     private val onPinRemoved: ((TargetPinView) -> Unit)? = null
 ) {
 
@@ -60,6 +61,7 @@ class TargetPinView(
             private var touchStartX = 0f
             private var touchStartY = 0f
             private var isDragging = false
+            private var downTime = 0L
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when (event.action) {
@@ -69,6 +71,7 @@ class TargetPinView(
                         touchStartX = event.rawX
                         touchStartY = event.rawY
                         isDragging = false
+                        downTime = System.currentTimeMillis()
                         return true
                     }
 
@@ -90,6 +93,9 @@ class TargetPinView(
                     }
 
                     MotionEvent.ACTION_UP -> {
+                        if (!isDragging && System.currentTimeMillis() - downTime < 350) {
+                            onPinClicked?.invoke(this@TargetPinView)
+                        }
                         return true
                     }
                 }
