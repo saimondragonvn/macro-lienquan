@@ -9,11 +9,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.macrophone.gaming.R
 import com.macrophone.gaming.core.ShellExecutor
+import com.macrophone.gaming.data.MacroConfigStorage
 import com.macrophone.gaming.databinding.ActivityMainBinding
 import com.macrophone.gaming.service.TurboOverlayService
 import com.macrophone.gaming.util.ShizukuHelper
@@ -28,6 +33,7 @@ import rikka.shizuku.Shizuku
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var configStorage: MacroConfigStorage
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         runOnUiThread {
@@ -65,15 +71,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        configStorage = MacroConfigStorage(this)
         binding.tvDeviceBadge.text = "Thiết bị: ${ShizukuHelper.getDeviceDisplayName()} • 120Hz Fast Combo"
 
         setupButtons()
+        setupProfileViews()
         registerShizukuListeners()
     }
 
     override fun onResume() {
         super.onResume()
         refreshStatuses()
+        renderProfileChips()
     }
 
     override fun onDestroy() {
@@ -98,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
-        // 🚀 1-Chạm MỞ LIÊN QUÂN MOBILE & BẬT GAME TURBO
+        // 🚀 1-Chạm MỞ GAME ĐANG CHỌN & BẬT GAME TURBO
         binding.btnLaunchTurboAndGame.setOnClickListener {
             if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' (Cửa sổ nổi) trước!", Toast.LENGTH_LONG).show()
@@ -110,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                 TurboOverlayService.start(this)
             }
 
-            launchLienQuanGame()
+            launchCurrentGame()
             binding.root.postDelayed({ refreshStatuses() }, 300)
         }
 
@@ -239,6 +248,125 @@ class MainActivity : AppCompatActivity() {
             binding.btnToggleTurbo.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
             binding.btnToggleTurbo.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
         }
+    }
+
+    /**
+     * Khởi tạo và đồng bộ giao diện Hồ Sơ Game trên Dashboard
+     */
+    private fun setupProfileViews() {
+        renderProfileChips()
+
+        binding.btnMainAddGameProfile.setOnClickListener {
+            showAddGameProfileDialog()
+        }
+    }
+
+    private fun renderProfileChips() {
+        val container = binding.layoutMainProfileChips
+        container.removeAllViews()
+
+        val profiles = configStorage.getAllProfiles()
+        val active = configStorage.getActiveProfile()
+
+        binding.tvMainActiveProfileDetail.text = "Đang chọn: ${active.iconEmoji} ${active.name} • ${active.triggers.size} nút combo đã gán"
+        binding.btnLaunchTurboAndGame.text = "🚀 MỞ ${active.name.uppercase()}"
+
+        val density = resources.displayMetrics.density
+        val padH = (14 * density).toInt()
+        val padV = (8 * density).toInt()
+        val marginEnd = (8 * density).toInt()
+
+        profiles.forEach { profile ->
+            val isSelected = (profile.id == active.id)
+            val chip = TextView(this).apply {
+                text = "${profile.iconEmoji} ${profile.name}"
+                textSize = 11.5f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                setPadding(padH, padV, padH, padV)
+                setBackgroundResource(if (isSelected) R.drawable.bg_chip_selected else R.drawable.bg_chip_unselected)
+                setTextColor(ContextCompat.getColor(this@MainActivity, if (isSelected) R.color.bg_dark else R.color.text_primary))
+                isClickable = true
+                isFocusable = true
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    this.marginEnd = marginEnd
+                }
+                setOnClickListener {
+                    if (profile.id != active.id) {
+                        configStorage.setActiveProfileId(profile.id)
+                        renderProfileChips()
+                        Toast.makeText(this@MainActivity, "🎮 Đã chọn hồ sơ: [${profile.name}]", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            container.addView(chip)
+        }
+    }
+
+    private fun showAddGameProfileDialog() {
+        val input = EditText(this).apply {
+            hint = "Tên game (VD: Free Fire, Tốc Chiến, Genshin)"
+            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.cyan_neon))
+            setHintTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
+            setBackgroundResource(R.drawable.bg_turbo_btn_secondary)
+            setPadding(32, 24, 32, 24)
+        }
+
+        val container = FrameLayout(this).apply {
+            setPadding(40, 20, 40, 10)
+            addView(input)
+        }
+
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle("🎮 Thêm Hồ Sơ Game Mới")
+            .setMessage("Mỗi game sẽ lưu trữ riêng biệt danh sách nút combo và vị trí nút.")
+            .setView(container)
+            .setPositiveButton("Tạo Game") { _, _ ->
+                val name = input.text?.toString()?.trim() ?: ""
+                if (name.isNotEmpty()) {
+                    configStorage.createProfile(name)
+                    renderProfileChips()
+                    Toast.makeText(this, "✨ Đã tạo và chọn hồ sơ: [$name]", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+
+    /**
+     * Khởi động game theo hồ sơ đang chọn
+     */
+    private fun launchCurrentGame() {
+        val active = configStorage.getActiveProfile()
+        val pm = packageManager
+        val targetPackages = when {
+            active.id == MacroConfigStorage.DEFAULT_PROFILE_FREEFIRE_ID || active.name.contains("Free Fire", ignoreCase = true) ->
+                listOf("com.dts.freefireth", "com.dts.freefiremax")
+            active.id == MacroConfigStorage.DEFAULT_PROFILE_WILDRIFT_ID || active.name.contains("Tốc Chiến", ignoreCase = true) || active.name.contains("Wild Rift", ignoreCase = true) ->
+                listOf("com.riotgames.league.wildriftvn", "com.riotgames.league.wildrift")
+            else -> listOf(
+                active.packageName ?: "",
+                "com.garena.game.kgvn",
+                "com.levelinfinite.sgameGlobal",
+                "com.garena.game.kgtw",
+                "com.garena.game.kgth"
+            ).filter { it.isNotEmpty() }
+        }
+
+        for (pkg in targetPackages) {
+            val intent = pm.getLaunchIntentForPackage(pkg)
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                configStorage.lastGamePackage = pkg
+                Toast.makeText(this, "🚀 Đang mở ${active.name}...", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        launchLienQuanGame()
     }
 
     /**

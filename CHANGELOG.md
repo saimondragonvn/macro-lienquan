@@ -4,6 +4,29 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.5.0] - 2026-09-30
+### 🎮 TÍNH NĂNG ĐA HỒ SƠ COMBO THEO GAME (MULTI-GAME PROFILES & PRESETS)
+- **HỒ SƠ CẤU HÌNH COMBO ĐỘC LẬP CHO TỪNG GAME (INDEPENDENT MACRO STORES)**:
+  - Mỗi game được lưu trữ trong một hồ sơ cấu hình riêng biệt (`GameProfile`): Tên nút, số lượng nút, tọa độ X/Y của nút trên màn hình, độ trễ và tốc độ xả combo của từng game hoàn toàn độc lập, không bị lẫn lộn.
+  - Cung cấp sẵn các hồ sơ mẫu tiêu chuẩn:
+    - 🎮 **Liên Quân Mobile**: Tối ưu cho chiêu thức Florentino, combo mua bán đồ nhanh, đổi trang bị tốc hành.
+    - 🔥 **Free Fire**: Tối ưu đặt keo nhanh, ghìm tâm, ngồi bắn.
+    - ⚔️ **Tốc Chiến (Wild Rift)**: Tối ưu chuỗi chiêu thức MOBA chuẩn Riot.
+    - 🎯 **Game Khác**: Dành cho bất kỳ tựa game nào người dùng cài đặt.
+- **CHUYỂN ĐỔI GAME 1-CHẠM NGAY TRÊN MENU TURBO HUD & MÀN HÌNH CHÍNH**:
+  - Tích hợp thanh chọn game dạng thẻ kính (Chips) cuộn ngang trực tiếp trên Game Turbo HUD: Chạm vào game bất kỳ để đổi hồ sơ ngay lập tức.
+  - Các nút combo của game cũ tự động dọn dẹp, và các nút của game mới lập tức xuất hiện đúng vị trí đã lưu.
+- **TẠO HỒ SƠ GAME MỚI, ĐỔI TÊN & XÓA HỒ SƠ LINH HOẠT**:
+  - Nút **`[+ Thêm Game]`**: Mở hộp thoại Liquid Glass cho phép nhập tên tựa game bất kỳ (VD: Genshin, Roblox, Võ Lâm...).
+  - Nút **`[✏️ Sửa tên]`**: Dễ dàng chỉnh sửa tên hồ sơ game theo ý muốn.
+  - Nút **`[🗑️ Xóa]`**: Xóa hồ sơ không dùng đến (tự động giữ lại ít nhất 1 hồ sơ an toàn).
+- **MỞ GAME THÔNG MINH THEO HỒ SƠ ĐANG CHỌN (SMART LAUNCHER)**:
+  - Nút `[🚀 MỞ GAME]` tự động cập nhật tên và nhận diện package của game đang chọn để khởi động chính xác.
+  - Thanh thông báo tiện ích hiển thị chi tiết tên game đang chọn: `⚡ [Liên Quân Mobile]: SẴN SÀNG`.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.5.0.apk`.
+
+---
+
 ## [v2.4.0] - 2026-09-30
 ### 💎 ĐẠI TU TOÀN DIỆN GIAO DIỆN THEO PHONG CÁCH LIQUID GLASS (GLASSMORPHISM & CYBER HUD)
 - **THIẾT KẾ KÍNH THỂ LỎNG CAO CẤP (LIQUID GLASS / GLASSMORPHISM)**:

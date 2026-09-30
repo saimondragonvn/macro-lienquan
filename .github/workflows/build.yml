@@ -46,27 +46,24 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.4.0' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.4.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.0' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.0' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.4.0' }})
+            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.5.0' }})
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 💎 ĐẠI TU TOÀN DIỆN GIAO DIỆN LIQUID GLASS & CYBER HUD:
-            1. **MẶT KÍNH ACRYLIC MỜ ĐỤC CÓ CHIỀU SÂU (FROSTED ACRYLIC GLASS SURFACES)**:
-               - Nâng cấp toàn bộ thẻ giao diện, bảng điều khiển menu và hộp thoại sang cấu trúc kính acrylic đa lớp với độ trong suốt tối ưu (75-85%).
-            2. **VIỀN PHẢN QUANG TINH THỂ KÍNH (SPECULAR GLASS RIM LIGHTS)**:
-               - Viền phản xạ ánh sáng Specular Rim Light 1.2dp quanh mép các khối kính, mô phỏng ánh sáng phản chiếu chân thực khi chạm vào mép cắt của kính cường lực.
-            3. **HỆ THỐNG NÚT BẤM KHỐI CẦU KÍNH NỔI (LIQUID GLASS ORBS HUD BUTTONS)**:
-               - Nút bấm combo trên màn hình game (`FloatingTriggerView`) được nâng cấp thành các quả cầu kính thể lỏng (Liquid Glass Orbs) với hiệu ứng gradient 3D dạng thấu kính, viền hào quang phát quang (Cyan Neon Glow `2dp`).
-               - Trạng thái xả combo: Lõi cầu kính phát sáng ngọc lục bảo rực lửa (`Radiant Emerald Power Core`) với viền hào quang trắng sáng (`White Specular Rim`).
-            4. **THANH ĐIỀU KHIỂN CAPSULE DYNAMIC ISLAND**:
-               - Nâng cấp thanh điều khiển ghi combo và thanh chỉnh sửa vị trí nút thành dạng viên con nhộng Liquid Capsule (`radius = 999dp`).
-            5. **BẢO LƯU 100% CÁC TÍNH NĂNG CHỦ LỰC**:
-               - Khóa vị trí trong trận đấu, chế độ di chuyển nút khi mở menu, chỉnh tốc độ cơ động lên tới 20x, thanh thông báo tiện ích điều khiển, động cơ Shizuku Binder 120Hz.
+            #### 🎮 TÍNH NĂNG ĐA HỒ SƠ COMBO THEO TỪNG GAME (MULTI-GAME PROFILES):
+            1. **HỒ SƠ CẤU HÌNH COMBO ĐỘC LẬP CHO TỪNG GAME**:
+               - Mỗi game (Liên Quân Mobile, Free Fire, Tốc Chiến, Genshin...) sở hữu danh sách nút combo, vị trí tọa độ, độ trễ và độ mờ riêng biệt 100%.
+            2. **CHUYỂN ĐỔI GAME 1-CHẠM TRÊN MENU & DASHBOARD**:
+               - Thanh chọn game dạng thẻ kính (Chips) cuộn ngang trực quan: Chạm vào game nào là các nút combo của game đó lập tức xuất hiện đúng vị trí.
+            3. **THÊM MỚI, ĐỔI TÊN & XÓA HỒ SƠ LINH HOẠT**:
+               - Dễ dàng tạo hồ sơ cho bất kỳ tựa game nào với nút `[+ Thêm Game]`.
+            4. **MỞ GAME THÔNG MINH THEO HỒ SƠ ĐANG CHỌN**:
+               - Tự động nhận diện và khởi động chính xác tựa game đang được chọn.
 
             #### 📲 Tải về APK:
-            Tải file **`Macro-LienQuan-v2.4.0.apk`** ở mục **Assets** bên dưới.
+            Tải file **`Macro-LienQuan-v2.5.0.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

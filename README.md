@@ -5,7 +5,7 @@
 ---
 
 ### 📥 Tải file APK cài đặt ngay:
-👉 **[Tải file APK mới nhất (Macro-LienQuan-v2.4.0.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v2.4.0/Macro-LienQuan-v2.4.0.apk)**  
+👉 **[Tải file APK mới nhất (Macro-LienQuan-v2.5.0.apk)](https://github.com/saimondragonvn/macro-lienquan/releases/download/v2.5.0/Macro-LienQuan-v2.5.0.apk)**  
 👉 **[Xem toàn bộ các bản phát hành (Releases)](https://github.com/saimondragonvn/macro-lienquan/releases)**
 
 ---

@@ -18,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -26,6 +27,7 @@ import androidx.core.content.ContextCompat
 import com.macrophone.gaming.R
 import com.macrophone.gaming.core.GameTurboRecorder
 import com.macrophone.gaming.core.ShellExecutor
+import com.macrophone.gaming.data.GameProfile
 import com.macrophone.gaming.data.MacroConfigStorage
 import com.macrophone.gaming.data.SavedMacroTrigger
 import com.macrophone.gaming.data.model.MacroAction
@@ -218,7 +220,8 @@ class TurboOverlayService : Service() {
             val notification = NotificationHelper.buildNotification(
                 context = this,
                 isButtonsHidden = isOverlayHidden,
-                isRecording = false
+                isRecording = false,
+                activeGameName = configStorage.getActiveProfile().name
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -252,7 +255,8 @@ class TurboOverlayService : Service() {
                 isButtonsHidden = isOverlayHidden,
                 isRecording = GameTurboRecorder.isRecording,
                 activeComboName = activeComboName,
-                isMenuOpen = isMenuOpen
+                isMenuOpen = isMenuOpen,
+                activeGameName = configStorage.getActiveProfile().name
             )
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.notify(NotificationHelper.NOTIFICATION_ID, notification)
@@ -370,6 +374,7 @@ class TurboOverlayService : Service() {
         dockView?.findViewById<View>(R.id.layoutCollapsed)?.visibility = View.GONE
 
         updateEngineBadge()
+        renderGameProfilesUI()
         renderAssignedTriggersList()
 
         try {
@@ -470,11 +475,20 @@ class TurboOverlayService : Service() {
             // Chặn click
         }
 
-        // 0. Mở Liên Quân Mobile nhanh từ Game Turbo Dock
+        // 0. Mở Game nhanh theo hồ sơ đang chọn
         btnLaunchGameFromDock?.setOnClickListener {
-            launchLienQuanGame()
+            launchCurrentGame()
             closeTurboMenu()
         }
+
+        // Quản lý Hồ sơ Game (Multi-Game Profile)
+        val btnAddNewGameProfile = root.findViewById<View>(R.id.btnAddNewGameProfile)
+        val btnRenameCurrentProfile = root.findViewById<View>(R.id.btnRenameCurrentProfile)
+        val btnDeleteCurrentProfile = root.findViewById<View>(R.id.btnDeleteCurrentProfile)
+
+        btnAddNewGameProfile?.setOnClickListener { showCreateProfileDialog() }
+        btnRenameCurrentProfile?.setOnClickListener { showRenameCurrentProfileDialog() }
+        btnDeleteCurrentProfile?.setOnClickListener { deleteCurrentProfile() }
 
         // Bấm vào Đèn LED trạng thái Shizuku để mở màn hình cấp quyền
         tvEngineStatusBadge?.setOnClickListener {
@@ -935,6 +949,41 @@ class TurboOverlayService : Service() {
     }
 
     /**
+     * Mở game theo cấu hình hồ sơ hiện tại
+     */
+    private fun launchCurrentGame() {
+        val active = configStorage.getActiveProfile()
+        val pm = packageManager
+
+        val targetPackages = when {
+            active.id == MacroConfigStorage.DEFAULT_PROFILE_FREEFIRE_ID || active.name.contains("Free Fire", ignoreCase = true) ->
+                listOf("com.dts.freefireth", "com.dts.freefiremax")
+            active.id == MacroConfigStorage.DEFAULT_PROFILE_WILDRIFT_ID || active.name.contains("Tốc Chiến", ignoreCase = true) || active.name.contains("Wild Rift", ignoreCase = true) ->
+                listOf("com.riotgames.league.wildriftvn", "com.riotgames.league.wildrift")
+            else -> listOf(
+                active.packageName ?: "",
+                "com.garena.game.kgvn",
+                "com.levelinfinite.sgameGlobal",
+                "com.garena.game.kgtw",
+                "com.garena.game.kgth"
+            ).filter { it.isNotEmpty() }
+        }
+
+        for (pkg in targetPackages) {
+            val intent = pm.getLaunchIntentForPackage(pkg)
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                configStorage.lastGamePackage = pkg
+                Toast.makeText(this, "🚀 Đang mở ${active.name}...", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        launchLienQuanGame()
+    }
+
+    /**
      * Mở game Liên Quân Mobile tự động
      */
     private fun launchLienQuanGame() {
@@ -1223,6 +1272,204 @@ class TurboOverlayService : Service() {
             }
 
             container.addView(itemView)
+        }
+
+        val tvActiveProfileSummary = root.findViewById<TextView>(R.id.tvActiveProfileSummary)
+        val active = configStorage.getActiveProfile()
+        tvActiveProfileSummary?.text = "${active.iconEmoji} ${active.name} (${triggerButtons.size} nút combo)"
+    }
+
+    /**
+     * Hiển thị thanh cuộn ngang các Hồ Sơ Game (Chips) trên menu HUD
+     */
+    private fun renderGameProfilesUI() {
+        val root = dockView ?: return
+        val chipsContainer = root.findViewById<LinearLayout>(R.id.layoutProfileChipsContainer) ?: return
+        val tvSummary = root.findViewById<TextView>(R.id.tvActiveProfileSummary)
+        val btnLaunchGame = root.findViewById<TextView>(R.id.btnLaunchGameFromDock)
+
+        chipsContainer.removeAllViews()
+
+        val profiles = configStorage.getAllProfiles()
+        val activeProfile = configStorage.getActiveProfile()
+
+        tvSummary?.text = "${activeProfile.iconEmoji} ${activeProfile.name} (${triggerButtons.size} nút combo)"
+        btnLaunchGame?.text = "🚀 MỞ ${activeProfile.name.uppercase()}"
+
+        val density = resources.displayMetrics.density
+        val padH = (12 * density).toInt()
+        val padV = (6 * density).toInt()
+        val marginEnd = (6 * density).toInt()
+
+        profiles.forEach { profile ->
+            val isSelected = (profile.id == activeProfile.id)
+            val chip = TextView(this).apply {
+                text = "${profile.iconEmoji} ${profile.name}"
+                textSize = 10.5f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                setPadding(padH, padV, padH, padV)
+                setBackgroundResource(if (isSelected) R.drawable.bg_chip_selected else R.drawable.bg_chip_unselected)
+                setTextColor(ContextCompat.getColor(this@TurboOverlayService, if (isSelected) R.color.bg_dark else R.color.text_primary))
+                isClickable = true
+                isFocusable = true
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    this.marginEnd = marginEnd
+                }
+                setOnClickListener {
+                    if (profile.id != activeProfile.id) {
+                        switchActiveGameProfile(profile.id)
+                    }
+                }
+            }
+            chipsContainer.addView(chip)
+        }
+    }
+
+    /**
+     * Chuyển đổi sang một hồ sơ game khác: Dọn dẹp nút cũ và hiển thị các nút của game mới
+     */
+    private fun switchActiveGameProfile(newProfileId: String) {
+        // 1. Dọn dẹp toàn bộ nút combo của game trước đó khỏi màn hình
+        triggerButtons.forEach { it.destroy() }
+        triggerButtons.clear()
+
+        // 2. Chuyển đổi ID cấu hình hoạt động
+        configStorage.setActiveProfileId(newProfileId)
+
+        // 3. Tải và vẽ các nút combo của game mới
+        loadSavedTriggers()
+
+        // 4. Cập nhật giao diện menu và thông báo
+        renderAssignedTriggersList()
+        renderGameProfilesUI()
+        updateNotification()
+
+        val active = configStorage.getActiveProfile()
+        Toast.makeText(this, "🎮 Đã chuyển sang: [${active.name}] (${triggerButtons.size} nút)", Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Hộp thoại thêm Hồ Sơ Game Mới
+     */
+    private fun showCreateProfileDialog() {
+        try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+            val dialogView = LayoutInflater.from(themedContext).inflate(R.layout.view_create_profile_dialog, null)
+            val etName = dialogView.findViewById<EditText>(R.id.etCreateProfileName)
+            val btnCancel = dialogView.findViewById<TextView>(R.id.btnCreateProfileCancel)
+            val btnConfirm = dialogView.findViewById<TextView>(R.id.btnCreateProfileConfirm)
+
+            val dialogParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.CENTER
+            }
+
+            val closeDialog = {
+                try {
+                    if (dialogView.isAttachedToWindow) {
+                        windowManager.removeViewImmediate(dialogView)
+                    } else {
+                        windowManager.removeView(dialogView)
+                    }
+                } catch (_: Throwable) {}
+            }
+
+            btnCancel.setOnClickListener { closeDialog() }
+            btnConfirm.setOnClickListener {
+                val name = etName.text?.toString()?.trim() ?: ""
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Vui lòng nhập tên game!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val newProfile = configStorage.createProfile(name)
+                closeDialog()
+                switchActiveGameProfile(newProfile.id)
+                Toast.makeText(this, "✨ Đã tạo và chọn hồ sơ game: [$name]", Toast.LENGTH_SHORT).show()
+            }
+
+            windowManager.addView(dialogView, dialogParams)
+            etName.requestFocus()
+        } catch (e: Throwable) {
+            Log.e("TurboOverlayService", "showCreateProfileDialog error: ${e.message}")
+        }
+    }
+
+    /**
+     * Hộp thoại đổi tên Hồ Sơ Game hiện tại
+     */
+    private fun showRenameCurrentProfileDialog() {
+        val active = configStorage.getActiveProfile()
+        try {
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+            val dialogView = LayoutInflater.from(themedContext).inflate(R.layout.view_rename_dialog, null)
+            val etInput = dialogView.findViewById<EditText>(R.id.etRenameInput)
+            val btnCancel = dialogView.findViewById<TextView>(R.id.btnRenameCancel)
+            val btnConfirm = dialogView.findViewById<TextView>(R.id.btnRenameConfirm)
+
+            etInput.setText(active.name)
+
+            val dialogParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.CENTER
+            }
+
+            val closeDialog = {
+                try {
+                    if (dialogView.isAttachedToWindow) {
+                        windowManager.removeViewImmediate(dialogView)
+                    } else {
+                        windowManager.removeView(dialogView)
+                    }
+                } catch (_: Throwable) {}
+            }
+
+            btnCancel.setOnClickListener { closeDialog() }
+            btnConfirm.setOnClickListener {
+                val newName = etInput.text?.toString()?.trim() ?: ""
+                if (newName.isNotEmpty()) {
+                    configStorage.renameProfile(active.id, newName)
+                    renderGameProfilesUI()
+                    updateNotification()
+                    Toast.makeText(this, "✏️ Đã đổi tên thành: [$newName]", Toast.LENGTH_SHORT).show()
+                }
+                closeDialog()
+            }
+
+            windowManager.addView(dialogView, dialogParams)
+            etInput.requestFocus()
+        } catch (e: Throwable) {
+            Log.e("TurboOverlayService", "showRenameCurrentProfileDialog error: ${e.message}")
+        }
+    }
+
+    /**
+     * Xóa Hồ Sơ Game hiện tại
+     */
+    private fun deleteCurrentProfile() {
+        val active = configStorage.getActiveProfile()
+        if (configStorage.getAllProfiles().size <= 1) {
+            Toast.makeText(this, "⚠️ Không thể xóa vì đây là hồ sơ game duy nhất còn lại!", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val oldName = active.name
+        val success = configStorage.deleteProfile(active.id)
+        if (success) {
+            switchActiveGameProfile(configStorage.getActiveProfileId())
+            Toast.makeText(this, "🗑️ Đã xóa hồ sơ game: [$oldName]", Toast.LENGTH_SHORT).show()
         }
     }
 
