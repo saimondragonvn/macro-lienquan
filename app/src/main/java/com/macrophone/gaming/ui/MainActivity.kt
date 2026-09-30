@@ -147,23 +147,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnGrantAccessibility.setOnClickListener {
-            if (ShizukuHelper.hasShizukuPermission() || ShizukuHelper.isRootAvailable()) {
-                lifecycleScope.launch {
-                    val pkg = packageName
-                    val serviceClass = "com.macrophone.gaming.service.MacroAccessibilityService"
-                    val ok = ShizukuHelper.executePrivilegedCommand("settings put secure enabled_accessibility_services $pkg/$serviceClass") &&
-                            ShizukuHelper.executePrivilegedCommand("settings put secure accessibility_enabled 1")
-                    if (ok) {
-                        Toast.makeText(this@MainActivity, "Đã tự động bật Dịch vụ Trợ năng!", Toast.LENGTH_SHORT).show()
-                        viewModel.refreshData()
-                    } else {
-                        showAccessibilityGuidanceDialog()
-                    }
-                }
-            } else {
-                showAccessibilityGuidanceDialog()
-            }
+        binding.btnSetupTurboEngine.setOnClickListener {
+            SetupWizardActivity.start(this)
         }
 
         binding.btnGrantOverlay.setOnClickListener {
@@ -224,7 +209,7 @@ class MainActivity : AppCompatActivity() {
             result.onSuccess { msg ->
                 MaterialAlertDialogBuilder(this@MainActivity)
                     .setTitle("Thành công!")
-                    .setMessage("Đã tự động mở khóa Restricted Settings, kích hoạt Trợ năng và cấp quyền Vẽ màn hình qua Shizuku!")
+                    .setMessage("Đã tự động cấp quyền Động cơ Game Turbo siêu tốc và cấp quyền Cửa sổ nổi qua Shizuku!")
                     .setPositiveButton("Tuyệt vời", null)
                     .show()
                 viewModel.refreshData()
@@ -259,13 +244,13 @@ class MainActivity : AppCompatActivity() {
         clipboard.setPrimaryClip(clip)
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("Đã sao chép 5 dòng lệnh ADB!")
+            .setTitle("Đã sao chép lệnh ADB!")
             .setMessage(
                 "Bạn có thể dán toàn bộ lệnh này vào ứng dụng LADB (Gỡ lỗi Wi-Fi ngay trên điện thoại) hoặc Command Prompt trên PC:\n\n" +
                 cmds + "\n\n" +
                 "Lệnh này sẽ tự động:\n" +
                 "✓ Mở khóa Cài đặt bị hạn chế (Restricted settings)\n" +
-                "✓ Kích hoạt Trợ năng (Accessibility Service)\n" +
+                "✓ Cấp quyền Động cơ Game Turbo (Shell đặc quyền)\n" +
                 "✓ Cấp quyền Cửa sổ nổi (SYSTEM_ALERT_WINDOW)"
             )
             .setPositiveButton("Đã hiểu", null)
@@ -311,22 +296,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updatePermissionUi(perms: PermissionState) {
-        if (perms.hasAccessibility) {
-            binding.ivAccStatus.setImageResource(R.drawable.ic_check)
-            binding.ivAccStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
-            binding.btnGrantAccessibility.text = getString(R.string.btn_granted)
-            binding.btnGrantAccessibility.isEnabled = false
-            binding.btnGrantAccessibility.setBackgroundColor(ContextCompat.getColor(this, R.color.bg_surface_elevated))
-            binding.btnGrantAccessibility.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
-        } else {
-            binding.ivAccStatus.setImageResource(R.drawable.ic_warning)
-            binding.ivAccStatus.setColorFilter(ContextCompat.getColor(this, R.color.amber_warning))
-            binding.btnGrantAccessibility.text = getString(R.string.btn_grant)
-            binding.btnGrantAccessibility.isEnabled = true
-            binding.btnGrantAccessibility.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
-            binding.btnGrantAccessibility.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
-        }
-
         if (perms.hasOverlay) {
             binding.ivOverlayStatus.setImageResource(R.drawable.ic_check)
             binding.ivOverlayStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
@@ -341,6 +310,22 @@ class MainActivity : AppCompatActivity() {
             binding.btnGrantOverlay.isEnabled = true
             binding.btnGrantOverlay.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
             binding.btnGrantOverlay.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
+        }
+
+        if (perms.hasShizukuOrRoot) {
+            binding.ivTurboStatus.setImageResource(R.drawable.ic_check)
+            binding.ivTurboStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
+            binding.btnSetupTurboEngine.text = "ĐÃ SẴN SÀNG"
+            binding.btnSetupTurboEngine.isEnabled = true
+            binding.btnSetupTurboEngine.setBackgroundColor(ContextCompat.getColor(this, R.color.bg_surface_elevated))
+            binding.btnSetupTurboEngine.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
+        } else {
+            binding.ivTurboStatus.setImageResource(R.drawable.ic_warning)
+            binding.ivTurboStatus.setColorFilter(ContextCompat.getColor(this, R.color.amber_warning))
+            binding.btnSetupTurboEngine.text = "CẤU HÌNH"
+            binding.btnSetupTurboEngine.isEnabled = true
+            binding.btnSetupTurboEngine.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
+            binding.btnSetupTurboEngine.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
         }
 
         if (perms.isBatteryOptimized) {
@@ -359,7 +344,7 @@ class MainActivity : AppCompatActivity() {
             binding.btnGrantBattery.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
         }
 
-        val allReady = perms.hasOverlay && (perms.hasAccessibility || ShizukuHelper.hasShizukuPermission() || ShizukuHelper.isRootAvailable())
+        val allReady = perms.hasOverlay && perms.hasShizukuOrRoot
         if (allReady) {
             binding.tvEngineStatus.text = "SẴN SÀNG"
             binding.tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
@@ -367,30 +352,6 @@ class MainActivity : AppCompatActivity() {
             binding.tvEngineStatus.text = "CHƯA CẤP ĐỦ"
             binding.tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.amber_warning))
         }
-    }
-
-    private fun showAccessibilityGuidanceDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Kích hoạt Dịch vụ Trợ năng")
-            .setMessage(
-                "Để Macro tự động bấm chiêu trong game, bạn cần gạt BẬT 'Macro Gaming Combo Service'.\n\n" +
-                "💡 MẸO NHANH: Bạn có thể dùng nút [⚡ Cấp quyền Shizuku] ở đầu trang để kích hoạt tự động 1-chạm mà không cần làm thủ công!\n\n" +
-                "⚠️ HOẶC MỞ KHÓA THỦ CÔNG (ANDROID 13/14+):\n" +
-                "Nếu công tắc Trợ năng bị MỜ (báo 'Cài đặt bị hạn chế'):\n" +
-                "1. Nhấn nút [Mở Cài đặt ứng dụng] bên dưới.\n" +
-                "2. Bấm vào dấu 3 chấm (⋮) ở góc trên bên phải màn hình.\n" +
-                "3. Chọn 'Cho phép cài đặt bị hạn chế' (Allow restricted settings).\n" +
-                "4. Xác nhận mở khóa vân tay / mã PIN.\n" +
-                "5. Quay lại đây và nhấn [Đến Cài đặt Trợ năng] để gạt BẬT!"
-            )
-            .setPositiveButton("Đến Cài đặt Trợ năng") { _, _ ->
-                PermissionUtils.openAccessibilitySettings(this)
-            }
-            .setNeutralButton("Mở Cài đặt ứng dụng (Mở khóa)") { _, _ ->
-                PermissionUtils.openAppDetailsSettings(this)
-            }
-            .setNegativeButton("Đóng", null)
-            .show()
     }
 
     private fun requestNotificationPermissionIfNeeded() {

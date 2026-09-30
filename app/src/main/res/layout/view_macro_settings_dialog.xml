@@ -218,14 +218,16 @@
         android:thumbTint="@color/cyan_neon" />
 
     <!-- Apply Button -->
-    <com.google.android.material.button.MaterialButton
+    <TextView
         android:id="@+id/btnApplySettings"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="44dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/cyan_neon"
+        android:background="@drawable/bg_turbo_btn_primary"
+        android:gravity="center"
         android:text="@string/btn_save"
         android:textColor="@color/bg_dark"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textSize="13sp" />
 
 </LinearLayout>

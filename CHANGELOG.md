@@ -4,6 +4,23 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v1.2.4] - 2026-09-30
+### 🚀 Loại Bỏ Hoàn Toàn Trợ Năng & Nâng Cấp Game Turbo HUD (Redmi/Xiaomi/RedMagic Style)
+- **LOẠI BỎ 100% DỊCH VỤ TRỢ NĂNG (ACCESSIBILITY SERVICE)**:
+  - Xóa bỏ triệt để file `MacroAccessibilityService`, config XML, permission checks và strings liên quan đến Accessibility.
+  - Người dùng không bao giờ bị hỏi quyền Trợ năng, không còn gặp rào cản "Cài đặt bị hạn chế" (Restricted Settings).
+  - Động cơ thực thi chuyển sang 100% privileged shell Shizuku / Gỡ lỗi qua Wi-Fi / Root: Chạy trực tiếp qua Binder với chuỗi script gom cụm (`input tap X Y; sleep ...`), loại bỏ độ trễ spawn tiến trình.
+- **NÂNG CẤP GIAO DIỆN GAME TURBO HUD (XIAOMI / REDMI / REDMAGIC STYLE)**:
+  - Tab nổi mép màn hình: Thu gọn thành tab nhỏ gọn `[⚡ TURBO]`, chạm là mở bảng điều khiển Game Turbo HUD.
+  - Tính năng **Gán Vị Trí Chiêu (Target Points Pinning)**: Bấm `[+ Ghim Điểm]`, kéo thả các điểm (1, 2, 3...) vào nút chiêu trong game, sau đó bấm `[🚀 TẠO NÚT BẤM TURBO]` là có ngay nút tròn trên màn hình.
+  - Tính năng **Ghi Thao Tác (Macro Recorder)**: Bổ sung nút **[🔴 BẮT ĐẦU GHI (START)]** to rõ ràng, hiển thị thanh điều khiển với nút **[⏹️ DỪNG GHI (STOP)]**, nút Hoàn tác `[↩ Xóa]`, tự động tạo nút tròn Turbo ngay khi dừng ghi!
+- **SỬA LỖI CRASH VÀ THEME TRÊN INFINIX NOTE 30 / ANDROID 13 & 14**:
+  - Thay thế toàn bộ MaterialButton trong các cửa sổ overlay service bằng View/TextView chuẩn (tránh crash Inflate Exception do thiếu Material theme context).
+  - Kiểm tra an toàn `isAttachedToWindow` trước khi đóng overlay view.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v1.2.4.apk`.
+
+---
+
 ## [v1.2.2] - 2026-09-30
 ### 📱 Sửa triệt để Crash & Nâng cấp giao diện Cyberpunk chuyên nghiệp cho Infinix Note 30
 - **ĐẶC TRỊ 100% LỖI CRASH TRÊN MÁY INFINIX NOTE 30 (XOS 13/14)**:

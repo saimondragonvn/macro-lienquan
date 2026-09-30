@@ -3,105 +3,280 @@
     android:id="@+id/dockRoot"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_floating_pill"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:elevation="12dp">
+    android:orientation="vertical">
 
-    <!-- Drag Handle / Status Glow Indicator -->
-    <ImageView
-        android:id="@+id/ivDragHandle"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:padding="6dp"
-        android:src="@drawable/ic_macro_tile"
-        android:contentDescription="Drag Handle" />
+    <!-- 1. Trạng thái THU GỌN (Game Turbo Edge Tab - Xiaomi / Redmi / RedMagic style) -->
+    <LinearLayout
+        android:id="@+id/layoutCollapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_floating_pill"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:elevation="14dp"
+        android:visibility="visible">
 
-    <View
-        android:layout_width="1dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
-        android:background="@color/stroke_border" />
+        <ImageView
+            android:id="@+id/ivCollapsedHandle"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_macro_tile"
+            android:contentDescription="Drag Handle" />
 
-    <!-- Play / Stop Button -->
-    <ImageButton
-        android:id="@+id/btnPlayStop"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="7dp"
-        android:src="@drawable/ic_play"
-        android:contentDescription="Play/Stop Macro" />
+        <TextView
+            android:id="@+id/tvCollapsedTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="⚡ TURBO"
+            android:textColor="@color/cyan_neon"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05" />
 
-    <!-- Add Target Point Button (+) -->
-    <ImageButton
-        android:id="@+id/btnAddPoint"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="7dp"
-        android:src="@drawable/ic_add"
-        android:contentDescription="Add Target Point" />
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_play"
+            android:tint="@color/cyan_neon"
+            android:contentDescription="Expand" />
+    </LinearLayout>
 
-    <!-- Remove Target Point Button (-) -->
-    <ImageButton
-        android:id="@+id/btnRemovePoint"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="7dp"
-        android:src="@drawable/ic_remove"
-        android:contentDescription="Remove Target Point" />
+    <!-- 2. Trạng thái MỞ RỘNG (Game Turbo HUD Control Center) -->
+    <LinearLayout
+        android:id="@+id/layoutExpanded"
+        android:layout_width="290dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dialog_card"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:elevation="16dp"
+        android:visibility="gone">
 
-    <!-- Create Floating Macro Button from Points (✓) -->
-    <ImageButton
-        android:id="@+id/btnCreateMacroBtn"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="6dp"
-        android:src="@drawable/ic_check"
-        android:contentDescription="Tạo nút Macro tròn từ các điểm ghim" />
+        <!-- Header -->
+        <LinearLayout
+            android:id="@+id/layoutExpandedHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
 
-    <!-- Toggle Points Visibility (Eye) -->
-    <ImageButton
-        android:id="@+id/btnToggleVisibility"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="7dp"
-        android:src="@drawable/ic_visibility"
-        android:contentDescription="Toggle Target Visibility" />
+            <ImageView
+                android:id="@+id/ivExpandedDrag"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_macro_tile"
+                android:contentDescription="Drag Panel" />
 
-    <!-- Record Button -->
-    <ImageButton
-        android:id="@+id/btnRecord"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="7dp"
-        android:src="@drawable/ic_record"
-        android:contentDescription="Record Macro" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-    <!-- Settings / Config Button -->
-    <ImageButton
-        android:id="@+id/btnSettings"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="7dp"
-        android:src="@drawable/ic_settings"
-        android:contentDescription="Macro Settings" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GAME TURBO PRO"
+                    android:textColor="@color/cyan_neon"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.04" />
 
-    <!-- Close Dock Button -->
-    <ImageButton
-        android:id="@+id/btnClose"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="5dp"
-        android:src="@drawable/ic_close"
-        android:contentDescription="Close Dock" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="120Hz Ultra Combo • Privileged Shell"
+                    android:textColor="@color/emerald_play"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btnCollapseDock"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="5dp"
+                android:src="@drawable/ic_close"
+                android:tint="@color/text_secondary"
+                android:contentDescription="Collapse Panel" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/stroke_border"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Phần 1: GÁN CHIÊU VỊ TRÍ TAY (TARGET POINTS) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎯 GÁN VỊ TRÍ CHIÊU (COMBO GHIM)"
+            android:textColor="@color/cyan_neon"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Kéo các điểm (1, 2, 3...) đặt lên nút chiêu trong game:"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp" />
+
+        <!-- Row nút thao tác với các điểm ghim -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnAddPoint"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="+ Ghim Điểm"
+                android:textColor="@color/cyan_neon"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnRemovePoint"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="- Bớt"
+                android:textColor="@color/text_primary"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/btnPlayTest"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.9"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="▶ Thử"
+                android:textColor="@color/emerald_play"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Nút Tạo Nút Bấm Turbo từ các điểm ghim (Nổi bật nhất) -->
+        <TextView
+            android:id="@+id/btnCreateMacroBtn"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_turbo_btn_primary"
+            android:gravity="center"
+            android:text="🚀 TẠO NÚT BẤM TURBO TỪ ĐIỂM GHIM"
+            android:textColor="@color/bg_dark"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/stroke_border"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Phần 2: GHI THAO TÁC TRỰC TIẾP (MACRO RECORDER) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔴 GHI HÌNH THAO TÁC TAY TRỰC TIẾP"
+            android:textColor="@color/crimson_stop"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Nhấn nút dưới để bắt đầu ghi các cú chạm/vuốt màn hình:"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp" />
+
+        <!-- Nút BẮT ĐẦU GHI (START) Cực kỳ to và rõ ràng -->
+        <TextView
+            android:id="@+id/btnStartRecord"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_turbo_btn_danger"
+            android:gravity="center"
+            android:text="🔴 BẮT ĐẦU GHI (START)"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.03" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/stroke_border"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Phần 3: Công cụ tiện ích -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnToggleVisibility"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="👁️ Ẩn/Hiện"
+                android:textColor="@color/text_primary"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/btnClearPoints"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="🗑️ Xóa Hết"
+                android:textColor="@color/amber_warning"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/btnCloseService"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_turbo_btn_secondary"
+                android:gravity="center"
+                android:text="✕ Đóng Turbo"
+                android:textColor="@color/crimson_stop"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

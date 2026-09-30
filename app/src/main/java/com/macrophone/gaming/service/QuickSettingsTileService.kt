@@ -35,12 +35,11 @@ class QuickSettingsTileService : TileService() {
 
         // 1. Kiểm tra quyền hệ thống trước khi bật
         val hasOverlay = PermissionUtils.hasOverlayPermission(this)
-        val hasAcc = PermissionUtils.isAccessibilityServiceEnabled(this, MacroAccessibilityService::class.java)
 
-        if (!hasOverlay || !hasAcc) {
+        if (!hasOverlay) {
             Toast.makeText(
                 this,
-                "Vui lòng mở ứng dụng và cấp đủ quyền Trợ năng & Vẽ trên màn hình!",
+                "Vui lòng mở ứng dụng và cấp quyền Cửa sổ nổi cho Game Turbo!",
                 Toast.LENGTH_LONG
             ).show()
 

@@ -29,7 +29,6 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.google.android.material.button.MaterialButton
 import com.macrophone.gaming.R
 import com.macrophone.gaming.data.model.GesturePoint
 import com.macrophone.gaming.data.model.MacroAction
@@ -313,56 +312,67 @@ class FloatingWidgetService : Service() {
     }
 
     private fun setupDockTouchDrag(root: View) {
-        val dragHandle = root.findViewById<View>(R.id.ivDragHandle)
+        val collapsed = root.findViewById<View>(R.id.layoutCollapsed)
+        val expandedHeader = root.findViewById<View>(R.id.layoutExpandedHeader)
 
-        dragHandle.setOnTouchListener(object : View.OnTouchListener {
-            private var initialX = 0
-            private var initialY = 0
-            private var initialTouchX = 0f
-            private var initialTouchY = 0f
-            private var isDragging = false
+        val createDragListener = { targetView: View ->
+            object : View.OnTouchListener {
+                private var initialX = 0
+                private var initialY = 0
+                private var initialTouchX = 0f
+                private var initialTouchY = 0f
+                private var isDragging = false
+                private var downTime = 0L
 
-            override fun onTouch(v: View, event: MotionEvent): Boolean {
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        initialX = dockParams.x
-                        initialY = dockParams.y
-                        initialTouchX = event.rawX
-                        initialTouchY = event.rawY
-                        isDragging = false
-                        return true
-                    }
-
-                    MotionEvent.ACTION_MOVE -> {
-                        val dx = (event.rawX - initialTouchX).toInt()
-                        val dy = (event.rawY - initialTouchY).toInt()
-
-                        if (abs(dx) > 10 || abs(dy) > 10) {
-                            isDragging = true
+                override fun onTouch(v: View, event: MotionEvent): Boolean {
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            initialX = dockParams.x
+                            initialY = dockParams.y
+                            initialTouchX = event.rawX
+                            initialTouchY = event.rawY
+                            isDragging = false
+                            downTime = System.currentTimeMillis()
+                            return false
                         }
 
-                        if (isDragging) {
-                            dockParams.x = initialX + dx
-                            dockParams.y = initialY + dy
-                            updateViewLayoutSafely(dockView, dockParams)
-                        }
-                        return true
-                    }
+                        MotionEvent.ACTION_MOVE -> {
+                            val dx = (event.rawX - initialTouchX).toInt()
+                            val dy = (event.rawY - initialTouchY).toInt()
 
-                    MotionEvent.ACTION_UP -> {
-                        if (isDragging) {
-                            val viewWidth = root.width
-                            val middle = screenWidth / 2
-                            val currentCenterX = dockParams.x + (viewWidth / 2)
-                            val targetX = if (currentCenterX < middle) 16 else (screenWidth - viewWidth - 16)
-                            animateDockSnap(dockParams.x, targetX)
+                            if (abs(dx) > 12 || abs(dy) > 12) {
+                                isDragging = true
+                                dockParams.x = initialX + dx
+                                dockParams.y = initialY + dy
+                                updateViewLayoutSafely(dockView, dockParams)
+                            }
+                            return isDragging
                         }
-                        return true
+
+                        MotionEvent.ACTION_UP -> {
+                            if (isDragging) {
+                                val viewWidth = root.width
+                                val middle = screenWidth / 2
+                                val currentCenterX = dockParams.x + (viewWidth / 2)
+                                val targetX = if (currentCenterX < middle) 16 else (screenWidth - viewWidth - 16)
+                                animateDockSnap(dockParams.x, targetX)
+                                return true
+                            }
+                            val duration = System.currentTimeMillis() - downTime
+                            if (duration < 300 && targetView == collapsed) {
+                                targetView.performClick()
+                                return true
+                            }
+                            return false
+                        }
                     }
+                    return false
                 }
-                return false
             }
-        })
+        }
+
+        collapsed?.setOnTouchListener(createDragListener(collapsed))
+        expandedHeader?.setOnTouchListener(createDragListener(expandedHeader))
     }
 
     private fun animateDockSnap(fromX: Int, toX: Int) {
@@ -377,32 +387,42 @@ class FloatingWidgetService : Service() {
     }
 
     private fun setupDockButtons(root: View) {
-        val btnPlayStop = root.findViewById<ImageButton>(R.id.btnPlayStop)
-        val btnAddPoint = root.findViewById<ImageButton>(R.id.btnAddPoint)
-        val btnRemovePoint = root.findViewById<ImageButton>(R.id.btnRemovePoint)
-        val btnCreateMacroBtn = root.findViewById<ImageButton>(R.id.btnCreateMacroBtn)
-        val btnToggleVisibility = root.findViewById<ImageButton>(R.id.btnToggleVisibility)
-        val btnRecord = root.findViewById<ImageButton>(R.id.btnRecord)
-        val btnSettings = root.findViewById<ImageButton>(R.id.btnSettings)
-        val btnClose = root.findViewById<ImageButton>(R.id.btnClose)
+        val layoutCollapsed = root.findViewById<View>(R.id.layoutCollapsed)
+        val layoutExpanded = root.findViewById<View>(R.id.layoutExpanded)
+        val btnCollapseDock = root.findViewById<View>(R.id.btnCollapseDock)
 
-        btnAddPoint.setOnClickListener {
+        val btnAddPoint = root.findViewById<View>(R.id.btnAddPoint)
+        val btnRemovePoint = root.findViewById<View>(R.id.btnRemovePoint)
+        val btnPlayTest = root.findViewById<View>(R.id.btnPlayTest)
+        val btnCreateMacroBtn = root.findViewById<View>(R.id.btnCreateMacroBtn)
+
+        val btnStartRecord = root.findViewById<View>(R.id.btnStartRecord)
+
+        val btnToggleVisibility = root.findViewById<View>(R.id.btnToggleVisibility)
+        val btnClearPoints = root.findViewById<View>(R.id.btnClearPoints)
+        val btnCloseService = root.findViewById<View>(R.id.btnCloseService)
+
+        // Bấm tab thu gọn -> Mở rộng Game Turbo HUD
+        layoutCollapsed?.setOnClickListener {
+            layoutCollapsed.visibility = View.GONE
+            layoutExpanded.visibility = View.VISIBLE
+        }
+
+        // Bấm nút đóng panel -> Thu gọn về tab mép màn hình
+        btnCollapseDock?.setOnClickListener {
+            layoutExpanded.visibility = View.GONE
+            layoutCollapsed.visibility = View.VISIBLE
+        }
+
+        btnAddPoint?.setOnClickListener {
             addNewTargetPoint()
         }
 
-        btnRemovePoint.setOnClickListener {
+        btnRemovePoint?.setOnClickListener {
             removeLastTargetPoint()
         }
 
-        btnCreateMacroBtn?.setOnClickListener {
-            createMacroButtonFromTargetPoints()
-        }
-
-        btnToggleVisibility.setOnClickListener {
-            toggleTargetPointsVisibility()
-        }
-
-        btnPlayStop.setOnClickListener {
+        btnPlayTest?.setOnClickListener {
             if (macroManager.macroState.value == MacroState.PLAYING) {
                 macroManager.stopPlayback()
             } else {
@@ -414,20 +434,25 @@ class FloatingWidgetService : Service() {
             }
         }
 
-        btnRecord.setOnClickListener {
-            if (macroManager.macroState.value == MacroState.RECORDING) {
-                closeRecordOverlay()
-                macroManager.cancelRecording()
-            } else {
-                openRecordOverlay()
-            }
+        btnCreateMacroBtn?.setOnClickListener {
+            createMacroButtonFromTargetPoints()
         }
 
-        btnSettings.setOnClickListener {
-            toggleSettingsDialog()
+        // NÚT BẮT ĐẦU GHI (START) CỰC KỲ RÕ RÀNG
+        btnStartRecord?.setOnClickListener {
+            openRecordOverlay()
         }
 
-        btnClose.setOnClickListener {
+        btnToggleVisibility?.setOnClickListener {
+            toggleTargetPointsVisibility()
+        }
+
+        btnClearPoints?.setOnClickListener {
+            clearAllTargetPoints()
+            Toast.makeText(this, "Đã xóa toàn bộ điểm ghim", Toast.LENGTH_SHORT).show()
+        }
+
+        btnCloseService?.setOnClickListener {
             macroManager.stopPlayback()
             stopSelf()
         }
@@ -499,7 +524,7 @@ class FloatingWidgetService : Service() {
         if (targetPoints.isEmpty()) {
             Toast.makeText(
                 this,
-                "Chưa có điểm ghim nào! Hãy bấm nút [+] để đặt các vị trí chiêu (1, 2, 3...) trước.",
+                "Chưa có điểm ghim nào! Hãy bấm nút [+ Ghim Điểm] để đặt các vị trí chiêu (1, 2, 3...) trước.",
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -555,8 +580,7 @@ class FloatingWidgetService : Service() {
 
         macroManager.startRecording()
 
-        val themedContext = ContextThemeWrapper(this, R.style.Theme_MacroGaming)
-        val inflater = LayoutInflater.from(themedContext)
+        val inflater = LayoutInflater.from(this)
         recordOverlayView = inflater.inflate(R.layout.view_touch_recorder, null)
 
         recordParams = WindowManager.LayoutParams(
@@ -570,9 +594,9 @@ class FloatingWidgetService : Service() {
 
         val canvas = recordOverlayView!!.findViewById<TouchRecorderCanvas>(R.id.touchCanvas)
         val tvCount = recordOverlayView!!.findViewById<TextView>(R.id.tvPointCount)
-        val btnUndo = recordOverlayView!!.findViewById<MaterialButton>(R.id.btnUndoRecord)
-        val btnSave = recordOverlayView!!.findViewById<MaterialButton>(R.id.btnSaveRecord)
-        val btnCancel = recordOverlayView!!.findViewById<MaterialButton>(R.id.btnCancelRecord)
+        val btnUndo = recordOverlayView!!.findViewById<TextView>(R.id.btnUndoRecord)
+        val btnCancel = recordOverlayView!!.findViewById<TextView>(R.id.btnCancelRecord)
+        val btnStop = recordOverlayView!!.findViewById<TextView>(R.id.btnStopRecord)
 
         canvas.onActionRecorded = { action: MacroAction ->
             macroManager.addRecordedAction(action)
@@ -590,7 +614,11 @@ class FloatingWidgetService : Service() {
             }
         }
 
-        btnSave?.setOnClickListener {
+        btnCancel?.setOnClickListener {
+            closeRecordOverlay()
+        }
+
+        btnStop?.setOnClickListener {
             val actions = canvas.getRecordedActions()
             if (actions.isEmpty()) {
                 Toast.makeText(this, "Chưa ghi thao tác nào! Hãy chạm hoặc vuốt trên màn hình.", Toast.LENGTH_SHORT).show()
@@ -623,14 +651,10 @@ class FloatingWidgetService : Service() {
 
                 Toast.makeText(
                     this,
-                    "✅ Đã tạo nút tròn Macro [$macroName]! Chạm nút để xả combo, đè nút để xóa.",
+                    "✅ Đã tạo nút tròn Turbo [$macroName]! Chạm nút để xả combo, đè nút để xóa.",
                     Toast.LENGTH_LONG
                 ).show()
             }
-        }
-
-        btnCancel?.setOnClickListener {
-            closeRecordOverlay()
         }
 
         dockView?.visibility = View.GONE
@@ -648,7 +672,9 @@ class FloatingWidgetService : Service() {
         unregisterSystemDialogsReceiver()
         if (recordOverlayView != null) {
             try {
-                windowManager.removeViewImmediate(recordOverlayView)
+                if (recordOverlayView!!.isAttachedToWindow) {
+                    windowManager.removeViewImmediate(recordOverlayView)
+                }
             } catch (_: Exception) {
                 try {
                     windowManager.removeView(recordOverlayView)
@@ -689,8 +715,8 @@ class FloatingWidgetService : Service() {
         val tvOrig = saveDialogView!!.findViewById<TextView>(R.id.tvOriginalDuration)
         val tvAccel = saveDialogView!!.findViewById<TextView>(R.id.tvAcceleratedDuration)
         val cbFloating = saveDialogView!!.findViewById<CheckBox>(R.id.cbCreateFloatingButton)
-        val btnCancel = saveDialogView!!.findViewById<MaterialButton>(R.id.btnCancelSaveDialog)
-        val btnConfirm = saveDialogView!!.findViewById<MaterialButton>(R.id.btnConfirmSaveDialog)
+        val btnCancel = saveDialogView!!.findViewById<TextView>(R.id.btnCancelSaveDialog)
+        val btnConfirm = saveDialogView!!.findViewById<TextView>(R.id.btnConfirmSaveDialog)
 
         // Hiển thị preview thao tác đã ghi
         val recordedActions = macroManager.getRecordedActions()
@@ -841,7 +867,7 @@ class FloatingWidgetService : Service() {
         val spinnerPresets = root.findViewById<Spinner>(R.id.spinnerPresets)
         val seekBarInterval = root.findViewById<SeekBar>(R.id.seekBarInterval)
         val tvIntervalLabel = root.findViewById<TextView>(R.id.tvIntervalLabel)
-        val btnApply = root.findViewById<MaterialButton>(R.id.btnApplySettings)
+        val btnApply = root.findViewById<TextView>(R.id.btnApplySettings)
 
         val allMacros = macroManager.getAllMacros()
         val names = allMacros.map { it.name }

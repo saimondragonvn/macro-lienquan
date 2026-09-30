@@ -3,7 +3,7 @@
     android:id="@+id/recorderRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#33000000">
+    android:background="#1A000000">
 
     <!-- Interactive Touch Canvas where touches are drawn -->
     <com.macrophone.gaming.ui.overlay.TouchRecorderCanvas
@@ -11,21 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Top Floating Control Bar -->
+    <!-- Top Floating Control Bar (Game Turbo Live Recording Bar) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/bg_dialog_card"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp"
-        android:elevation="16dp">
+        android:padding="8dp"
+        android:elevation="18dp">
 
         <ImageView
             android:layout_width="22dp"
@@ -53,36 +53,48 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Đã ghi: 0 thao tác"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/cyan_neon"
                 android:textSize="11sp" />
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <!-- Nút Hoàn tác / Xóa thao tác vừa ghi -->
+        <TextView
             android:id="@+id/btnUndoRecord"
             android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:layout_marginEnd="4dp"
-            android:backgroundTint="@color/bg_surface_elevated"
+            android:layout_height="36dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:text="↩ Xóa"
             android:textColor="@color/amber_warning"
             android:textSize="11sp" />
 
-        <com.google.android.material.button.MaterialButton
+        <!-- Nút Hủy bỏ -->
+        <TextView
             android:id="@+id/btnCancelRecord"
             android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:layout_marginEnd="4dp"
-            android:backgroundTint="@color/bg_surface_elevated"
-            android:text="✕ Thoát"
+            android:layout_height="36dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="✕ Hủy"
             android:textColor="@color/text_primary"
             android:textSize="11sp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSaveRecord"
+        <!-- Nút DỪNG GHI (STOP) To, rõ ràng, màu đỏ rực rỡ -->
+        <TextView
+            android:id="@+id/btnStopRecord"
             android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:backgroundTint="@color/emerald_play"
-            android:text="✓ Tạo nút"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_turbo_btn_danger"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="⏹️ DỪNG GHI (STOP)"
             android:textColor="@color/white"
             android:textSize="11sp"
             android:textStyle="bold" />
@@ -102,8 +114,8 @@
         android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="@string/rec_instructions"
+        android:text="👉 Chạm hoặc vuốt trên màn hình để ghi combo. Bấm [⏹️ DỪNG GHI] khi hoàn thành!"
         android:textColor="@color/text_primary"
-        android:textSize="12sp" />
+        android:textSize="11sp" />
 
 </RelativeLayout>

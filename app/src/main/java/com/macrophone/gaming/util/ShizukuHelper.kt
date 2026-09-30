@@ -199,18 +199,12 @@ object ShizukuHelper {
             return@withContext Result.failure(Exception("Chưa kích hoạt Shizuku và máy chưa có Root! Hãy mở Shizuku hoặc bật Root trên giả lập."))
         }
 
-        val pkg = context.packageName
-        val serviceClass = "com.macrophone.gaming.service.MacroAccessibilityService"
-
         val commands = listOf(
             // 1. Mở khóa "Cài đặt bị hạn chế" (Restricted Settings) trên Android 13/14 (Infinix XOS)
             "appops set $pkg ACCESS_RESTRICTED_SETTINGS allow",
             // 2. Cấp quyền vẽ trên ứng dụng khác (SYSTEM_ALERT_WINDOW)
             "appops set $pkg SYSTEM_ALERT_WINDOW allow",
-            // 3. Kích hoạt trực tiếp dịch vụ Trợ năng
-            "settings put secure enabled_accessibility_services $pkg/$serviceClass",
-            "settings put secure accessibility_enabled 1",
-            // 4. Bỏ qua tối ưu hóa pin
+            // 3. Bỏ qua tối ưu hóa pin cho game mượt mà
             "dumpsys deviceidle whitelist +$pkg"
         )
 
@@ -221,9 +215,9 @@ object ShizukuHelper {
             }
         }
 
-        if (successCount >= 2) {
+        if (successCount >= 1) {
             val modeStr = if (hasShizuku) "Shizuku" else "Root"
-            Result.success("Đã tự động mở khóa & cấp quyền thành công qua $modeStr!")
+            Result.success("Đã tự động mở khóa & kích hoạt Động cơ Game Turbo thành công qua $modeStr!")
         } else {
             Result.failure(Exception("Đã thực thi lệnh nhưng hệ thống chưa lưu. Hãy kiểm tra Shizuku."))
         }
@@ -234,12 +228,9 @@ object ShizukuHelper {
      */
     fun getAdbCommandsString(context: Context): String {
         val pkg = context.packageName
-        val serviceClass = "com.macrophone.gaming.service.MacroAccessibilityService"
         return """
             appops set $pkg ACCESS_RESTRICTED_SETTINGS allow
             appops set $pkg SYSTEM_ALERT_WINDOW allow
-            settings put secure enabled_accessibility_services $pkg/$serviceClass
-            settings put secure accessibility_enabled 1
             dumpsys deviceidle whitelist +$pkg
         """.trimIndent()
     }

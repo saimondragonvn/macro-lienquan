@@ -1,13 +1,11 @@
 <resources>
     <string name="app_name">Macro Gaming Combo</string>
-    <string name="accessibility_service_name">Macro Gaming Combo Service</string>
-    <string name="accessibility_service_description">Dịch vụ hỗ trợ mô phỏng thao tác cảm ứng tự động và chuỗi combo nhanh (Fast Combo) phục vụ trải nghiệm chơi game nâng cao.</string>
+    <string name="turbo_engine_title">Động cơ Game Turbo (Shizuku / Root)</string>
+    <string name="turbo_engine_desc">Mô phỏng click siêu tốc qua Shell đặc quyền (Hoàn toàn không cần Trợ năng).</string>
 
     <!-- Permissions -->
-    <string name="perm_accessibility_title">Accessibility Service</string>
-    <string name="perm_accessibility_desc">Cần thiết để mô phỏng cử chỉ chạm, giữ và vuốt trên màn hình (dispatchGesture).</string>
     <string name="perm_overlay_title">Display Over Other Apps</string>
-    <string name="perm_overlay_desc">Cần thiết để hiển thị thanh công cụ nổi (Floating Dock) trên các trò chơi.</string>
+    <string name="perm_overlay_desc">Cần thiết để hiển thị thanh Game Turbo HUD trên các trò chơi.</string>
     <string name="perm_notification_title">Notifications (Android 13+)</string>
     <string name="perm_notification_desc">Hiển thị thanh điều khiển nhanh trạng thái combo đang chạy.</string>
     <string name="perm_battery_title">Ignore Battery Optimization</string>

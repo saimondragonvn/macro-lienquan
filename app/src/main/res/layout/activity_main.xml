@@ -222,7 +222,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Tự động mở khóa Restricted Settings &amp; bật Trợ năng 1-chạm!"
+                                android:text="Cấp quyền Động cơ Game Turbo siêu tốc không cần Trợ năng!"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="11sp" />
                         </LinearLayout>
@@ -311,7 +311,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bắt buộc để hiện Nút Macro Tròn và Dock nổi trên game."
+                            android:text="Bắt buộc để hiện Nút Macro Tròn và Game Turbo HUD trên game."
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -328,9 +328,9 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 2: Accessibility Service -->
+            <!-- Card 2: Game Turbo Privileged Engine (Shizuku / Root) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardAccessibility"
+                android:id="@+id/cardTurboEngine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -345,7 +345,7 @@
                     android:padding="12dp">
 
                     <ImageView
-                        android:id="@+id/ivAccStatus"
+                        android:id="@+id/ivTurboStatus"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:src="@drawable/ic_warning"
@@ -361,7 +361,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Dịch vụ Trợ năng (Accessibility)"
+                            android:text="Động cơ Game Turbo (Shizuku / Root)"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -369,17 +369,17 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Mô phỏng cử chỉ chạm màn hình (không cần nếu dùng Shizuku/Root)."
+                            android:text="Mô phỏng click siêu tốc qua Shell đặc quyền (Không cần Trợ năng)."
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnGrantAccessibility"
+                        android:id="@+id/btnSetupTurboEngine"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:backgroundTint="@color/cyan_neon"
-                        android:text="@string/btn_grant"
+                        android:text="Cấu hình"
                         android:textColor="@color/bg_dark"
                         android:textSize="11sp"
                         android:textStyle="bold" />

@@ -8,7 +8,6 @@ import com.macrophone.gaming.data.model.MacroState
 import com.macrophone.gaming.data.model.MacroType
 import com.macrophone.gaming.data.model.PlaybackConfig
 import com.macrophone.gaming.data.repository.MacroRepository
-import com.macrophone.gaming.service.MacroAccessibilityService
 import com.macrophone.gaming.util.ShizukuHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,12 +17,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 /**
  * Trình quản lý trung tâm chịu trách nhiệm:
- * - Điều phối trạng thái hệ thống Macro (IDLE, RECORDING, PLAYING)
- * - Tương tác giữa Floating Service, Accessibility Service và UI
- * - Phát lại combo điểm ghim hoặc preset với cơ chế đa điểm không chặn thao tác
+ * - Điều phối trạng thái hệ thống Macro Game Turbo (IDLE, RECORDING, PLAYING)
+ * - Tương tác giữa Game Turbo Floating HUD và UI
+ * - Phát lại combo điểm ghim hoặc preset siêu tốc qua Shizuku/Root (HOÀN TOÀN KHÔNG CẦN TRỢ NĂNG)
  */
 class MacroManager private constructor(private val context: Context) {
 
@@ -82,29 +82,13 @@ class MacroManager private constructor(private val context: Context) {
     }
 
     /**
-     * Phát trực tiếp một chuỗi thao tác (hỗ trợ cả Trợ năng lẫn Shizuku/Root/ADB)
+     * Phát trực tiếp một chuỗi thao tác Game Turbo siêu tốc qua Shizuku / Root (Không dùng Trợ năng)
      */
     fun playDirectSequence(sequence: MacroSequence) {
         if (sequence.actions.isEmpty()) return
 
         stopPlayback()
 
-        val accService = MacroAccessibilityService.instance
-        if (accService != null && MacroAccessibilityService.isRunning) {
-            _macroState.value = MacroState.PLAYING
-            accService.playMacro(
-                sequence = sequence,
-                onComplete = {
-                    scope.launch { _macroState.value = MacroState.IDLE }
-                },
-                onError = {
-                    scope.launch { _macroState.value = MacroState.IDLE }
-                }
-            )
-            return
-        }
-
-        // Nếu Dịch vụ Trợ năng chưa bật: Chạy mô phỏng click qua Shizuku Shell hoặc ADB / Root
         _macroState.value = MacroState.PLAYING
         playbackJob = scope.launch(Dispatchers.IO) {
             val executed = playViaShell(sequence)
@@ -113,7 +97,7 @@ class MacroManager private constructor(private val context: Context) {
                 if (!executed) {
                     Toast.makeText(
                         context,
-                        "Cần bật Trợ năng HOẶC chạy Shizuku/ADB để điện thoại tự động click!",
+                        "Cần cấp quyền Shizuku (Gỡ lỗi Wi-Fi) hoặc Root để Game Turbo tự động click!",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -121,40 +105,55 @@ class MacroManager private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Thực thi combo qua Shizuku shell với cơ chế gom nhóm (Batching):
+     * Gom toàn bộ các lệnh tap/swipe vào 1 tiến trình shell duy nhất giúp xả chiêu với độ trễ siêu thấp (Game Turbo style)
+     */
     private fun playViaShell(sequence: MacroSequence): Boolean {
         return try {
             val speedFactor = sequence.config.speedMultiplier.coerceAtLeast(0.1f)
             val repeatCount = if (sequence.config.isInfiniteLoop) 1000 else sequence.config.loopCount.coerceAtLeast(1)
 
+            // Xây dựng chuỗi lệnh bash gom nhóm để chạy trong 1 tiến trình shell
+            val cmdBuilder = java.lang.StringBuilder()
+            for (action in sequence.actions) {
+                val delaySec = String.format(Locale.US, "%.3f", (action.delayBeforeMs / speedFactor) / 1000.0)
+                if (delaySec.toDouble() > 0.005) {
+                    cmdBuilder.append("sleep ").append(delaySec).append("; ")
+                }
+                when (action.type) {
+                    MacroType.TAP -> {
+                        val pt = action.points.firstOrNull() ?: continue
+                        cmdBuilder.append("input tap ").append(pt.x.toInt()).append(" ").append(pt.y.toInt()).append("; ")
+                    }
+                    MacroType.HOLD -> {
+                        val pt = action.points.firstOrNull() ?: continue
+                        val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(50)
+                        cmdBuilder.append("input swipe ")
+                            .append(pt.x.toInt()).append(" ").append(pt.y.toInt()).append(" ")
+                            .append(pt.x.toInt()).append(" ").append(pt.y.toInt()).append(" ")
+                            .append(dur).append("; ")
+                    }
+                    MacroType.SWIPE -> {
+                        val p1 = action.points.firstOrNull() ?: continue
+                        val p2 = action.points.lastOrNull() ?: continue
+                        val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(20)
+                        cmdBuilder.append("input swipe ")
+                            .append(p1.x.toInt()).append(" ").append(p1.y.toInt()).append(" ")
+                            .append(p2.x.toInt()).append(" ").append(p2.y.toInt()).append(" ")
+                            .append(dur).append("; ")
+                    }
+                }
+            }
+
+            val batchCommand = cmdBuilder.toString().trim().removeSuffix(";")
+            if (batchCommand.isBlank()) return false
+
             for (r in 0 until repeatCount) {
                 if (_macroState.value != MacroState.PLAYING) break
 
-                for (action in sequence.actions) {
-                    if (_macroState.value != MacroState.PLAYING) break
-
-                    val delay = (action.delayBeforeMs / speedFactor).toLong()
-                    if (delay > 0) {
-                        Thread.sleep(delay)
-                    }
-
-                    when (action.type) {
-                        MacroType.TAP -> {
-                            val pt = action.points.firstOrNull() ?: continue
-                            executeShellInput("input tap ${pt.x.toInt()} ${pt.y.toInt()}")
-                        }
-                        MacroType.HOLD -> {
-                            val pt = action.points.firstOrNull() ?: continue
-                            val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(50)
-                            executeShellInput("input swipe ${pt.x.toInt()} ${pt.y.toInt()} ${pt.x.toInt()} ${pt.y.toInt()} $dur")
-                        }
-                        MacroType.SWIPE -> {
-                            val p1 = action.points.firstOrNull() ?: continue
-                            val p2 = action.points.lastOrNull() ?: continue
-                            val dur = ((action.durationMs / speedFactor).toLong()).coerceAtLeast(20)
-                            executeShellInput("input swipe ${p1.x.toInt()} ${p1.y.toInt()} ${p2.x.toInt()} ${p2.y.toInt()} $dur")
-                        }
-                    }
-                }
+                val success = ShizukuHelper.executePrivilegedCommand(batchCommand)
+                if (!success) return false
 
                 if (sequence.config.loopIntervalMs > 0 && r < repeatCount - 1) {
                     Thread.sleep((sequence.config.loopIntervalMs / speedFactor).toLong())
@@ -166,17 +165,12 @@ class MacroManager private constructor(private val context: Context) {
         }
     }
 
-    private fun executeShellInput(cmd: String): Boolean {
-        return ShizukuHelper.executePrivilegedCommand(cmd)
-    }
-
     /**
      * Dừng phát lại ngay lập tức
      */
     fun stopPlayback() {
         playbackJob?.cancel()
         playbackJob = null
-        MacroAccessibilityService.instance?.stopMacro()
         _macroState.value = MacroState.IDLE
     }
 

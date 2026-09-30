@@ -7,21 +7,21 @@ import androidx.lifecycle.viewModelScope
 import com.macrophone.gaming.data.model.MacroSequence
 import com.macrophone.gaming.domain.MacroManager
 import com.macrophone.gaming.service.FloatingWidgetService
-import com.macrophone.gaming.service.MacroAccessibilityService
 import com.macrophone.gaming.util.PermissionUtils
+import com.macrophone.gaming.util.ShizukuHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class PermissionState(
-    val hasAccessibility: Boolean = false,
     val hasOverlay: Boolean = false,
+    val hasShizukuOrRoot: Boolean = false,
     val hasNotification: Boolean = false,
     val isBatteryOptimized: Boolean = false
 ) {
     val areCorePermissionsGranted: Boolean
-        get() = hasAccessibility && hasOverlay
+        get() = hasOverlay && hasShizukuOrRoot
 }
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -43,12 +43,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun refreshData() {
         val context = getApplication<Application>()
+        val hasShizukuOrRoot = ShizukuHelper.hasShizukuPermission() || ShizukuHelper.isRootAvailable()
         _permissions.value = PermissionState(
-            hasAccessibility = PermissionUtils.isAccessibilityServiceEnabled(
-                context,
-                MacroAccessibilityService::class.java
-            ),
             hasOverlay = PermissionUtils.hasOverlayPermission(context),
+            hasShizukuOrRoot = hasShizukuOrRoot,
             hasNotification = PermissionUtils.hasNotificationPermission(context),
             isBatteryOptimized = PermissionUtils.isIgnoringBatteryOptimizations(context)
         )

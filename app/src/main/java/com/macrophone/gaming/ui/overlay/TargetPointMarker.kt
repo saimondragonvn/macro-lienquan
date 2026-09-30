@@ -91,7 +91,7 @@ class TargetPointMarker(
     }
 
     /**
-     * Tọa độ tâm điểm $(X, Y)$ để AccessibilityService dispatch chính xác
+     * Tọa độ tâm điểm $(X, Y)$ để click chính xác qua shell đặc quyền
      */
     fun getCenterCoordinates(): Pair<Float, Float> {
         val width = if (view.width > 0) view.width else 120
