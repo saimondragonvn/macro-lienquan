@@ -9,19 +9,21 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import com.macrophone.gaming.R
+import kotlin.math.abs
 
 /**
- * Quản lý một Điểm Ghim Mục Tiêu nổi (Floating Target Marker) độc lập trên màn hình.
- * - Chỉ chiếm diện tích 44x44dp, 100% diện tích còn lại của màn hình hoàn toàn KHÔNG BỊ CHẶN cảm ứng!
- * - Cho phép kéo thả tự do đặt lên các nút chiêu, nút bắn trong game.
- * - FLAG_NOT_TOUCH_MODAL giúp các thao tác chạm khác (joystick, xoay góc nhìn) hoạt động bình thường.
+ * Điểm Ghim Mục Tiêu Nổi (Target Pin Marker) - Phong cách Game Turbo:
+ * - Kích thước nhỏ gọn 44x44dp, không hề chiếm diện tích hay cản trở thao tác chơi game.
+ * - Cho phép kéo thả trực tiếp lên các nút chiêu của tướng (Chiêu 1, Chiêu 2, Chiêu 3, Đánh thường).
+ * - Cung cấp tọa độ tâm điểm chính xác để bắn lệnh click shell.
  */
-class TargetPointMarker(
+class TargetPinView(
     private val context: Context,
     private val windowManager: WindowManager,
     var index: Int,
     initialX: Int,
-    initialY: Int
+    initialY: Int,
+    private val onPinRemoved: ((TargetPinView) -> Unit)? = null
 ) {
 
     val view: View = LayoutInflater.from(context).inflate(R.layout.view_target_point, null)
@@ -40,23 +42,22 @@ class TargetPointMarker(
         y = initialY
     }
 
-    var isVisible: Boolean = true
-        private set
-
     init {
         tvIndex.text = index.toString()
-        setupDragListener()
+        setupTouchListener()
+
         try {
             windowManager.addView(view, params)
-        } catch (_: Exception) {}
+        } catch (_: Throwable) {}
     }
 
-    private fun setupDragListener() {
+    private fun setupTouchListener() {
         view.setOnTouchListener(object : View.OnTouchListener {
             private var startX = 0
             private var startY = 0
             private var touchStartX = 0f
             private var touchStartY = 0f
+            private var isDragging = false
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when (event.action) {
@@ -65,18 +66,28 @@ class TargetPointMarker(
                         startY = params.y
                         touchStartX = event.rawX
                         touchStartY = event.rawY
+                        isDragging = false
                         return true
                     }
+
                     MotionEvent.ACTION_MOVE -> {
                         val dx = (event.rawX - touchStartX).toInt()
                         val dy = (event.rawY - touchStartY).toInt()
-                        params.x = startX + dx
-                        params.y = startY + dy
-                        if (view.isAttachedToWindow) {
-                            try {
-                                windowManager.updateViewLayout(view, params)
-                            } catch (_: Exception) {}
+
+                        if (abs(dx) > 6 || abs(dy) > 6) {
+                            isDragging = true
+                            params.x = startX + dx
+                            params.y = startY + dy
+                            if (view.isAttachedToWindow) {
+                                try {
+                                    windowManager.updateViewLayout(view, params)
+                                } catch (_: Throwable) {}
+                            }
                         }
+                        return true
+                    }
+
+                    MotionEvent.ACTION_UP -> {
                         return true
                     }
                 }
@@ -91,19 +102,14 @@ class TargetPointMarker(
     }
 
     /**
-     * Tọa độ tâm điểm $(X, Y)$ để click chính xác qua shell đặc quyền
+     * Tọa độ tâm điểm chính xác (X, Y) trên màn hình game
      */
     fun getCenterCoordinates(): Pair<Float, Float> {
-        val width = if (view.width > 0) view.width else 120
-        val height = if (view.height > 0) view.height else 120
-        val cx = params.x.toFloat() + (width / 2f)
-        val cy = params.y.toFloat() + (height / 2f)
+        val w = if (view.width > 0) view.width else 100
+        val h = if (view.height > 0) view.height else 100
+        val cx = params.x.toFloat() + (w / 2f)
+        val cy = params.y.toFloat() + (h / 2f)
         return Pair(cx, cy)
-    }
-
-    fun setVisible(visible: Boolean) {
-        isVisible = visible
-        view.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
     fun destroy() {
@@ -113,6 +119,6 @@ class TargetPointMarker(
             } else {
                 windowManager.removeView(view)
             }
-        } catch (_: Exception) {}
+        } catch (_: Throwable) {}
     }
 }

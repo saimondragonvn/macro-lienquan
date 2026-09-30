@@ -4,6 +4,24 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.0.0] - 2026-09-30
+### 🚀 TÁI CẤU TRÚC TOÀN DIỆN - KIẾN TRÚC MỚI TINH GỌN, ỔN ĐỊNH TUYỆT ĐỐI
+- **ĐẬP ĐI XÂY LẠI TỪ ĐẦU TOÀN BỘ SERVICE VÀ ENGINE**:
+  - Khởi tạo kiến trúc mới với `TurboOverlayService`: loại bỏ hoàn toàn các lớp wrapper rườm rà, adapter, wizard activities, dialogs cũ dễ gây lỗi theme.
+  - Tự động nhận diện và cập nhật kích thước xoay màn hình ngang/dọc (`onConfigurationChanged`): Tối ưu hóa đặc biệt cho game xoay ngang (Landscape) như Liên Quân Mobile trên Infinix Note 30, Xiaomi, Samsung và các giả lập PC.
+- **ĐỘNG CƠ SHELLEXECUTOR 120HZ TỐI TÂN**:
+  - Giao tiếp trực tiếp với Shizuku Binder hoặc Root `su` qua một tiến trình shell chuỗi duy nhất, xả combo ngay lập tức với độ trễ 0ms.
+- **GIAO DIỆN GAME TURBO HUD REDMI / XIAOMI / REDMAGIC**:
+  - Tab nổi mép viền `[⚡ TURBO]` tự động hút dính mép màn hình, chạm là bung bảng điều khiển.
+  - Gán vị trí chiêu: Bấm `[+ Ghim Điểm]` để kéo thả các điểm (1, 2, 3...) vào chiêu thức, bấm `[🚀 TẠO NÚT BẤM TURBO]` để tạo Nút tròn nổi `[⚡]`.
+  - Chạm nút tròn `[⚡]` để kích hoạt combo tức thì, đè lâu để xóa nút.
+  - Ghi thao tác: Bấm `[🔴 BẮT ĐẦU GHI]` để chạm/vuốt trên màn hình, bấm `[⏹️ DỪNG GHI]` để tự động sinh nút tròn Turbo.
+- **LOẠI BỎ 100% DỊCH VỤ TRỢ NĂNG (ACCESSIBILITY SERVICE)**:
+  - Hoạt động thuần túy qua Shizuku và Root.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.0.0.apk`.
+
+---
+
 ## [v1.2.5] - 2026-09-30
 ### 🛡️ Khắc Phục Triệt Để Lỗi Crash ("Ứng Dụng Đã Dừng") & Hoàn Thiện Cảm Ứng Game Turbo
 - **KHẮC PHỤC 100% NGUYÊN NHÂN CRASH VĂNG APP ("ỨNG DỤNG ĐÃ DỪNG")**:

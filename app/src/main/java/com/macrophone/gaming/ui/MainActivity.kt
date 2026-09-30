@@ -4,58 +4,44 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.macrophone.gaming.R
+import com.macrophone.gaming.core.ShellExecutor
 import com.macrophone.gaming.databinding.ActivityMainBinding
-import com.macrophone.gaming.ui.adapter.MacroPresetAdapter
-import com.macrophone.gaming.util.PermissionUtils
+import com.macrophone.gaming.service.TurboOverlayService
 import com.macrophone.gaming.util.ShizukuHelper
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 
 /**
- * Màn hình chính (MainActivity):
- * - Quản trị và tự động cấp quyền qua Shizuku / Gỡ lỗi Wi-Fi
- * - Kiểm tra trạng thái cấp quyền (Trợ năng, Vẽ trên màn hình, Tối ưu pin, Thông báo)
- * - Quản lý danh sách Macro Presets
- * - Khởi động / tắt Floating Widget Controller
+ * Màn hình chính Game Turbo Pro (Kiến trúc Mới):
+ * - Quản trị và kiểm tra trạng thái quyền trực quan, tức thì.
+ * - 1 Chạm để Bật/Tắt Game Turbo HUD.
+ * - Hỗ trợ cấp quyền Shizuku / Root an toàn 100%, không bao giờ văng ứng dụng.
  */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainViewModel by viewModels()
-    private lateinit var presetAdapter: MacroPresetAdapter
 
-    // Lắng nghe kết quả yêu cầu quyền Shizuku an toàn trên UI thread
     private val shizukuPermissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
-        if (requestCode == ShizukuHelper.SHIZUKU_REQUEST_CODE) {
+        if (requestCode == ShellExecutor.SHIZUKU_REQUEST_CODE) {
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
-                if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                    executeShizukuGrant()
+                if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Đã cấp quyền Shizuku thành công! Động cơ sẵn sàng 120Hz.", Toast.LENGTH_SHORT).show()
+                    ShellExecutor.autoGrantPermissions(this)
                 } else {
-                    Toast.makeText(this, "Bạn đã từ chối cấp quyền Shizuku!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Bạn đã từ chối cấp quyền Shizuku.", Toast.LENGTH_SHORT).show()
                 }
+                refreshStatuses()
             }
         }
-    }
-
-    private val notificationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-        viewModel.refreshData()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,300 +51,159 @@ class MainActivity : AppCompatActivity() {
 
         binding.tvDeviceBadge.text = "Thiết bị: ${ShizukuHelper.getDeviceDisplayName()} • 120Hz Fast Combo"
 
-        setupRecyclerView()
-        setupListeners()
-        setupShizukuListeners()
-        observeViewModel()
-        requestNotificationPermissionIfNeeded()
+        setupButtons()
+        registerShizukuListenerSafe()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        refreshStatuses()
+    }
+
+    override fun onDestroy() {
+        unregisterShizukuListenerSafe()
+        super.onDestroy()
+    }
+
+    private fun registerShizukuListenerSafe() {
         try {
-            if (ShizukuHelper.isShizukuRunning()) {
+            if (ShellExecutor.isShizukuRunning()) {
                 Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
             }
         } catch (_: Throwable) {}
     }
 
-    override fun onDestroy() {
+    private fun unregisterShizukuListenerSafe() {
         try {
             Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
         } catch (_: Throwable) {}
-        super.onDestroy()
     }
 
-    override fun onResume() {
-        super.onResume()
-        try {
-            viewModel.refreshData()
-        } catch (_: Throwable) {}
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        try {
-            viewModel.refreshData()
-        } catch (_: Throwable) {}
-    }
-
-    private fun setupRecyclerView() {
-        presetAdapter = MacroPresetAdapter(
-            items = emptyList(),
-            activeId = null,
-            onSelect = { sequence ->
-                viewModel.selectMacro(sequence)
-            },
-            onQuickPlay = { sequence ->
-                viewModel.playMacro(sequence)
-                Toast.makeText(this, "Đang phát: ${sequence.name}", Toast.LENGTH_SHORT).show()
-            },
-            onDelete = { sequence ->
-                viewModel.deleteMacro(sequence)
-            }
-        )
-
-        binding.rvPresets.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = presetAdapter
-        }
-    }
-
-    private fun setupListeners() {
-        binding.btnUnlockInfinixRestricted.setOnClickListener {
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Mở khóa trên Infinix Note 30 (XOS)")
-                .setMessage(
-                    "Khi trang Cài đặt ứng dụng mở ra:\n\n" +
-                    "1. Bấm vào dấu 3 chấm (⋮) ở góc trên bên phải màn hình.\n" +
-                    "2. Chọn 'Cho phép cài đặt bị hạn chế' (Allow restricted settings).\n" +
-                    "3. Xác nhận mã PIN hoặc vân tay.\n\n" +
-                    "Sau đó bạn có thể kích hoạt dịch vụ Trợ năng tự do!"
-                )
-                .setPositiveButton("Mở Cài đặt ngay") { _, _ ->
-                    PermissionUtils.openAppDetailsSettings(this)
+    private fun setupButtons() {
+        // Nút BẬT / TẮT GAME TURBO HUD
+        binding.btnToggleTurbo.setOnClickListener {
+            if (TurboOverlayService.isRunning) {
+                TurboOverlayService.stop(this)
+                Toast.makeText(this, "Đã tắt Game Turbo HUD", Toast.LENGTH_SHORT).show()
+            } else {
+                if (!Settings.canDrawOverlays(this)) {
+                    Toast.makeText(this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' trước!", Toast.LENGTH_LONG).show()
+                    openOverlaySettings()
+                    return@setOnClickListener
                 }
-                .setNegativeButton("Đóng", null)
-                .show()
-        }
-
-        binding.btnInfinixFloatingPerm.setOnClickListener {
-            val opened = PermissionUtils.openTranssionFloatingSettings(this)
-            if (!opened) {
-                PermissionUtils.openOverlaySettings(this)
+                TurboOverlayService.start(this)
+                Toast.makeText(this, "Đã khởi động Game Turbo HUD! Hãy mở game Liên Quân.", Toast.LENGTH_LONG).show()
             }
+            binding.root.postDelayed({ refreshStatuses() }, 300)
         }
 
-        binding.btnSetupTurboEngine.setOnClickListener {
-            SetupWizardActivity.start(this)
-        }
-
+        // Cấp quyền Cửa sổ nổi
         binding.btnGrantOverlay.setOnClickListener {
-            PermissionUtils.openOverlaySettings(this)
+            openOverlaySettings()
         }
 
-        binding.btnGrantBattery.setOnClickListener {
-            PermissionUtils.openBatteryOptimizationSettings(this)
-        }
-
-        binding.btnResetDefaultPresets.setOnClickListener {
-            viewModel.resetDefaults()
-            Toast.makeText(this, "Đã khôi phục các combo mẫu", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnToggleFloatingWidget.setOnClickListener {
-            val perms = viewModel.permissions.value
-            if (!perms.hasOverlay) {
-                Toast.makeText(this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' trước!", Toast.LENGTH_SHORT).show()
-                PermissionUtils.openOverlaySettings(this)
+        // Cấp quyền Shizuku 1-chạm
+        binding.btnGrantShizuku.setOnClickListener {
+            if (!ShellExecutor.isShizukuRunning()) {
+                Toast.makeText(
+                    this,
+                    "Shizuku chưa chạy! Hãy mở app Shizuku trên máy và bấm 'Khởi động' qua Wi-Fi trước.",
+                    Toast.LENGTH_LONG
+                ).show()
                 return@setOnClickListener
             }
 
-            // Mở Dock nổi ngay lập tức, không bắt buộc quyền Trợ năng!
-            viewModel.toggleFloatingService(this)
-        }
-    }
-
-    /**
-     * Cài đặt tương tác cho tính năng Shizuku & Gỡ lỗi qua Wi-Fi
-     * → Mở Trình hướng dẫn từng bước (Panda Touch Pro style)
-     */
-    private fun setupShizukuListeners() {
-        binding.btnGrantShizuku.setOnClickListener {
-            SetupWizardActivity.start(this)
+            if (!ShellExecutor.hasShizukuPermission()) {
+                ShellExecutor.requestShizukuPermission(this)
+            } else {
+                ShellExecutor.autoGrantPermissions(this)
+                Toast.makeText(this, "Đã được cấp quyền Shizuku rồi!", Toast.LENGTH_SHORT).show()
+                refreshStatuses()
+            }
         }
 
+        // Sao chép lệnh ADB
         binding.btnCopyAdb.setOnClickListener {
-            copyAdbCommands()
-        }
-    }
-
-    private fun executeShizukuGrant() {
-        if (!ShizukuHelper.isShizukuRunning()) {
-            showShizukuNotRunningDialog()
-            return
+            val cmd = ShellExecutor.getAdbCommand(this)
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText("ADB Command", cmd))
+            Toast.makeText(this, "Đã sao chép lệnh ADB vào khay nhớ tạm!", Toast.LENGTH_SHORT).show()
         }
 
-        if (!ShizukuHelper.hasShizukuPermission()) {
-            Toast.makeText(this, "Đang xin quyền truy cập Shizuku...", Toast.LENGTH_SHORT).show()
-            ShizukuHelper.requestShizukuPermission(this)
-            return
-        }
-
-        lifecycleScope.launch {
-            Toast.makeText(this@MainActivity, "Đang tự động chạy lệnh cấp quyền...", Toast.LENGTH_SHORT).show()
-            val result = ShizukuHelper.grantAllPermissionsViaShizuku(this@MainActivity)
-            result.onSuccess { msg ->
-                MaterialAlertDialogBuilder(this@MainActivity)
-                    .setTitle("Thành công!")
-                    .setMessage("Đã tự động cấp quyền Động cơ Game Turbo siêu tốc và cấp quyền Cửa sổ nổi qua Shizuku!")
-                    .setPositiveButton("Tuyệt vời", null)
-                    .show()
-                viewModel.refreshData()
-            }.onFailure { err ->
-                Toast.makeText(this@MainActivity, err.message, Toast.LENGTH_LONG).show()
+        // Mở cài đặt Infinix XOS (để mở khóa Restricted Settings)
+        binding.btnUnlockInfinix.setOnClickListener {
+            try {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+                Toast.makeText(this, "Bấm nút 3 chấm (⋮) ở góc trên bên phải -> Chọn 'Cho phép cài đặt bị hạn chế'", Toast.LENGTH_LONG).show()
+            } catch (_: Throwable) {
+                Toast.makeText(this, "Không thể mở cài đặt ứng dụng.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showShizukuNotRunningDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Shizuku chưa được khởi động!")
-            .setMessage(
-                "Để kích hoạt Shizuku bằng Gỡ lỗi qua Wi-Fi (Không cần máy tính):\n\n" +
-                "1. Tải ứng dụng 'Shizuku' từ CH Play (hoặc GitHub).\n" +
-                "2. Vào Cài đặt điện thoại > Tùy chọn nhà phát triển > Bật 'Gỡ lỗi không dây' (Wireless Debugging).\n" +
-                "3. Mở Shizuku > Chọn 'Ghép nối' (Pairing) > Nhập mã 6 số từ Gỡ lỗi không dây.\n" +
-                "4. Nhấn 'Khởi động' (Start) trong Shizuku.\n" +
-                "5. Quay lại app này nhấn nút 'Cấp quyền Shizuku' là XONG NGAY!"
+    private fun openOverlaySettings() {
+        try {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
             )
-            .setPositiveButton("Sao chép lệnh ADB thủ công") { _, _ ->
-                copyAdbCommands()
-            }
-            .setNegativeButton("Đã hiểu", null)
-            .show()
-    }
-
-    private fun copyAdbCommands() {
-        val cmds = ShizukuHelper.getAdbCommandsString(this)
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Macro ADB Commands", cmds)
-        clipboard.setPrimaryClip(clip)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Đã sao chép lệnh ADB!")
-            .setMessage(
-                "Bạn có thể dán toàn bộ lệnh này vào ứng dụng LADB (Gỡ lỗi Wi-Fi ngay trên điện thoại) hoặc Command Prompt trên PC:\n\n" +
-                cmds + "\n\n" +
-                "Lệnh này sẽ tự động:\n" +
-                "✓ Mở khóa Cài đặt bị hạn chế (Restricted settings)\n" +
-                "✓ Cấp quyền Động cơ Game Turbo (Shell đặc quyền)\n" +
-                "✓ Cấp quyền Cửa sổ nổi (SYSTEM_ALERT_WINDOW)"
-            )
-            .setPositiveButton("Đã hiểu", null)
-            .show()
-    }
-
-    private fun observeViewModel() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.permissions.collect { perms ->
-                        updatePermissionUi(perms)
-                    }
-                }
-
-                launch {
-                    combine(viewModel.macroList, viewModel.activeMacro) { list, active ->
-                        Pair(list, active)
-                    }.collect { (list, active) ->
-                        presetAdapter.updateData(list, active?.id)
-                    }
-                }
-
-                launch {
-                    viewModel.isFloatingServiceRunning.collect { isRunning ->
-                        if (isRunning) {
-                            binding.btnToggleFloatingWidget.text = getString(R.string.btn_stop_dock)
-                            binding.btnToggleFloatingWidget.setBackgroundColor(
-                                ContextCompat.getColor(this@MainActivity, R.color.crimson_stop)
-                            )
-                            binding.btnToggleFloatingWidget.setIconResource(R.drawable.ic_stop)
-                        } else {
-                            binding.btnToggleFloatingWidget.text = getString(R.string.btn_start_dock)
-                            binding.btnToggleFloatingWidget.setBackgroundColor(
-                                ContextCompat.getColor(this@MainActivity, R.color.cyan_neon)
-                            )
-                            binding.btnToggleFloatingWidget.setIconResource(R.drawable.ic_play)
-                        }
-                    }
-                }
-            }
+            startActivity(intent)
+        } catch (_: Throwable) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            startActivity(intent)
         }
     }
 
-    private fun updatePermissionUi(perms: PermissionState) {
-        if (perms.hasOverlay) {
-            binding.ivOverlayStatus.setImageResource(R.drawable.ic_check)
-            binding.ivOverlayStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
-            binding.btnGrantOverlay.text = getString(R.string.btn_granted)
+    private fun refreshStatuses() {
+        val hasOverlay = Settings.canDrawOverlays(this)
+        val engineReady = ShellExecutor.isEngineReady()
+        val isServiceRunning = TurboOverlayService.isRunning
+
+        // 1. Cửa sổ nổi
+        if (hasOverlay) {
+            binding.tvOverlayBadge.text = "ĐÃ CẤP"
+            binding.tvOverlayBadge.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
+            binding.btnGrantOverlay.text = "✓ Đã cấp quyền Cửa sổ nổi"
             binding.btnGrantOverlay.isEnabled = false
-            binding.btnGrantOverlay.setBackgroundColor(ContextCompat.getColor(this, R.color.bg_surface_elevated))
-            binding.btnGrantOverlay.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
+            binding.btnGrantOverlay.alpha = 0.6f
         } else {
-            binding.ivOverlayStatus.setImageResource(R.drawable.ic_warning)
-            binding.ivOverlayStatus.setColorFilter(ContextCompat.getColor(this, R.color.amber_warning))
-            binding.btnGrantOverlay.text = getString(R.string.btn_grant)
+            binding.tvOverlayBadge.text = "CHƯA CẤP"
+            binding.tvOverlayBadge.setTextColor(ContextCompat.getColor(this, R.color.amber_warning))
+            binding.btnGrantOverlay.text = "Cấp quyền Cửa sổ nổi"
             binding.btnGrantOverlay.isEnabled = true
-            binding.btnGrantOverlay.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
-            binding.btnGrantOverlay.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
+            binding.btnGrantOverlay.alpha = 1.0f
         }
 
-        if (perms.hasShizukuOrRoot) {
-            binding.ivTurboStatus.setImageResource(R.drawable.ic_check)
-            binding.ivTurboStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
-            binding.btnSetupTurboEngine.text = "ĐÃ SẴN SÀNG"
-            binding.btnSetupTurboEngine.isEnabled = true
-            binding.btnSetupTurboEngine.setBackgroundColor(ContextCompat.getColor(this, R.color.bg_surface_elevated))
-            binding.btnSetupTurboEngine.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
+        // 2. Động cơ Shizuku / Root
+        if (engineReady) {
+            binding.tvShizukuBadge.text = "SẴN SÀNG (${ShellExecutor.getEngineModeName()})"
+            binding.tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
         } else {
-            binding.ivTurboStatus.setImageResource(R.drawable.ic_warning)
-            binding.ivTurboStatus.setColorFilter(ContextCompat.getColor(this, R.color.amber_warning))
-            binding.btnSetupTurboEngine.text = "CẤU HÌNH"
-            binding.btnSetupTurboEngine.isEnabled = true
-            binding.btnSetupTurboEngine.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
-            binding.btnSetupTurboEngine.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
+            binding.tvShizukuBadge.text = "CHƯA CẤP"
+            binding.tvShizukuBadge.setTextColor(ContextCompat.getColor(this, R.color.amber_warning))
         }
 
-        if (perms.isBatteryOptimized) {
-            binding.ivBatteryStatus.setImageResource(R.drawable.ic_check)
-            binding.ivBatteryStatus.setColorFilter(ContextCompat.getColor(this, R.color.emerald_play))
-            binding.btnGrantBattery.text = getString(R.string.btn_granted)
-            binding.btnGrantBattery.isEnabled = false
-            binding.btnGrantBattery.setBackgroundColor(ContextCompat.getColor(this, R.color.bg_surface_elevated))
-            binding.btnGrantBattery.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
+        // 3. Trạng thái toàn cục
+        if (hasOverlay && engineReady) {
+            binding.tvGlobalStatus.text = "SẴN SÀNG"
+            binding.tvGlobalStatus.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
         } else {
-            binding.ivBatteryStatus.setImageResource(R.drawable.ic_warning)
-            binding.ivBatteryStatus.setColorFilter(ContextCompat.getColor(this, R.color.amber_warning))
-            binding.btnGrantBattery.text = getString(R.string.btn_grant)
-            binding.btnGrantBattery.isEnabled = true
-            binding.btnGrantBattery.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
-            binding.btnGrantBattery.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
+            binding.tvGlobalStatus.text = "CẦN CẤP QUYỀN"
+            binding.tvGlobalStatus.setTextColor(ContextCompat.getColor(this, R.color.amber_warning))
         }
 
-        val allReady = perms.hasOverlay && perms.hasShizukuOrRoot
-        if (allReady) {
-            binding.tvEngineStatus.text = "SẴN SÀNG"
-            binding.tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
+        // 4. Nút Khởi động Turbo
+        if (isServiceRunning) {
+            binding.btnToggleTurbo.text = "⏹ TẮT GAME TURBO HUD"
+            binding.btnToggleTurbo.setBackgroundColor(ContextCompat.getColor(this, R.color.crimson_stop))
+            binding.btnToggleTurbo.setTextColor(ContextCompat.getColor(this, R.color.white))
         } else {
-            binding.tvEngineStatus.text = "CHƯA CẤP ĐỦ"
-            binding.tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.amber_warning))
-        }
-    }
-
-    private fun requestNotificationPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (!PermissionUtils.hasNotificationPermission(this)) {
-                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-            }
+            binding.btnToggleTurbo.text = "⚡ BẬT GAME TURBO HUD"
+            binding.btnToggleTurbo.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
+            binding.btnToggleTurbo.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
         }
     }
 }

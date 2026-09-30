@@ -13,22 +13,23 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.macrophone.gaming.R
-import com.macrophone.gaming.data.model.MacroSequence
 import kotlin.math.abs
 
 /**
- * Quản lý một Nút Macro Nổi độc lập trên màn hình game (Floating Macro Trigger Button):
- * - Người chơi kéo thả nút này đến vị trí thuận tay nhất (ví dụ: ngay cạnh nút đánh thường).
- * - Khi CHẠM vào nút: Lập tức phát lại toàn bộ thao tác đã ghi với tốc độ siêu nhanh (2x, 5x, 10x).
- * - Cờ FLAG_NOT_TOUCH_MODAL đảm bảo các ngón tay khác (di chuyển Joystick) hoàn toàn tự do.
+ * Nút Tròn Kích Hoạt Combo Nổi Trên Màn Hình Game (Floating Trigger Button):
+ * - Kéo thả tự do đến mọi vị trí thuận ngón tay (gần nút đánh thường hoặc góc phải).
+ * - CHẠM VÀO NÚT: Bắn ngay chuỗi combo chiêu đã gán với độ trễ siêu thấp 0ms!
+ * - NHẤN GIỮ LÂU: Bật/tắt nút xóa (✕) để dọn dẹp khi không muốn dùng nữa.
  */
-class FloatingMacroButton(
+class FloatingTriggerView(
     private val context: Context,
     private val windowManager: WindowManager,
-    val sequence: MacroSequence,
-    private val onTrigger: (MacroSequence) -> Unit,
-    private val onStop: () -> Unit,
-    private val onDelete: (MacroSequence) -> Unit
+    val name: String,
+    val points: List<Pair<Float, Float>>,
+    initialX: Int,
+    initialY: Int,
+    private val onTrigger: (List<Pair<Float, Float>>) -> Unit,
+    private val onDelete: (FloatingTriggerView) -> Unit
 ) {
 
     val view: View = LayoutInflater.from(context).inflate(R.layout.view_floating_macro_button, null)
@@ -46,35 +47,25 @@ class FloatingMacroButton(
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.TOP or Gravity.START
-        x = sequence.buttonX
-        y = sequence.buttonY
+        x = initialX
+        y = initialY
     }
 
-    var isPlaying: Boolean = false
-        private set
-
     init {
-        // Đặt nhãn ngắn gọn cho nút (tối đa 4-5 ký tự)
-        val shortName = if (sequence.name.length > 5) {
-            sequence.name.take(4) + ".."
-        } else {
-            sequence.name
-        }
-        tvLabel.text = shortName
-
-        setupTouchAndDrag()
+        tvLabel.text = name.take(4)
+        setupTouchListener()
 
         ivDelete.setOnClickListener {
             destroy()
-            onDelete(sequence)
+            onDelete(this)
         }
 
         try {
             windowManager.addView(view, params)
-        } catch (_: Exception) {}
+        } catch (_: Throwable) {}
     }
 
-    private fun setupTouchAndDrag() {
+    private fun setupTouchListener() {
         view.setOnTouchListener(object : View.OnTouchListener {
             private var startX = 0
             private var startY = 0
@@ -99,16 +90,14 @@ class FloatingMacroButton(
                         val dx = (event.rawX - touchStartX).toInt()
                         val dy = (event.rawY - touchStartY).toInt()
 
-                        if (abs(dx) > 12 || abs(dy) > 12) {
+                        if (abs(dx) > 10 || abs(dy) > 10) {
                             isDragging = true
                             params.x = startX + dx
                             params.y = startY + dy
-                            sequence.buttonX = params.x
-                            sequence.buttonY = params.y
                             if (view.isAttachedToWindow) {
                                 try {
                                     windowManager.updateViewLayout(view, params)
-                                } catch (_: Exception) {}
+                                } catch (_: Throwable) {}
                             }
                         }
                         return true
@@ -116,19 +105,13 @@ class FloatingMacroButton(
 
                     MotionEvent.ACTION_UP -> {
                         val duration = System.currentTimeMillis() - downTime
-                        if (!isDragging && duration < 500) {
-                            // Người dùng CLICK vào nút Macro để BẬT hoặc DỪNG phát lại!
-                            vibrateClick(35)
-                            if (isPlaying) {
-                                setPlayingState(false)
-                                onStop()
-                            } else {
-                                setPlayingState(true)
-                                onTrigger(sequence)
-                            }
+                        if (!isDragging && duration < 400) {
+                            // Chạm nhanh -> KÍCH HOẠT COMBO!
+                            flashFeedback()
+                            onTrigger(points)
                         } else if (!isDragging && duration >= 500) {
-                            // Nhấn giữ lâu để bật/tắt nút xóa
-                            vibrateClick(80)
+                            // Nhấn giữ lâu -> Hiển thị nút xóa
+                            vibrate(80)
                             ivDelete.visibility = if (ivDelete.visibility == View.VISIBLE) View.GONE else View.VISIBLE
                         }
                         return true
@@ -139,32 +122,22 @@ class FloatingMacroButton(
         })
     }
 
-    /**
-     * Cập nhật trạng thái hiển thị của nút khi đang phát hoặc đang chờ
-     */
-    fun setPlayingState(playing: Boolean) {
-        isPlaying = playing
-        if (playing) {
-            view.setBackgroundResource(R.drawable.bg_floating_macro_btn_active)
-            ivIcon.setImageResource(R.drawable.ic_stop)
-            ivIcon.setColorFilter(ContextCompat.getColor(context, R.color.white))
-            tvLabel.setTextColor(ContextCompat.getColor(context, R.color.white))
-        } else {
-            view.setBackgroundResource(R.drawable.bg_floating_macro_btn_idle)
-            ivIcon.setImageResource(R.drawable.ic_speed)
-            ivIcon.setColorFilter(ContextCompat.getColor(context, R.color.cyan_neon))
-            tvLabel.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
-        }
+    private fun flashFeedback() {
+        vibrate(30)
+        view.setBackgroundResource(R.drawable.bg_floating_macro_btn_active)
+        ivIcon.setColorFilter(ContextCompat.getColor(context, R.color.white))
+        view.postDelayed({
+            if (view.isAttachedToWindow) {
+                view.setBackgroundResource(R.drawable.bg_floating_macro_btn_idle)
+                ivIcon.setColorFilter(ContextCompat.getColor(context, R.color.cyan_neon))
+            }
+        }, 200)
     }
 
-    private fun vibrateClick(ms: Long) {
+    private fun vibrate(ms: Long) {
         try {
             vibrator?.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE))
-        } catch (_: Exception) {}
-    }
-
-    fun setVisible(visible: Boolean) {
-        view.visibility = if (visible) View.VISIBLE else View.GONE
+        } catch (_: Throwable) {}
     }
 
     fun destroy() {
@@ -174,6 +147,6 @@ class FloatingMacroButton(
             } else {
                 windowManager.removeView(view)
             }
-        } catch (_: Exception) {}
+        } catch (_: Throwable) {}
     }
 }

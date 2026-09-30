@@ -5,14 +5,14 @@
     <!-- Cửa sổ nổi trên game và ứng dụng khác -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-    <!-- Chạy Foreground Service duy trì trạng thái Dock nổi -->
+    <!-- Chạy Foreground Service duy trì trạng thái Game Turbo HUD -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <!-- Hiển thị Notification điều khiển nhanh (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Phản hồi rung xúc giác khi chạm ghi thao tác -->
+    <!-- Phản hồi rung xúc giác khi chạm nút Turbo -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- Bỏ qua tối ưu hóa pin để không bị ngắt combo giữa chừng -->
@@ -28,7 +28,7 @@
         android:theme="@style/Theme.MacroGaming"
         tools:targetApi="34">
 
-        <!-- Màn hình chính quản trị quyền và presets -->
+        <!-- Màn hình chính quản trị quyền và Bật/Tắt Turbo -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -40,16 +40,9 @@
             </intent-filter>
         </activity>
 
-        <!-- Trình hướng dẫn cấp quyền kiểu Panda Touch Pro (từng bước) -->
-        <activity
-            android:name=".ui.SetupWizardActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.MacroGaming" />
-
-        <!-- Service quản lý cửa sổ Game Turbo nổi (Game Turbo Controller) -->
+        <!-- Service Quản Lý Cửa Sổ Nổi Game Turbo (Kiến trúc Mới) -->
         <service
-            android:name=".service.FloatingWidgetService"
+            android:name=".service.TurboOverlayService"
             android:exported="false"
             android:foregroundServiceType="specialUse">
             <property

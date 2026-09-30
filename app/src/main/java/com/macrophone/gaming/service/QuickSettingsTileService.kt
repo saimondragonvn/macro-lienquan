@@ -3,27 +3,19 @@ package com.macrophone.gaming.service
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
+import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import com.macrophone.gaming.R
-import com.macrophone.gaming.domain.MacroManager
 import com.macrophone.gaming.ui.MainActivity
-import com.macrophone.gaming.util.PermissionUtils
 
 /**
  * Quản lý Tile trên bảng Cài đặt nhanh (Quick Settings Panel):
- * - Cho phép game thủ bật/tắt nhanh Floating Controller ngay khi đang trong game
+ * - Cho phép game thủ bật/tắt nhanh Game Turbo HUD ngay khi đang trong game
  * - Hiển thị trạng thái hoạt động trực quan
  */
 class QuickSettingsTileService : TileService() {
-
-    private lateinit var macroManager: MacroManager
-
-    override fun onCreate() {
-        super.onCreate()
-        macroManager = MacroManager.getInstance(this)
-    }
 
     override fun onStartListening() {
         super.onStartListening()
@@ -34,7 +26,7 @@ class QuickSettingsTileService : TileService() {
         super.onClick()
 
         // 1. Kiểm tra quyền hệ thống trước khi bật
-        val hasOverlay = PermissionUtils.hasOverlayPermission(this)
+        val hasOverlay = Settings.canDrawOverlays(this)
 
         if (!hasOverlay) {
             Toast.makeText(
@@ -61,12 +53,12 @@ class QuickSettingsTileService : TileService() {
             return
         }
 
-        // 2. Chuyển đổi trạng thái bật/tắt Floating Service
-        val isRunning = macroManager.isFloatingServiceRunning.value
+        // 2. Chuyển đổi trạng thái bật/tắt TurboOverlayService
+        val isRunning = TurboOverlayService.isRunning
         if (isRunning) {
-            FloatingWidgetService.stop(this)
+            TurboOverlayService.stop(this)
         } else {
-            FloatingWidgetService.start(this)
+            TurboOverlayService.start(this)
         }
 
         updateTileState(!isRunning)
@@ -74,7 +66,7 @@ class QuickSettingsTileService : TileService() {
 
     private fun updateTileState(overrideRunning: Boolean? = null) {
         val tile = qsTile ?: return
-        val isRunning = overrideRunning ?: macroManager.isFloatingServiceRunning.value
+        val isRunning = overrideRunning ?: TurboOverlayService.isRunning
 
         tile.state = if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         tile.icon = Icon.createWithResource(this, R.drawable.ic_macro_tile)

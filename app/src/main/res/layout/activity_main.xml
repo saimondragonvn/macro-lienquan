@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_dark">
@@ -17,14 +16,14 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Hero Gaming Header -->
+            <!-- Gaming Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="14dp">
+                android:layout_marginBottom="16dp">
 
                 <ImageView
                     android:layout_width="48dp"
@@ -32,7 +31,8 @@
                     android:background="@drawable/bg_floating_pill"
                     android:padding="10dp"
                     android:src="@drawable/ic_macro_tile"
-                    app:tint="@color/cyan_neon" />
+                    app:tint="@color/cyan_neon"
+                    android:contentDescription="Logo" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -44,13 +44,12 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="MACRO GAMING PRO"
+                        android:text="GAME TURBO PRO"
                         android:textColor="@color/cyan_neon"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.04" />
 
-                    <!-- Device identification badge -->
                     <TextView
                         android:id="@+id/tvDeviceBadge"
                         android:layout_width="wrap_content"
@@ -62,9 +61,8 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Engine Status Pill -->
                 <TextView
-                    android:id="@+id/tvEngineStatus"
+                    android:id="@+id/tvGlobalStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_floating_pill"
@@ -78,16 +76,29 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Card: Tối ưu riêng cho Infinix Note 30 / Transsion XOS 13 & 14 -->
+            <!-- Nút Bật/Tắt Game Turbo To và Nổi Bật Nhất -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnToggleTurbo"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/cyan_neon"
+                app:cornerRadius="14dp"
+                android:text="⚡ BẬT GAME TURBO HUD"
+                android:textColor="@color/bg_dark"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.04" />
+
+            <!-- Card 1: Quyền Cửa Sổ Nổi (Overlay Window) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardInfinixOptimizer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                app:cardBackgroundColor="@color/bg_surface_elevated"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@color/bg_surface"
                 app:cardCornerRadius="14dp"
-                app:strokeColor="@color/cyan_neon"
-                app:strokeWidth="1.5dp">
+                app:strokeColor="@color/stroke_border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -102,85 +113,60 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@drawable/ic_speed"
-                            app:tint="@color/cyan_neon" />
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/ic_macro_tile"
+                            app:tint="@color/cyan_neon"
+                            android:contentDescription="Overlay Icon" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:orientation="vertical">
+                            android:layout_weight="1"
+                            android:text="1. CỬA SỔ NỔI TRÊN GAME"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="TỐI ƯU CHO INFINIX NOTE 30 (XOS)"
-                                android:textColor="@color/cyan_neon"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Xử lý nhanh 'Cài đặt bị hạn chế' &amp; Cửa sổ thả nổi trên Infinix"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvOverlayBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CHƯA CẤP"
+                            android:textColor="@color/amber_warning"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="📌 Trên Infinix Note 30 (Android 13/14): Khi cài file APK từ bên ngoài, hệ thống XOS mặc định khóa 'Cài đặt bị hạn chế'. Hãy bấm nút bên dưới để mở khóa ngay:"
-                        android:textColor="@color/text_primary"
-                        android:textSize="11sp"
-                        android:lineSpacingExtra="2dp" />
+                        android:layout_marginTop="6dp"
+                        android:text="Hiển thị thanh công cụ Game Turbo mép màn hình khi chơi game Liên Quân."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
 
-                    <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGrantOverlay"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:layout_marginTop="10dp"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnUnlockInfinixRestricted"
-                            android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="6dp"
-                            android:backgroundTint="@color/bg_surface"
-                            app:strokeColor="@color/cyan_neon"
-                            app:strokeWidth="1dp"
-                            android:text="🔓 Mở khóa Cài đặt (⋮)"
-                            android:textColor="@color/cyan_neon"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnInfinixFloatingPerm"
-                            android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/bg_surface"
-                            app:strokeColor="@color/purple_accent"
-                            app:strokeWidth="1dp"
-                            android:text="🪟 Cửa sổ thả nổi"
-                            android:textColor="@color/purple_accent"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                        android:backgroundTint="@color/bg_surface_elevated"
+                        app:strokeColor="@color/cyan_neon"
+                        app:strokeWidth="1dp"
+                        android:text="Cấp quyền Hiển thị trên ứng dụng khác"
+                        android:textColor="@color/cyan_neon"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card: Shizuku / Gỡ lỗi Wi-Fi 1-chạm -->
+            <!-- Card 2: Động cơ Game Turbo (Shizuku & Root) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardShizuku"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="12dp"
                 app:cardBackgroundColor="@color/bg_surface"
                 app:cardCornerRadius="14dp"
                 app:strokeColor="@color/purple_accent"
@@ -199,34 +185,39 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
                             android:src="@drawable/ic_speed"
-                            app:tint="@color/purple_accent" />
+                            app:tint="@color/purple_accent"
+                            android:contentDescription="Turbo Icon" />
 
-                        <LinearLayout
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:text="2. ĐỘNG CƠ SHIZUKU / ROOT"
+                            android:textColor="@color/purple_accent"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="KÍCH HOẠT TỰ ĐỘNG QUA SHIZUKU (WI-FI)"
-                                android:textColor="@color/purple_accent"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Cấp quyền Động cơ Game Turbo siêu tốc không cần Trợ năng!"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvShizukuBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CHƯA CẤP"
+                            android:textColor="@color/amber_warning"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Tự động click combo chiêu siêu tốc 120Hz không cần Trợ năng. Kích hoạt qua Shizuku (Gỡ lỗi Wi-Fi) hoặc Root trên giả lập."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -237,263 +228,109 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnGrantShizuku"
                             android:layout_width="0dp"
-                            android:layout_height="42dp"
-                            android:layout_weight="1.6"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
                             android:layout_marginEnd="6dp"
                             android:backgroundTint="@color/purple_accent"
-                            android:text="⚡ Cấp quyền 1-Chạm"
+                            android:text="⚡ Cấp quyền Shizuku"
                             android:textColor="@color/white"
                             android:textSize="11sp"
                             android:textStyle="bold" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnCopyAdb"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
-                            android:layout_height="42dp"
-                            android:layout_weight="1.4"
-                            android:text="📋 Lệnh Wi-Fi / ADB"
-                            android:textColor="@color/text_primary"
+                            android:layout_height="40dp"
+                            android:layout_weight="0.9"
+                            android:backgroundTint="@color/bg_surface_elevated"
+                            app:strokeColor="@color/purple_accent"
+                            app:strokeWidth="1dp"
+                            android:text="📋 Sao chép ADB"
+                            android:textColor="@color/purple_accent"
                             android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Section Title: Core Permissions -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CÁC QUYỀN HỆ THỐNG"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Card 1: Overlay Permission (Crucial) -->
+            <!-- Card 3: Mở khóa trên Infinix Note 30 (Transsion XOS) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardOverlay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/ivOverlayStatus"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_warning"
-                        app:tint="@color/amber_warning" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hiển thị trên ứng dụng khác"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bắt buộc để hiện Nút Macro Tròn và Game Turbo HUD trên game."
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnGrantOverlay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:backgroundTint="@color/cyan_neon"
-                        android:text="@string/btn_grant"
-                        android:textColor="@color/bg_dark"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Card 2: Game Turbo Privileged Engine (Shizuku / Root) -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardTurboEngine"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/ivTurboStatus"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_warning"
-                        app:tint="@color/amber_warning" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Động cơ Game Turbo (Shizuku / Root)"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Mô phỏng click siêu tốc qua Shell đặc quyền (Không cần Trợ năng)."
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSetupTurboEngine"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:backgroundTint="@color/cyan_neon"
-                        android:text="Cấu hình"
-                        android:textColor="@color/bg_dark"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Card 3: Battery Optimization Exemption -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardBattery"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/bg_surface"
-                app:cardCornerRadius="12dp">
+                app:cardBackgroundColor="@color/bg_surface_elevated"
+                app:cardCornerRadius="14dp"
+                app:strokeColor="@color/stroke_border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp">
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
-                    <ImageView
-                        android:id="@+id/ivBatteryStatus"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_warning"
-                        app:tint="@color/amber_warning" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:text="📌 DÀNH CHO INFINIX NOTE 30 (XOS 13/14)"
+                        android:textColor="@color/cyan_neon"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bỏ qua tối ưu hóa Pin"
-                            android:textColor="@color/text_primary"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Giữ combo chạy mượt mà, không bị Infinix XOS ngắt ngầm."
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Nếu ứng dụng bị hệ thống XOS giới hạn quyền: Bấm nút dưới $\\rightarrow$ Bấm nút 3 chấm (⋮) ở góc trên bên phải màn hình $\\rightarrow$ Chọn 'Cho phép cài đặt bị hạn chế'."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnGrantBattery"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:backgroundTint="@color/cyan_neon"
-                        android:text="@string/btn_grant"
-                        android:textColor="@color/bg_dark"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
+                        android:id="@+id/btnUnlockInfinix"
+                        android:layout_width="match_parent"
+                        android:layout_height="38dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/bg_surface"
+                        app:strokeColor="@color/cyan_neon"
+                        app:strokeWidth="1dp"
+                        android:text="🔓 Mở trang Cài đặt ứng dụng Infinix"
+                        android:textColor="@color/cyan_neon"
+                        android:textSize="11sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Primary Action: Start Floating Controller -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnToggleFloatingWidget"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:backgroundTint="@color/cyan_neon"
-                android:text="@string/btn_start_dock"
-                android:textColor="@color/bg_dark"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:cornerRadius="14dp"
-                app:icon="@drawable/ic_play"
-                app:iconTint="@color/bg_dark"
-                app:iconGravity="textStart"
-                android:layout_marginBottom="20dp" />
-
-            <!-- Presets Section Header -->
-            <LinearLayout
+            <!-- Hướng dẫn sử dụng trong game (Game Turbo Guide) -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="10dp">
+                app:cardBackgroundColor="@color/bg_surface"
+                app:cardCornerRadius="14dp"
+                app:strokeColor="@color/stroke_border"
+                app:strokeWidth="1dp">
 
-                <TextView
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="DANH SÁCH COMBO PRESET"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnResetDefaultPresets"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Khôi phục mẫu"
-                    android:textColor="@color/cyan_neon"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎮 HƯỚNG DẪN 3 BƯỚC DÙNG TRONG GAME"
+                        android:textColor="@color/emerald_play"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPresets"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_macro_preset" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="1️⃣ Bấm 'BẬT GAME TURBO HUD' ở trên rồi vào game Liên Quân Mobile.\n\n2️⃣ Chạm vào tab nhỏ [⚡ TURBO] ở mép màn hình để mở bảng điều khiển.\n\n3️⃣ Bấm [+ Ghim Điểm] để kéo các điểm (1, 2, 3...) vào nút chiêu, sau đó bấm [🚀 TẠO NÚT BẤM TURBO] là có ngay nút tròn trên màn hình. Chạm nút tròn để xả combo!"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp"
+                        android:lineSpacingExtra="3dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
