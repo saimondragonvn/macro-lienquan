@@ -49,7 +49,7 @@
     <!-- 2. Trạng thái MỞ RỘNG (Game Turbo HUD Control Center) -->
     <LinearLayout
         android:id="@+id/layoutExpanded"
-        android:layout_width="290dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_dialog_card"
         android:orientation="vertical"
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="8dp">
 
             <ImageView
                 android:id="@+id/ivExpandedDrag"
@@ -92,7 +92,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="120Hz Ultra Combo • Privileged Shell"
+                    android:text="120Hz Ultra Combo • Memory Save"
                     android:textColor="@color/emerald_play"
                     android:textSize="10sp" />
             </LinearLayout>
@@ -115,235 +115,390 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/stroke_border"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="8dp" />
 
-        <!-- Phần 1: GÁN CHIÊU VỊ TRÍ TAY (TARGET POINTS) -->
-        <TextView
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🎯 GÁN VỊ TRÍ CHIÊU (COMBO GHIM)"
-            android:textColor="@color/cyan_neon"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:scrollbars="none"
+            android:fillViewport="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Kéo các điểm (1, 2, 3...) đặt lên nút chiêu trong game:"
-            android:textColor="@color/text_secondary"
-            android:textSize="10sp" />
-
-        <!-- Row nút thao tác với các điểm ghim -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/btnAddPoint"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.2"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="+ Ghim Điểm"
-                android:textColor="@color/cyan_neon"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btnRemovePoint"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="- Bớt"
-                android:textColor="@color/text_primary"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/btnPlayTest"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.9"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="▶ Thử"
-                android:textColor="@color/emerald_play"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Nút Tạo Nút Bấm Turbo từ các điểm ghim (Nổi bật nhất) -->
-        <TextView
-            android:id="@+id/btnCreateMacroBtn"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_turbo_btn_primary"
-            android:gravity="center"
-            android:text="🚀 TẠO NÚT BẤM TURBO TỪ ĐIỂM GHIM"
-            android:textColor="@color/bg_dark"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <!-- Chọn tốc độ xả chiêu combo -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="6dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="⏱️ Tốc độ:"
-                android:textColor="@color/text_secondary"
-                android:textSize="10sp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/btnSpeedFast"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="3dp"
-                android:background="@drawable/bg_turbo_btn_primary"
-                android:gravity="center"
-                android:text="30ms"
-                android:textColor="@color/bg_dark"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                <!-- Nút Khởi Chạy Game Nhanh -->
+                <TextView
+                    android:id="@+id/btnLaunchGameFromDock"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_turbo_btn_primary"
+                    android:gravity="center"
+                    android:text="🚀 MỞ LIÊN QUÂN MOBILE NGAY"
+                    android:textColor="@color/bg_dark"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
 
-            <TextView
-                android:id="@+id/btnSpeedNormal"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginEnd="3dp"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="60ms"
-                android:textColor="@color/text_primary"
-                android:textSize="10sp" />
+                <!-- Phần 1: GÁN CHIÊU VỊ TRÍ TAY (TARGET POINTS) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎯 GÁN VỊ TRÍ CHIÊU (COMBO GHIM)"
+                    android:textColor="@color/cyan_neon"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/btnSpeedSlow"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="120ms"
-                android:textColor="@color/text_primary"
-                android:textSize="10sp" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Kéo các điểm (1, 2, 3...) đặt lên nút chiêu trong game:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/stroke_border"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
+                <!-- Row nút thao tác với các điểm ghim -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
 
-        <!-- Phần 2: GHI THAO TÁC TRỰC TIẾP (MACRO RECORDER) -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔴 GHI HÌNH THAO TÁC TAY TRỰC TIẾP"
-            android:textColor="@color/crimson_stop"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/btnAddPoint"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.2"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="+ Ghim Điểm"
+                        android:textColor="@color/cyan_neon"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Nhấn nút dưới để bắt đầu ghi các cú chạm/vuốt màn hình:"
-            android:textColor="@color/text_secondary"
-            android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/btnRemovePoint"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.8"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="- Bớt"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp" />
 
-        <!-- Nút BẮT ĐẦU GHI (START) Cực kỳ to và rõ ràng -->
-        <TextView
-            android:id="@+id/btnStartRecord"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_turbo_btn_danger"
-            android:gravity="center"
-            android:text="🔴 BẮT ĐẦU GHI (START)"
-            android:textColor="@color/white"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.03" />
+                    <TextView
+                        android:id="@+id/btnPlayTest"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.9"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="▶ Thử"
+                        android:textColor="@color/emerald_play"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/stroke_border"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
+                <!-- Nút Tạo Nút Bấm Turbo từ các điểm ghim -->
+                <TextView
+                    android:id="@+id/btnCreateMacroBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_turbo_btn_primary"
+                    android:gravity="center"
+                    android:text="⚡ TẠO NÚT BẤM TURBO VÀO GAME"
+                    android:textColor="@color/bg_dark"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
 
-        <!-- Phần 3: Công cụ tiện ích -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="34dp"
-            android:orientation="horizontal">
+                <!-- Chọn tốc độ xả chiêu combo -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/btnToggleVisibility"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="👁️ Ẩn/Hiện"
-                android:textColor="@color/text_primary"
-                android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⏱️ Tốc độ:"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
 
-            <TextView
-                android:id="@+id/btnClearPoints"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="🗑️ Xóa Hết"
-                android:textColor="@color/amber_warning"
-                android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/btnSpeedFast"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="3dp"
+                        android:background="@drawable/bg_turbo_btn_primary"
+                        android:gravity="center"
+                        android:text="30ms"
+                        android:textColor="@color/bg_dark"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/btnCloseService"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/bg_turbo_btn_secondary"
-                android:gravity="center"
-                android:text="✕ Đóng Turbo"
-                android:textColor="@color/crimson_stop"
-                android:textSize="10sp" />
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/btnSpeedNormal"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="3dp"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="60ms"
+                        android:textColor="@color/text_primary"
+                        android:textSize="10sp" />
 
-        <!-- Nút thu gọn to, dễ bấm ở dưới đáy bảng điều khiển -->
-        <TextView
-            android:id="@+id/btnBottomCollapse"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_turbo_btn_secondary"
-            android:gravity="center"
-            android:text="— THU GỌN VỀ MÉP MÀN HÌNH"
-            android:textColor="@color/cyan_neon"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/btnSpeedSlow"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="120ms"
+                        android:textColor="@color/text_primary"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/stroke_border"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Phần 2: ĐỘ MỜ CỦA NÚT TRÊN MÀN HÌNH (OPACITY) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="👻 ĐỘ MỜ NÚT (TRONG SUỐT):"
+                        android:textColor="@color/cyan_neon"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/btnGlobalOpacity30"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="3dp"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="30% Mờ"
+                        android:textColor="@color/text_primary"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/btnGlobalOpacity50"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="3dp"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="50% Vừa"
+                        android:textColor="@color/text_primary"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/btnGlobalOpacity80"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="3dp"
+                        android:background="@drawable/bg_turbo_btn_primary"
+                        android:gravity="center"
+                        android:text="80% Rõ"
+                        android:textColor="@color/bg_dark"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnGlobalOpacity100"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="100% Đậm"
+                        android:textColor="@color/text_primary"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/stroke_border"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Phần 3: DANH SÁCH NÚT MACRO ĐANG CHẠY & XÓA TỪNG NÚT -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="📋 NÚT MACRO ĐÃ GÁN (TỰ LƯU):"
+                        android:textColor="@color/cyan_neon"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnRefreshTriggers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔄 Tải lại"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="9sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvNoTriggers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="Chưa có nút nào. Bấm [+ Ghim Điểm] -> [Tạo Nút] để tạo."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+
+                <!-- Container chứa danh sách các nút và nút xóa từng nút -->
+                <LinearLayout
+                    android:id="@+id/layoutAssignedTriggers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/stroke_border"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Phần 4: GHI THAO TÁC TRỰC TIẾP (MACRO RECORDER) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔴 GHI HÌNH THAO TÁC TAY TRỰC TIẾP"
+                    android:textColor="@color/crimson_stop"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Chạm mở shop/mua đồ trong lúc ghi sẽ tự động phản hồi vào game:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp" />
+
+                <!-- Nút BẮT ĐẦU GHI (START) Cực kỳ to và rõ ràng -->
+                <TextView
+                    android:id="@+id/btnStartRecord"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_turbo_btn_danger"
+                    android:gravity="center"
+                    android:text="🔴 BẮT ĐẦU GHI (START)"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.03" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/stroke_border"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Phần 5: Công cụ tiện ích -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/btnToggleVisibility"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="👁️ Ẩn/Hiện"
+                        android:textColor="@color/text_primary"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/btnClearPoints"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="🗑️ Xóa Ghim"
+                        android:textColor="@color/amber_warning"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/btnCloseService"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_turbo_btn_secondary"
+                        android:gravity="center"
+                        android:text="✕ Đóng Turbo"
+                        android:textColor="@color/crimson_stop"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <!-- Nút thu gọn to, dễ bấm ở dưới đáy bảng điều khiển -->
+                <TextView
+                    android:id="@+id/btnBottomCollapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_turbo_btn_secondary"
+                    android:gravity="center"
+                    android:text="— THU GỌN VỀ MÉP MÀN HÌNH"
+                    android:textColor="@color/cyan_neon"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </ScrollView>
 
     </LinearLayout>
 

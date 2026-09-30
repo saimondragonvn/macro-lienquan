@@ -46,24 +46,32 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.3' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.3' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.4' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.4' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.0.3)
+            ### 🎮 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release v2.0.4)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🚀 CẢI TIẾN ĐỘT PHÁ v2.0.3:
-            1. **VỪA DI CHUYỂN (JOYSTICK) VỪA BẤM COMBO MƯỢT MÀ**:
-               - Kích hoạt cờ `FLAG_SPLIT_TOUCH` trên toàn bộ cửa sổ nổi và xử lý `ACTION_POINTER_DOWN / ACTION_POINTER_UP`.
-               - Giờ đây ngón cái tay trái kéo joystick đi chuyển tướng, ngón tay phải bấm nút combo `[⚡ C1]` hoàn toàn độc lập cùng lúc, không còn bị khựng hay đơ cảm ứng!
-            2. **KHẮC PHỤC TRIỆT ĐỂ LỖI BẤM SHOP / CHIÊU KHÔNG MỞ TRONG GAME**:
-               - Thay thế lệnh `input tap` (0ms thường bị game engine Unity/Tencent bỏ qua) bằng `input swipe X Y X Y 45ms` (chuẩn thời gian giữ ngón tay).
-               - Nút Shop, nút Chiêu, nút Trang bị trong game nhận diện và phản hồi 100% tức thì!
-            3. **GHI THAO TÁC TRỰC QUAN - TƯƠNG TÁC THỜI GIAN THỰC VÀO GAME**:
-               - Khi bấm [Ghi Thao Tác]: Mỗi lần chạm vào màn hình (ví dụ bấm mở Shop, bấm mua đồ, bấm đóng shop) thì game sẽ THỰC SỰ PHẢN HỒI VÀ MỞ SHOP ngay tức khắc, đồng thời vẽ điểm đánh dấu số ①, ②, ③ trực tiếp trên màn hình!
+            #### 🚀 CẢI TIẾN ĐỘT PHÁ v2.0.4:
+            1. **BỘ NHỚ LƯU TRỮ CẤU HÌNH VĨNH VIỄN (PERSISTENT CONFIG STORAGE)**:
+               - Tích hợp `MacroConfigStorage` lưu tự động mọi nút macro (tên, tọa độ X/Y, delay, repeat, opacity, danh sách điểm chiêu) vào `SharedPreferences` + `Gson`.
+               - Tắt mở lại ứng dụng hoặc khởi động lại máy thì toàn bộ các nút đã tạo tự động phục hồi đúng vị trí chuẩn trên màn hình game.
+            2. **QUẢN LÝ DANH SÁCH & XÓA TỪNG NÚT ĐỘC LẬP**:
+               - Bảng điều khiển Game Turbo HUD hiển thị danh sách từng nút macro đã gán (`[C1]`, `[C2]`, `[R1]...`).
+               - Nút `[🎯 Ghim]`: Tự động phục hồi lại các điểm ghim ①, ②, ③ lên chiêu để kéo căn chỉnh lại.
+               - Nút `[🗑️ XÓA]`: Xóa vĩnh viễn từng nút một cách độc lập mà không ảnh hưởng các nút khác.
+            3. **TÙY CHỈNH ĐỘ MỜ (OPACITY / TRONG SUỐT)**:
+               - Bổ sung thanh chỉnh độ mờ toàn cục trên Game Turbo HUD: `30% Mờ`, `50% Vừa`, `80% Rõ`, `100% Đậm`.
+               - Hỗ trợ chỉnh độ mờ riêng cho từng nút trong menu cài đặt combo để không che khuất tầm nhìn combat.
+            4. **1-CHẠM KHỞI ĐỘNG LIÊN QUÂN MOBILE (TURBO MODE)**:
+               - Nút `[🚀 MỞ LIÊN QUÂN MOBILE (TURBO MODE)]` trên cả màn hình chính lẫn Game Turbo HUD giúp tự động bật HUD và mở game Liên Quân chỉ với 1 chạm.
+            5. **TỐI ƯU HÓA ĐỘNG CƠ SHIZUKU / ROOT & TƯƠNG TÁC GAME TUYỆT ĐỐI**:
+               - Lệnh `input tap` + `swipe` dự phòng với xử lý luồng tránh nghẽn pipe buffer.
+               - Tọa độ chiêu được hiệu chỉnh bằng `getLocationOnScreen()` bù trừ viền màn hình và tai thỏ trên điện thoại Infinix Note 30.
+               - Cảnh báo trực quan Toast nếu Shizuku chưa kết nối hoặc chưa cấp quyền.
 
             #### 📲 Tải về APK:
-            Tải file **`Macro-LienQuan-v2.0.3.apk`** ở mục **Assets** bên dưới.
+            Tải file **`Macro-LienQuan-v2.0.4.apk`** ở mục **Assets** bên dưới.
           draft: false
           prerelease: false
         env:

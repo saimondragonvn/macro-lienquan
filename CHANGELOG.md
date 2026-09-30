@@ -4,6 +4,30 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.0.4] - 2026-09-30
+### 🚀 Quản Lý Từng Nút (Xóa/Ghim Lại), Bộ Nhớ Tự Lưu Vĩnh Viễn, Chỉnh Độ Mờ & Mở Liên Quân (Game Turbo Mode)
+- **BỘ NHỚ LƯU TRỮ CẤU HÌNH VĨNH VIỄN (PERSISTENT CONFIG STORAGE)**:
+  - Tích hợp `MacroConfigStorage` lưu tự động mọi nút macro (tên, tọa độ X/Y trên màn hình, độ trễ delay, số lần lặp, độ mờ opacity và danh sách điểm chiêu) vào `SharedPreferences` + `Gson`.
+  - Khởi động lại máy hoặc tắt mở lại Game Turbo, toàn bộ các nút đã tạo tự động phục hồi đúng vị trí chuẩn trên màn hình game, không lo mất cài đặt!
+- **QUẢN LÝ DANH SÁCH & XÓA TỪNG NÚT ĐỘC LẬP**:
+  - Bảng điều khiển Game Turbo HUD bổ sung mục **"📋 NÚT MACRO ĐÃ GÁN"**:
+    - Hiển thị trực quan từng nút (`[C1]`, `[C2]`, `[R1]...`), số chiêu, độ trễ và độ mờ.
+    - Nút `[🎯 Ghim]`: Tự động gỡ nút và bung lại các điểm ghim ①, ②, ③ lên màn hình để căn chỉnh lại vị trí chiêu.
+    - Nút `[🗑️ XÓA]`: Xóa vĩnh viễn từng nút một cách độc lập mà không ảnh hưởng các nút khác.
+- **TÙY CHỈNH ĐỘ MỜ (OPACITY / TRONG SUỐT)**:
+  - Bổ sung thanh chỉnh độ mờ toàn cục trên Game Turbo HUD: `30% Mờ`, `50% Vừa`, `80% Rõ`, `100% Đậm`.
+  - Hỗ trợ chỉnh độ mờ độc lập cho từng nút trong menu cài đặt combo (khi nhấn giữ nút). Nút có thể làm mờ mờ để không che khuất tầm nhìn bản đồ và combat!
+- **1-CHẠM KHỞI ĐỘNG LIÊN QUÂN MOBILE (TURBO MODE)**:
+  - Bổ sung nút `[🚀 MỞ LIÊN QUÂN MOBILE (TURBO MODE)]` trên cả Màn hình chính (`MainActivity`) lẫn bảng điều khiển nổi Game Turbo.
+  - Tự động bật Game Turbo HUD và lập tức mở game Liên Quân Mobile (hỗ trợ cả bản Garena VN lẫn Global) chỉ với 1 lần chạm!
+- **TỐI ƯU HÓA ĐỘNG CƠ SHIZUKU / ROOT & TƯƠNG TÁC GAME TUYỆT ĐỐI**:
+  - Tối ưu lệnh `input tap` kết hợp `input swipe` dự phòng, xử lý luồng stdout/stderr tránh nghẽn pipe buffer.
+  - Tọa độ chiêu được hiệu chỉnh bằng `getLocationOnScreen()` tính toán chính xác bù trừ viền màn hình và tai thỏ trên điện thoại Infinix Note 30 khi xoay ngang.
+  - Cảnh báo trực quan Toast nếu Shizuku chưa kết nối hoặc chưa cấp quyền, người dùng biết ngay nguyên nhân nếu chưa kích hoạt động cơ.
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.0.4.apk`.
+
+---
+
 ## [v2.0.3] - 2026-09-30
 ### 🚀 Vừa Di Chuyển Vừa Bấm Combo Mượt Mà & Khắc Phục Lỗi Bấm Shop/Chiêu Không Mở
 - **VỪA DI CHUYỂN (JOYSTICK) VỪA BẤM COMBO MƯỢT MÀ**:

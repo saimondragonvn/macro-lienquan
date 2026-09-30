@@ -25,14 +25,18 @@ import kotlin.math.abs
 class FloatingTriggerView(
     private val context: Context,
     private val windowManager: WindowManager,
+    val id: String = java.util.UUID.randomUUID().toString(),
     val name: String,
     val points: List<Pair<Float, Float>>,
     initialX: Int,
     initialY: Int,
     var delayBetweenMs: Long = 40,
     var repeatCount: Int = 1,
+    var opacityPercent: Int = 85,
     private val onTrigger: (List<Pair<Float, Float>>, Long, Int) -> Unit,
     private val onRestorePins: ((List<Pair<Float, Float>>) -> Unit)? = null,
+    var onPositionChanged: ((FloatingTriggerView) -> Unit)? = null,
+    var onConfigChanged: ((FloatingTriggerView) -> Unit)? = null,
     private val onDelete: (FloatingTriggerView) -> Unit
 ) {
 
@@ -62,6 +66,7 @@ class FloatingTriggerView(
 
     init {
         tvLabel.text = name.take(4)
+        updateOpacity(opacityPercent)
         (view as? android.view.ViewGroup)?.isMotionEventSplittingEnabled = true
         setupTouchListener()
 
@@ -73,6 +78,11 @@ class FloatingTriggerView(
         try {
             windowManager.addView(view, params)
         } catch (_: Throwable) {}
+    }
+
+    fun updateOpacity(percent: Int) {
+        opacityPercent = percent.coerceIn(20, 100)
+        view.alpha = opacityPercent / 100f
     }
 
     private fun setupTouchListener() {
@@ -130,11 +140,13 @@ class FloatingTriggerView(
                         val pointerId = event.getPointerId(actionIndex)
                         if (activePointerId == MotionEvent.INVALID_POINTER_ID || pointerId == activePointerId) {
                             val duration = System.currentTimeMillis() - downTime
-                            if (!isDragging && duration < 450) {
+                            if (isDragging) {
+                                onPositionChanged?.invoke(this@FloatingTriggerView)
+                            } else if (duration < 450) {
                                 // Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME!
                                 flashFeedback()
                                 onTrigger(points, delayBetweenMs, repeatCount)
-                            } else if (!isDragging && duration >= 450) {
+                            } else {
                                 // Nhấn giữ lâu -> Mở Menu Cài Đặt Combo!
                                 vibrate(60)
                                 showConfigDialog()
@@ -145,6 +157,9 @@ class FloatingTriggerView(
                     }
 
                     MotionEvent.ACTION_CANCEL -> {
+                        if (isDragging) {
+                            onPositionChanged?.invoke(this@FloatingTriggerView)
+                        }
                         isDragging = false
                         activePointerId = MotionEvent.INVALID_POINTER_ID
                         return true
@@ -186,6 +201,11 @@ class FloatingTriggerView(
             val btnRepeat2 = configDialogView!!.findViewById<TextView>(R.id.btnRepeat2)
             val btnRepeat3 = configDialogView!!.findViewById<TextView>(R.id.btnRepeat3)
 
+            val btnOpacity30 = configDialogView!!.findViewById<TextView>(R.id.btnOpacity30)
+            val btnOpacity50 = configDialogView!!.findViewById<TextView>(R.id.btnOpacity50)
+            val btnOpacity80 = configDialogView!!.findViewById<TextView>(R.id.btnOpacity80)
+            val btnOpacity100 = configDialogView!!.findViewById<TextView>(R.id.btnOpacity100)
+
             val btnDialogTestRun = configDialogView!!.findViewById<TextView>(R.id.btnDialogTestRun)
             val btnDialogRestorePins = configDialogView!!.findViewById<TextView>(R.id.btnDialogRestorePins)
             val btnDialogDelete = configDialogView!!.findViewById<TextView>(R.id.btnDialogDelete)
@@ -215,33 +235,75 @@ class FloatingTriggerView(
                 btnRepeat3?.setTextColor(ContextCompat.getColor(context, if (repeatCount >= 3) R.color.bg_dark else R.color.text_primary))
             }
 
+            val updateOpacityUI = {
+                btnOpacity30?.setBackgroundResource(if (opacityPercent <= 35) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnOpacity30?.setTextColor(ContextCompat.getColor(context, if (opacityPercent <= 35) R.color.bg_dark else R.color.text_primary))
+
+                btnOpacity50?.setBackgroundResource(if (opacityPercent in 36..65) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnOpacity50?.setTextColor(ContextCompat.getColor(context, if (opacityPercent in 36..65) R.color.bg_dark else R.color.text_primary))
+
+                btnOpacity80?.setBackgroundResource(if (opacityPercent in 66..85) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnOpacity80?.setTextColor(ContextCompat.getColor(context, if (opacityPercent in 66..85) R.color.bg_dark else R.color.text_primary))
+
+                btnOpacity100?.setBackgroundResource(if (opacityPercent > 85) R.drawable.bg_turbo_btn_primary else R.drawable.bg_turbo_btn_secondary)
+                btnOpacity100?.setTextColor(ContextCompat.getColor(context, if (opacityPercent > 85) R.color.bg_dark else R.color.text_primary))
+            }
+
             updateDelayUI()
             updateRepeatUI()
+            updateOpacityUI()
 
             btnOptDelayFast?.setOnClickListener {
                 delayBetweenMs = 30
                 updateDelayUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
             }
             btnOptDelayNormal?.setOnClickListener {
                 delayBetweenMs = 60
                 updateDelayUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
             }
             btnOptDelaySlow?.setOnClickListener {
                 delayBetweenMs = 120
                 updateDelayUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
             }
 
             btnRepeat1?.setOnClickListener {
                 repeatCount = 1
                 updateRepeatUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
             }
             btnRepeat2?.setOnClickListener {
                 repeatCount = 2
                 updateRepeatUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
             }
             btnRepeat3?.setOnClickListener {
                 repeatCount = 3
                 updateRepeatUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+
+            btnOpacity30?.setOnClickListener {
+                updateOpacity(30)
+                updateOpacityUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+            btnOpacity50?.setOnClickListener {
+                updateOpacity(50)
+                updateOpacityUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+            btnOpacity80?.setOnClickListener {
+                updateOpacity(80)
+                updateOpacityUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
+            }
+            btnOpacity100?.setOnClickListener {
+                updateOpacity(100)
+                updateOpacityUI()
+                onConfigChanged?.invoke(this@FloatingTriggerView)
             }
 
             btnDialogTestRun?.setOnClickListener {
@@ -261,7 +323,7 @@ class FloatingTriggerView(
                 dismissConfigDialog()
                 destroy()
                 onDelete(this)
-                Toast.makeText(context, "Đã xóa nút combo", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Đã xóa nút combo [$name]", Toast.LENGTH_SHORT).show()
             }
 
             btnDialogClose?.setOnClickListener {

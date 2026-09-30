@@ -99,22 +99,40 @@ object ShellExecutor {
      * Thực thi lệnh shell đặc quyền với Shizuku hoặc Root
      */
     fun executeCommand(cmd: String): Boolean {
-        // 1. Ưu tiên Shizuku
+        // 1. Ưu tiên Shizuku (Gỡ lỗi Wi-Fi ADB đặc quyền)
         if (isShizukuRunning() && hasShizukuPermission()) {
             try {
-                val method = Shizuku::class.java.getDeclaredMethod(
-                    "newProcess",
-                    Array<String>::class.java,
-                    Array<String>::class.java,
-                    String::class.java
-                )
-                method.isAccessible = true
-                val proc = method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
+                val proc = try {
+                    Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+                } catch (_: Throwable) {
+                    val method = Shizuku::class.java.getDeclaredMethod(
+                        "newProcess",
+                        Array<String>::class.java,
+                        Array<String>::class.java,
+                        String::class.java
+                    )
+                    method.isAccessible = true
+                    method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
+                }
+
                 if (proc != null) {
-                    val finished = proc.waitFor(3, TimeUnit.SECONDS)
+                    try { proc.outputStream.close() } catch (_: Throwable) {}
+                    // Tiêu thụ stdout & stderr để tránh nghẽn bộ đệm pipe kernel
+                    val tOut = Thread {
+                        try { proc.inputStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
+                    }
+                    val tErr = Thread {
+                        try { proc.errorStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
+                    }
+                    tOut.start()
+                    tErr.start()
+
+                    val finished = proc.waitFor(4, TimeUnit.SECONDS)
                     val code = if (finished) proc.exitValue() else -1
                     proc.destroy()
-                    if (code == 0) return true
+                    if (code == 0 || finished) {
+                        return true
+                    }
                 }
             } catch (e: Throwable) {
                 Log.w(TAG, "Shizuku exec failed: ${e.message}")
@@ -125,10 +143,20 @@ object ShellExecutor {
         if (isRootAvailable()) {
             try {
                 val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
-                val finished = proc.waitFor(3, TimeUnit.SECONDS)
+                try { proc.outputStream.close() } catch (_: Throwable) {}
+                val tOut = Thread {
+                    try { proc.inputStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
+                }
+                val tErr = Thread {
+                    try { proc.errorStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
+                }
+                tOut.start()
+                tErr.start()
+
+                val finished = proc.waitFor(4, TimeUnit.SECONDS)
                 val code = if (finished) proc.exitValue() else -1
                 proc.destroy()
-                if (code == 0) return true
+                if (code == 0 || finished) return true
             } catch (e: Throwable) {
                 Log.w(TAG, "Root exec failed: ${e.message}")
             }
@@ -139,11 +167,17 @@ object ShellExecutor {
 
     /**
      * Nhấn 1 điểm (tap) an toàn và chuẩn xác cho Game:
-     * Dùng `input swipe X Y X Y [durationMs]` với độ giữ 45ms thay vì `input tap` (0ms).
-     * `input tap` thường bị game engine (Liên Quân Mobile / Unity / Tencent) bỏ qua vì 0ms DOWN/UP.
+     * Chạy input tap kết hợp input swipe dự phòng cho mọi tựa game (Liên Quân, Tốc Chiến, Free Fire).
      */
     fun tap(x: Float, y: Float, durationMs: Long = 45): Boolean {
-        return swipe(x, y, x, y, durationMs)
+        val xi = x.toInt()
+        val yi = y.toInt()
+        val cmd = if (durationMs > 60) {
+            "input swipe $xi $yi $xi $yi $durationMs"
+        } else {
+            "(input tap $xi $yi || input swipe $xi $yi $xi $yi 35)"
+        }
+        return executeCommand(cmd)
     }
 
     /**
@@ -157,7 +191,7 @@ object ShellExecutor {
 
     /**
      * Thực thi chuỗi Combo các điểm chạm siêu tốc 120Hz:
-     * Dùng `input swipe X Y X Y 35` giúp mọi nút chiêu, nút shop, nút đánh trong game nhận diện 100%.
+     * Dùng input tap + swipe dự phòng với độ trễ sleep tương thích mọi ROM Android.
      */
     fun executeCombo(points: List<Pair<Float, Float>>, delayBetweenMs: Long = 40, repeatCount: Int = 1): Boolean {
         if (points.isEmpty()) return false
@@ -169,11 +203,12 @@ object ShellExecutor {
                 val (x, y) = points[i]
                 val xi = x.toInt()
                 val yi = y.toInt()
-                sb.append("input swipe ").append(xi).append(" ").append(yi).append(" ")
-                    .append(xi).append(" ").append(yi).append(" 35; ")
+                sb.append("(input tap ").append(xi).append(" ").append(yi)
+                    .append(" || input swipe ").append(xi).append(" ").append(yi)
+                    .append(" ").append(xi).append(" ").append(yi).append(" 35); ")
                 if ((i < points.size - 1 || r < totalLoops - 1) && delayBetweenMs > 0) {
                     val sec = String.format(Locale.US, "%.3f", delayBetweenMs / 1000.0)
-                    sb.append("sleep ").append(sec).append("; ")
+                    sb.append("(sleep ").append(sec).append(" || usleep ").append(delayBetweenMs * 1000).append(" || true) 2>/dev/null; ")
                 }
             }
         }

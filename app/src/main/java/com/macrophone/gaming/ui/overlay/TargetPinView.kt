@@ -135,13 +135,25 @@ class TargetPinView(
     }
 
     /**
-     * Tọa độ tâm điểm chính xác (X, Y) trên màn hình game
+     * Tọa độ tâm điểm chính xác (X, Y) trên màn hình game (chuẩn tuyệt đối cả khi xoay ngang/có tai thỏ)
      */
     fun getCenterCoordinates(): Pair<Float, Float> {
-        val w = if (view.width > 0) view.width else 100
-        val h = if (view.height > 0) view.height else 100
-        val cx = params.x.toFloat() + (w / 2f)
-        val cy = params.y.toFloat() + (h / 2f)
+        val density = context.resources.displayMetrics.density
+        val defaultSize = (44 * density).toInt()
+        val w = if (view.width > 0) view.width else defaultSize
+        val h = if (view.height > 0) view.height else defaultSize
+        val loc = IntArray(2)
+        view.getLocationOnScreen(loc)
+        val cx = if (view.isAttachedToWindow && (loc[0] > 0 || loc[1] > 0)) {
+            loc[0].toFloat() + (w / 2f)
+        } else {
+            params.x.toFloat() + (w / 2f)
+        }
+        val cy = if (view.isAttachedToWindow && (loc[0] > 0 || loc[1] > 0)) {
+            loc[1].toFloat() + (h / 2f)
+        } else {
+            params.y.toFloat() + (h / 2f)
+        }
         return Pair(cx, cy)
     }
 

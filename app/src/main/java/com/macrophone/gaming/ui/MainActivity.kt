@@ -98,6 +98,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
+        // 🚀 1-Chạm MỞ LIÊN QUÂN MOBILE & BẬT GAME TURBO
+        binding.btnLaunchTurboAndGame.setOnClickListener {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "Vui lòng cấp quyền 'Hiển thị trên ứng dụng khác' (Cửa sổ nổi) trước!", Toast.LENGTH_LONG).show()
+                openOverlaySettings()
+                return@setOnClickListener
+            }
+
+            if (!TurboOverlayService.isRunning) {
+                TurboOverlayService.start(this)
+            }
+
+            launchLienQuanGame()
+            binding.root.postDelayed({ refreshStatuses() }, 300)
+        }
+
         // Nút BẬT / TẮT GAME TURBO HUD
         binding.btnToggleTurbo.setOnClickListener {
             if (TurboOverlayService.isRunning) {
@@ -222,6 +238,41 @@ class MainActivity : AppCompatActivity() {
             binding.btnToggleTurbo.text = "⚡ BẬT GAME TURBO HUD"
             binding.btnToggleTurbo.setBackgroundColor(ContextCompat.getColor(this, R.color.cyan_neon))
             binding.btnToggleTurbo.setTextColor(ContextCompat.getColor(this, R.color.bg_dark))
+        }
+    }
+
+    /**
+     * Khởi động Liên Quân Mobile tự động
+     */
+    private fun launchLienQuanGame() {
+        val packages = listOf(
+            "com.garena.game.kgvn",         // Liên Quân Mobile Garena VN
+            "com.levelinfinite.sgameGlobal", // Honor of Kings / AoV Global
+            "com.garena.game.kgtw",         // AoV Đài Loan
+            "com.garena.game.kgth"          // AoV Thái Lan
+        )
+        val pm = packageManager
+        for (pkg in packages) {
+            val intent = pm.getLaunchIntentForPackage(pkg)
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                Toast.makeText(this, "🎮 Đang khởi động Liên Quân Mobile kèm Game Turbo!", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        Toast.makeText(this, "Không tìm thấy game Liên Quân trên máy! Đang mở Google Play...", Toast.LENGTH_LONG).show()
+        try {
+            val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.garena.game.kgvn")).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(playIntent)
+        } catch (_: Throwable) {
+            val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.garena.game.kgvn")).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(webIntent)
         }
     }
 }

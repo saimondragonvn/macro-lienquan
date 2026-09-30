@@ -76,6 +76,20 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- Nút 1-Chạm Mở Liên Quân Mobile Kèm Game Turbo (Xiaomi/RedMagic Turbo Mode) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLaunchTurboAndGame"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/emerald_play"
+                app:cornerRadius="14dp"
+                android:text="🚀 MỞ LIÊN QUÂN MOBILE (TURBO MODE)"
+                android:textColor="@color/bg_dark"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.03" />
+
             <!-- Nút Bật/Tắt Game Turbo To và Nổi Bật Nhất -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnToggleTurbo"
