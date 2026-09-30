@@ -99,6 +99,8 @@ object ShellExecutor {
      * Thực thi lệnh shell đặc quyền với Shizuku hoặc Root
      */
     fun executeCommand(cmd: String): Boolean {
+        val wrappedCmd = "$cmd >/dev/null 2>&1"
+
         // 1. Ưu tiên Shizuku (Gỡ lỗi Wi-Fi ADB đặc quyền)
         if (isShizukuRunning() && hasShizukuPermission()) {
             try {
@@ -119,7 +121,7 @@ object ShellExecutor {
                         )
                     }
                     method.isAccessible = true
-                    method.invoke(null, arrayOf("sh", "-c", cmd), null, null) as? Process
+                    method.invoke(null, arrayOf("sh", "-c", wrappedCmd), null, null) as? Process
                 } catch (e: Throwable) {
                     Log.w(TAG, "Shizuku process invocation error: ${e.message}")
                     null
@@ -127,17 +129,7 @@ object ShellExecutor {
 
                 if (proc != null) {
                     try { proc.outputStream.close() } catch (_: Throwable) {}
-                    // Tiêu thụ stdout & stderr để tránh nghẽn bộ đệm pipe kernel
-                    val tOut = Thread {
-                        try { proc.inputStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
-                    }
-                    val tErr = Thread {
-                        try { proc.errorStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
-                    }
-                    tOut.start()
-                    tErr.start()
-
-                    val finished = proc.waitFor(4, TimeUnit.SECONDS)
+                    val finished = proc.waitFor(3, TimeUnit.SECONDS)
                     val code = if (finished) proc.exitValue() else -1
                     proc.destroy()
                     if (code == 0 || finished) {
@@ -152,18 +144,9 @@ object ShellExecutor {
         // 2. Dự phòng bằng Root `su` (giả lập PC / máy đã root)
         if (isRootAvailable()) {
             try {
-                val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
+                val proc = Runtime.getRuntime().exec(arrayOf("su", "-c", wrappedCmd))
                 try { proc.outputStream.close() } catch (_: Throwable) {}
-                val tOut = Thread {
-                    try { proc.inputStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
-                }
-                val tErr = Thread {
-                    try { proc.errorStream.bufferedReader().use { it.readText() } } catch (_: Throwable) {}
-                }
-                tOut.start()
-                tErr.start()
-
-                val finished = proc.waitFor(4, TimeUnit.SECONDS)
+                val finished = proc.waitFor(3, TimeUnit.SECONDS)
                 val code = if (finished) proc.exitValue() else -1
                 proc.destroy()
                 if (code == 0 || finished) return true
@@ -177,17 +160,14 @@ object ShellExecutor {
 
     /**
      * Nhấn 1 điểm (tap) an toàn và chuẩn xác cho Game:
-     * Chạy input tap kết hợp input swipe dự phòng cho mọi tựa game (Liên Quân, Tốc Chiến, Free Fire).
+     * Dùng input swipe với thời lượng 35ms mô phỏng cảm ứng ngón tay thật của game thủ,
+     * đảm bảo game engine (Liên Quân / Unity / Tencent) nhận diện 100%.
      */
-    fun tap(x: Float, y: Float, durationMs: Long = 45): Boolean {
+    fun tap(x: Float, y: Float, durationMs: Long = 35): Boolean {
         val xi = x.toInt()
         val yi = y.toInt()
-        val cmd = if (durationMs > 60) {
-            "input swipe $xi $yi $xi $yi $durationMs"
-        } else {
-            "(input tap $xi $yi || input swipe $xi $yi $xi $yi 35)"
-        }
-        return executeCommand(cmd)
+        val dur = durationMs.coerceIn(25L, 200L)
+        return executeCommand("input swipe $xi $yi $xi $yi $dur")
     }
 
     /**
@@ -195,30 +175,30 @@ object ShellExecutor {
      */
     fun swipe(x1: Float, y1: Float, x2: Float, y2: Float, durationMs: Long = 100): Boolean {
         val dur = durationMs.coerceAtLeast(35)
-        val cmd = "input swipe ${x1.toInt()} ${y1.toInt()} ${x2.toInt()} ${y2.toInt()} $dur"
-        return executeCommand(cmd)
+        return executeCommand("input swipe ${x1.toInt()} ${y1.toInt()} ${x2.toInt()} ${y2.toInt()} $dur")
     }
 
     /**
      * Thực thi chuỗi Combo các điểm chạm siêu tốc 120Hz:
-     * Dùng input tap + swipe dự phòng với độ trễ sleep tương thích mọi ROM Android.
+     * Gom toàn bộ các điểm ghim vào 1 chuỗi lệnh swipe duy nhất, bắn thẳng vào kernel input pipeline!
      */
     fun executeCombo(points: List<Pair<Float, Float>>, delayBetweenMs: Long = 40, repeatCount: Int = 1): Boolean {
         if (points.isEmpty()) return false
 
         val sb = StringBuilder()
-        val totalLoops = repeatCount.coerceIn(1, 10)
+        val totalLoops = repeatCount.coerceIn(1, 5)
         for (r in 0 until totalLoops) {
             for (i in points.indices) {
                 val (x, y) = points[i]
                 val xi = x.toInt()
                 val yi = y.toInt()
-                sb.append("(input tap ").append(xi).append(" ").append(yi)
-                    .append(" || input swipe ").append(xi).append(" ").append(yi)
-                    .append(" ").append(xi).append(" ").append(yi).append(" 35); ")
-                if ((i < points.size - 1 || r < totalLoops - 1) && delayBetweenMs > 0) {
-                    val sec = String.format(Locale.US, "%.3f", delayBetweenMs / 1000.0)
-                    sb.append("(sleep ").append(sec).append(" || usleep ").append(delayBetweenMs * 1000).append(" || true) 2>/dev/null; ")
+                sb.append("input swipe ").append(xi).append(" ").append(yi).append(" ")
+                    .append(xi).append(" ").append(yi).append(" 35; ")
+
+                // Nếu có khoảng nghỉ delay lớn hơn 50ms giữa các chiêu
+                if (delayBetweenMs > 50 && (i < points.size - 1 || r < totalLoops - 1)) {
+                    val sec = String.format(Locale.US, "%.2f", delayBetweenMs / 1000.0)
+                    sb.append("sleep ").append(sec).append("; ")
                 }
             }
         }

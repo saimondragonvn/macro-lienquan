@@ -11,8 +11,8 @@ android {
         applicationId = "com.macrophone.gaming"
         minSdk = 26
         targetSdk = 34
-        versionCode = 16
-        versionName = "2.0.4"
+        versionCode = 17
+        versionName = "2.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

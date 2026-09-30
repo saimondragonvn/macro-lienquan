@@ -26,12 +26,10 @@ import com.macrophone.gaming.R
 import com.macrophone.gaming.core.ShellExecutor
 import com.macrophone.gaming.data.MacroConfigStorage
 import com.macrophone.gaming.data.SavedMacroTrigger
-import com.macrophone.gaming.data.model.MacroAction
 import com.macrophone.gaming.data.model.MacroState
-import com.macrophone.gaming.data.model.MacroType
+import com.macrophone.gaming.ui.MainActivity
 import com.macrophone.gaming.ui.overlay.FloatingTriggerView
 import com.macrophone.gaming.ui.overlay.TargetPinView
-import com.macrophone.gaming.ui.overlay.TouchRecorderCanvas
 import com.macrophone.gaming.util.NotificationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,16 +39,15 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 /**
- * Service Cửa Sổ Nổi Game Turbo (Kiến trúc Mới - Tối giản, Ổn định 100%):
- * - Tự động nhận diện xoay màn hình (Landscape game Liên Quân Mobile vs Portrait).
- * - Cung cấp Tab Nổi mép màn hình [⚡ TURBO] thu gọn/mở rộng mượt mà.
- * - Hỗ trợ Gán Điểm Ghim Chiêu (Target Pins ①, ②, ③) và tạo Nút Tròn Turbo độc lập.
- * - Hỗ trợ Ghi thao tác trực tiếp và chuyển đổi thành Nút Tròn Turbo.
- * - Quản lý danh sách từng nút macro đã gán và cho phép xóa từng nút độc lập.
- * - Lưu trữ cấu hình vĩnh viễn (Persistent Memory) qua MacroConfigStorage.
- * - Tùy chỉnh độ mờ (Opacity) toàn cục và riêng từng nút (30%, 50%, 80%, 100%).
+ * Service Cửa Sổ Nổi Game Turbo (Kiến trúc v2.1.0 - 100% Tương tác Game, Chống Spam, Siêu Ổn Định):
+ * - Hoàn toàn KHÔNG chặn cảm ứng game, cho phép vừa chơi vừa gán vị trí chiêu.
+ * - Tab Nổi mép màn hình [⚡ TURBO] thu gọn/mở rộng mượt mà.
+ * - Hỗ trợ Gán Điểm Ghim Chiêu (Target Pins ①, ②, ③) và chạm thử trực tiếp vào game.
+ * - Tạo Nút Combo Nổi [⚡ C1], [⚡ C2] độc lập, tự động lưu vĩnh viễn vào bộ nhớ.
+ * - Quản lý từng nút, xóa từng nút hoặc xóa toàn bộ nút 1-chạm (chống spam nút).
+ * - Hiển thị trạng thái Động cơ Shizuku với đèn LED thời gian thực.
  * - Khởi động nhanh Liên Quân Mobile 1-chạm (Turbo Mode).
- * - Thực thi trực tiếp qua ShellExecutor (Shizuku/Root) không cần Trợ năng.
+ * - Thực thi trực tiếp qua ShellExecutor (Shizuku/Root) với tốc độ 120Hz.
  */
 class TurboOverlayService : Service() {
 
@@ -65,18 +62,16 @@ class TurboOverlayService : Service() {
     private var dockView: View? = null
     private lateinit var dockParams: WindowManager.LayoutParams
 
-    // Danh sách các Điểm Ghim Chiêu đang hiển thị
+    // Danh sách các Điểm Ghim Chiêu đang hiển thị trên màn hình
     private val targetPins = mutableListOf<TargetPinView>()
 
     // Danh sách các Nút Tròn Turbo độc lập trên màn hình
     private val triggerButtons = mutableListOf<FloatingTriggerView>()
 
-    // View Ghi thao tác trực tiếp
-    private var recordOverlayView: View? = null
-
     private var selectedSpeedDelay: Long = 30
     private var isOverlayHidden = false
 
+    private var tvEngineStatusBadge: TextView? = null
     private var btnGlobalOpacity30: TextView? = null
     private var btnGlobalOpacity50: TextView? = null
     private var btnGlobalOpacity80: TextView? = null
@@ -124,13 +119,13 @@ class TurboOverlayService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
+        updateEngineBadge()
         return START_STICKY
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         updateScreenDimensions()
-        // Giữ dock trong tầm màn hình khi xoay ngang/dọc
         dockParams.x = dockParams.x.coerceIn(0, screenWidth - 100)
         dockParams.y = dockParams.y.coerceIn(0, screenHeight - 100)
         updateViewSafely(dockView, dockParams)
@@ -142,7 +137,6 @@ class TurboOverlayService : Service() {
 
         clearAllTargetPins()
         clearAllTriggerButtons()
-        closeRecordOverlay()
         removeViewSafely(dockView)
 
         super.onDestroy()
@@ -225,7 +219,7 @@ class TurboOverlayService : Service() {
             windowManager.addView(dockView, dockParams)
         } catch (e: Throwable) {
             Log.e("TurboOverlayService", "initDockView error: ${e.message}", e)
-            Toast.makeText(this, "Chưa cấp đủ quyền 'Cửa sổ thả nổi' hoặc 'Hiển thị trên ứng dụng khác'!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Chưa cấp quyền 'Hiển thị trên ứng dụng khác'!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -330,6 +324,17 @@ class TurboOverlayService : Service() {
         layoutCollapsed?.alpha = 0.85f
     }
 
+    private fun updateEngineBadge() {
+        tvEngineStatusBadge = dockView?.findViewById(R.id.tvEngineStatusBadge)
+        if (ShellExecutor.isEngineReady()) {
+            tvEngineStatusBadge?.text = "🟢 Shizuku 120Hz: SẴN SÀNG"
+            tvEngineStatusBadge?.setTextColor(ContextCompat.getColor(this, R.color.emerald_play))
+        } else {
+            tvEngineStatusBadge?.text = "🔴 Shizuku: CHƯA CẤP (BẤM ĐÂY)"
+            tvEngineStatusBadge?.setTextColor(ContextCompat.getColor(this, R.color.amber_warning))
+        }
+    }
+
     private fun setupDockButtons(root: View) {
         val layoutCollapsed = root.findViewById<View>(R.id.layoutCollapsed)
         val layoutExpanded = root.findViewById<View>(R.id.layoutExpanded)
@@ -337,6 +342,7 @@ class TurboOverlayService : Service() {
         val btnBottomCollapse = root.findViewById<View>(R.id.btnBottomCollapse)
 
         val btnLaunchGameFromDock = root.findViewById<View>(R.id.btnLaunchGameFromDock)
+        tvEngineStatusBadge = root.findViewById(R.id.tvEngineStatusBadge)
 
         val btnAddPoint = root.findViewById<View>(R.id.btnAddPoint)
         val btnRemovePoint = root.findViewById<View>(R.id.btnRemovePoint)
@@ -353,8 +359,8 @@ class TurboOverlayService : Service() {
         btnGlobalOpacity100 = root.findViewById(R.id.btnGlobalOpacity100)
 
         val btnRefreshTriggers = root.findViewById<View>(R.id.btnRefreshTriggers)
+        val btnClearAllTriggers = root.findViewById<View>(R.id.btnClearAllTriggers)
 
-        val btnStartRecord = root.findViewById<View>(R.id.btnStartRecord)
         val btnToggleVisibility = root.findViewById<View>(R.id.btnToggleVisibility)
         val btnClearPoints = root.findViewById<View>(R.id.btnClearPoints)
         val btnCloseService = root.findViewById<View>(R.id.btnCloseService)
@@ -362,6 +368,15 @@ class TurboOverlayService : Service() {
         // 0. Mở Liên Quân Mobile nhanh từ Game Turbo Dock
         btnLaunchGameFromDock?.setOnClickListener {
             launchLienQuanGame()
+            collapseDock()
+        }
+
+        // Bấm vào Đèn LED trạng thái Shizuku để mở màn hình cấp quyền
+        tvEngineStatusBadge?.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
             collapseDock()
         }
 
@@ -375,16 +390,13 @@ class TurboOverlayService : Service() {
             }
             layoutCollapsed.visibility = View.GONE
             layoutExpanded.visibility = View.VISIBLE
+            updateEngineBadge()
             renderAssignedTriggersList()
         }
 
         // 2. Thu gọn về mép màn hình
-        btnCollapseDock?.setOnClickListener {
-            collapseDock()
-        }
-        btnBottomCollapse?.setOnClickListener {
-            collapseDock()
-        }
+        btnCollapseDock?.setOnClickListener { collapseDock() }
+        btnBottomCollapse?.setOnClickListener { collapseDock() }
 
         // 3. Tùy chọn tốc độ xả combo
         val updateSpeedUI = {
@@ -446,9 +458,9 @@ class TurboOverlayService : Service() {
             Toast.makeText(this, "Đã làm mới danh sách nút macro", Toast.LENGTH_SHORT).show()
         }
 
-        // 10. 🔴 BẮT ĐẦU GHI THAO TÁC TRỰC TIẾP
-        btnStartRecord?.setOnClickListener {
-            openRecordOverlay()
+        // Xóa toàn bộ nút đã tạo (chống spam nút)
+        btnClearAllTriggers?.setOnClickListener {
+            clearAllMacroTriggers()
         }
 
         // 11. 👁️ Ẩn/Hiện toàn bộ nút
@@ -490,8 +502,7 @@ class TurboOverlayService : Service() {
             }
         }
 
-        // Nếu chưa cài bản nào, gợi ý mở Google Play
-        Toast.makeText(this, "Không tìm thấy game Liên Quân trên máy! Đang mở Google Play...", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Đang mở Google Play...", Toast.LENGTH_LONG).show()
         try {
             val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.garena.game.kgvn")).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -557,7 +568,7 @@ class TurboOverlayService : Service() {
         val savedList = configStorage.loadAllTriggers()
         if (savedList.isEmpty()) return
 
-        savedList.forEach { saved ->
+        savedList.take(5).forEach { saved ->
             if (saved.points.isNotEmpty()) {
                 val posX = saved.x.coerceIn(16, (screenWidth - 120).coerceAtLeast(16))
                 val posY = saved.y.coerceIn(50, (screenHeight - 120).coerceAtLeast(50))
@@ -605,7 +616,7 @@ class TurboOverlayService : Service() {
             opacityPercent = opacity,
             onTrigger = { pts, d, r ->
                 if (!ShellExecutor.isEngineReady()) {
-                    Toast.makeText(this@TurboOverlayService, "⚠️ Động cơ Shizuku chưa bật! Vui lòng mở app cấp quyền Shizuku để tự động chạm.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@TurboOverlayService, "⚠️ Động cơ Shizuku chưa bật! Hãy mở app cấp quyền Shizuku.", Toast.LENGTH_LONG).show()
                 } else {
                     scope.launch(Dispatchers.IO) {
                         val ok = ShellExecutor.executeCombo(pts, delayBetweenMs = d, repeatCount = r)
@@ -624,7 +635,7 @@ class TurboOverlayService : Service() {
                 configStorage.deleteTrigger(triggerBtn.id)
                 restorePinsFromCombo(pts)
                 renderAssignedTriggersList()
-                Toast.makeText(this@TurboOverlayService, "🎯 Đã hiện lại các điểm ghim trên game!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@TurboOverlayService, "🎯 Đã bung ${pts.size} điểm ghim lên game! Bạn hãy kéo đặt vào vị trí chiêu.", Toast.LENGTH_SHORT).show()
             },
             onPositionChanged = { btn ->
                 configStorage.upsertTrigger(
@@ -718,6 +729,16 @@ class TurboOverlayService : Service() {
         }
     }
 
+    /**
+     * Xóa toàn bộ nút combo đã tạo khỏi màn hình và bộ nhớ (chống spam nút)
+     */
+    private fun clearAllMacroTriggers() {
+        clearAllTriggerButtons()
+        configStorage.clearAllTriggers()
+        renderAssignedTriggersList()
+        Toast.makeText(this, "🗑️ Đã xóa toàn bộ nút Macro đã tạo!", Toast.LENGTH_SHORT).show()
+    }
+
     private fun toggleOverlayVisibility() {
         isOverlayHidden = !isOverlayHidden
         val layoutCollapsed = dockView?.findViewById<View>(R.id.layoutCollapsed)
@@ -729,7 +750,7 @@ class TurboOverlayService : Service() {
             layoutExpanded?.visibility = View.GONE
             layoutCollapsed?.visibility = View.VISIBLE
             layoutCollapsed?.alpha = 0.35f
-            Toast.makeText(this, "Đã ẩn toàn bộ nút! Chạm vào mép màn hình để hiện lại.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Đã ẩn toàn bộ nút! Chạm mép màn hình để hiện lại.", Toast.LENGTH_SHORT).show()
         } else {
             targetPins.forEach { it.view.visibility = View.VISIBLE }
             triggerButtons.forEach { it.view.visibility = View.VISIBLE }
@@ -739,9 +760,14 @@ class TurboOverlayService : Service() {
     }
 
     private fun addNewTargetPin(x: Int? = null, y: Int? = null) {
+        if (targetPins.size >= 10) {
+            Toast.makeText(this, "Tối đa 10 điểm ghim!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val index = targetPins.size + 1
-        val initialX = x ?: ((screenWidth / 2) - 80 + (targetPins.size * 30))
-        val initialY = y ?: ((screenHeight / 2) - 100 + (targetPins.size * 40))
+        val initialX = x ?: ((screenWidth / 2) - 80 + (targetPins.size * 35))
+        val initialY = y ?: ((screenHeight / 2) - 80 + (targetPins.size * 35))
 
         val pin = TargetPinView(
             context = this,
@@ -755,20 +781,15 @@ class TurboOverlayService : Service() {
                     Toast.makeText(this@TurboOverlayService, "⚠️ Động cơ Shizuku chưa bật! Hãy mở app cấp quyền Shizuku.", Toast.LENGTH_LONG).show()
                 } else {
                     scope.launch(Dispatchers.IO) {
-                        val ok = ShellExecutor.tap(cx, cy, 45)
-                        if (!ok) {
-                            scope.launch(Dispatchers.Main) {
-                                Toast.makeText(this@TurboOverlayService, "⚠️ Không thể click! Kiểm tra lại Shizuku.", Toast.LENGTH_SHORT).show()
-                            }
-                        }
+                        ShellExecutor.tap(cx, cy, 35)
                     }
-                    Toast.makeText(this@TurboOverlayService, "▶ Đã thử kích hoạt Điểm #${p.index} vào game!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TurboOverlayService, "▶ Đã click Điểm #${p.index} vào game!", Toast.LENGTH_SHORT).show()
                 }
             }
         )
         targetPins.add(pin)
 
-        Toast.makeText(this, "Đã thêm Điểm #$index. Kéo đặt lên chiêu và chạm vào điểm để test thử!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Đã thêm Điểm #$index. Kéo đặt lên nút Shop/Chiêu trong game!", Toast.LENGTH_SHORT).show()
     }
 
     private fun removeLastTargetPin() {
@@ -807,7 +828,7 @@ class TurboOverlayService : Service() {
     }
 
     /**
-     * Tạo Nút Tròn Kích Hoạt Combo Độc Lập
+     * Tạo Nút Tròn Kích Hoạt Combo Độc Lập từ các điểm ghim
      */
     private fun createTriggerButtonFromPins() {
         if (targetPins.isEmpty()) {
@@ -815,10 +836,16 @@ class TurboOverlayService : Service() {
             return
         }
 
+        if (triggerButtons.size >= 5) {
+            Toast.makeText(this, "Đã đạt tối đa 5 nút combo! Hãy xóa bớt nút cũ trước.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val points = targetPins.map { it.getCenterCoordinates() }
         val name = "C${triggerButtons.size + 1}"
-        val btnX = (screenWidth - 200).coerceAtLeast(60)
-        val btnY = (screenHeight / 2) - 80
+        val offset = (triggerButtons.size * 65)
+        val btnX = (screenWidth - 180).coerceAtLeast(60)
+        val btnY = ((screenHeight / 3) + offset).coerceIn(100, (screenHeight - 160).coerceAtLeast(100))
 
         val triggerBtn = createFloatingTriggerInstance(
             id = java.util.UUID.randomUUID().toString(),
@@ -846,10 +873,11 @@ class TurboOverlayService : Service() {
             )
         )
 
+        // Tự động dọn dẹp toàn bộ điểm ghim và thu gọn dock
         clearAllTargetPins()
         collapseDock()
         renderAssignedTriggersList()
-        Toast.makeText(this, "✅ Đã tạo & tự lưu nút [$name]! Chạm nút để xả combo, nhấn giữ để chỉnh sửa.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "✅ Đã tạo nút [$name]! Chạm nút để xả combo, nhấn giữ để chỉnh sửa.", Toast.LENGTH_LONG).show()
     }
 
     private fun restorePinsFromCombo(points: List<Pair<Float, Float>>) {
@@ -868,133 +896,6 @@ class TurboOverlayService : Service() {
     private fun clearAllTriggerButtons() {
         triggerButtons.forEach { it.destroy() }
         triggerButtons.clear()
-    }
-
-    /**
-     * Ghi thao tác màn hình trực tiếp
-     */
-    private fun openRecordOverlay() {
-        if (recordOverlayView != null) return
-
-        try {
-            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
-            val inflater = LayoutInflater.from(themedContext)
-            recordOverlayView = inflater.inflate(R.layout.view_touch_recorder, null)
-
-            val params = WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                        WindowManager.LayoutParams.FLAG_SPLIT_TOUCH or
-                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                PixelFormat.TRANSLUCENT
-            )
-
-            val canvas = recordOverlayView!!.findViewById<TouchRecorderCanvas>(R.id.touchCanvas)
-            val tvCount = recordOverlayView!!.findViewById<TextView>(R.id.tvPointCount)
-            val btnUndo = recordOverlayView!!.findViewById<TextView>(R.id.btnUndoRecord)
-            val btnCancel = recordOverlayView!!.findViewById<TextView>(R.id.btnCancelRecord)
-            val btnStop = recordOverlayView!!.findViewById<TextView>(R.id.btnStopRecord)
-
-            canvas.onCountChanged = { count ->
-                tvCount.text = "Đã ghi: $count thao tác"
-            }
-
-            // Chuyển tiếp ngay lập tức thao tác chạm/vuốt vào game trong thời gian thực!
-            // Nhờ đó khi bấm vào shop thì shop mở thật, bấm chiêu thì chiêu tung thật!
-            canvas.onActionRecorded = { action ->
-                scope.launch(Dispatchers.IO) {
-                    when (action.type) {
-                        MacroType.TAP, MacroType.HOLD -> {
-                            val pt = action.points.firstOrNull() ?: return@launch
-                            val dur = if (action.type == MacroType.HOLD) {
-                                action.durationMs.coerceIn(50L, 1000L)
-                            } else {
-                                45L
-                            }
-                            ShellExecutor.tap(pt.x, pt.y, dur)
-                        }
-                        MacroType.SWIPE -> {
-                            val start = action.points.firstOrNull() ?: return@launch
-                            val end = action.points.lastOrNull() ?: return@launch
-                            val dur = action.durationMs.coerceIn(50L, 500L)
-                            ShellExecutor.swipe(start.x, start.y, end.x, end.y, dur)
-                        }
-                    }
-                }
-            }
-
-            btnUndo?.setOnClickListener {
-                canvas.undoLast()
-            }
-
-            btnCancel?.setOnClickListener {
-                closeRecordOverlay()
-            }
-
-            btnStop?.setOnClickListener {
-                val actions = canvas.getRecordedActions()
-                if (actions.isEmpty()) {
-                    Toast.makeText(this, "Chưa ghi thao tác nào! Hãy chạm trên màn hình.", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-
-                closeRecordOverlay()
-
-                val points = actions.mapNotNull { act ->
-                    act.points.firstOrNull()?.let { Pair(it.x, it.y) }
-                }
-
-                val name = "R${triggerButtons.size + 1}"
-                val btnX = (screenWidth - 200).coerceAtLeast(60)
-                val btnY = (screenHeight / 2) - 80
-
-                val triggerBtn = createFloatingTriggerInstance(
-                    id = java.util.UUID.randomUUID().toString(),
-                    name = name,
-                    points = points,
-                    posX = btnX,
-                    posY = btnY,
-                    delay = selectedSpeedDelay,
-                    repeat = 1,
-                    opacity = configStorage.globalOpacity
-                )
-                triggerButtons.add(triggerBtn)
-
-                // Lưu cấu hình vào bộ nhớ
-                configStorage.upsertTrigger(
-                    SavedMacroTrigger(
-                        id = triggerBtn.id,
-                        name = name,
-                        x = btnX,
-                        y = btnY,
-                        delayBetweenMs = selectedSpeedDelay,
-                        repeatCount = 1,
-                        opacityPercent = configStorage.globalOpacity,
-                        points = points
-                    )
-                )
-
-                renderAssignedTriggersList()
-                Toast.makeText(this, "✅ Đã tạo & tự lưu nút ghi [$name]! Chạm nút để xả combo, nhấn giữ để chỉnh sửa.", Toast.LENGTH_LONG).show()
-            }
-
-            dockView?.visibility = View.GONE
-            windowManager.addView(recordOverlayView, params)
-        } catch (e: Throwable) {
-            closeRecordOverlay()
-            Toast.makeText(this, "Lỗi mở giao diện ghi: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun closeRecordOverlay() {
-        if (recordOverlayView != null) {
-            removeViewSafely(recordOverlayView)
-            recordOverlayView = null
-        }
-        dockView?.visibility = View.VISIBLE
     }
 
     private fun removeViewSafely(view: View?) {

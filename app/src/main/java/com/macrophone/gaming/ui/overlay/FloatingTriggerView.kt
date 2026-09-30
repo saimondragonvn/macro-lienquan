@@ -120,8 +120,9 @@ class FloatingTriggerView(
                             val curY = event.getY(pointerIndex) + params.y
                             val dx = (curX - touchStartX).toInt()
                             val dy = (curY - touchStartY).toInt()
+                            val dragThreshold = (18 * context.resources.displayMetrics.density).toInt()
 
-                            if (abs(dx) > 10 || abs(dy) > 10) {
+                            if (abs(dx) > dragThreshold || abs(dy) > dragThreshold) {
                                 isDragging = true
                                 params.x = startX + dx
                                 params.y = startY + dy
@@ -140,16 +141,17 @@ class FloatingTriggerView(
                         val pointerId = event.getPointerId(actionIndex)
                         if (activePointerId == MotionEvent.INVALID_POINTER_ID || pointerId == activePointerId) {
                             val duration = System.currentTimeMillis() - downTime
-                            if (isDragging) {
-                                onPositionChanged?.invoke(this@FloatingTriggerView)
-                            } else if (duration < 450) {
-                                // Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME!
+                            if (!isDragging && duration < 350) {
+                                // 1. Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME NGAY TỨC THÌ!
                                 flashFeedback()
                                 onTrigger(points, delayBetweenMs, repeatCount)
-                            } else {
-                                // Nhấn giữ lâu -> Mở Menu Cài Đặt Combo!
+                            } else if (duration >= 450 && !isDragging) {
+                                // 2. Nhấn giữ lâu mà không kéo -> Mở Menu Cài Đặt Combo!
                                 vibrate(60)
                                 showConfigDialog()
+                            } else if (isDragging) {
+                                // 3. Kéo thả di chuyển vị trí nút
+                                onPositionChanged?.invoke(this@FloatingTriggerView)
                             }
                             activePointerId = MotionEvent.INVALID_POINTER_ID
                         }

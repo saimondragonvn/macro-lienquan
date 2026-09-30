@@ -49,7 +49,7 @@
     <!-- 2. Trạng thái MỞ RỘNG (Game Turbo HUD Control Center) -->
     <LinearLayout
         android:id="@+id/layoutExpanded"
-        android:layout_width="300dp"
+        android:layout_width="310dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_dialog_card"
         android:orientation="vertical"
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="6dp">
 
             <ImageView
                 android:id="@+id/ivExpandedDrag"
@@ -89,12 +89,15 @@
                     android:textStyle="bold"
                     android:letterSpacing="0.04" />
 
+                <!-- Đèn LED trạng thái Shizuku tương tác được -->
                 <TextView
+                    android:id="@+id/tvEngineStatusBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="120Hz Ultra Combo • Memory Save"
+                    android:text="🟢 Shizuku 120Hz: SẴN SÀNG"
                     android:textColor="@color/emerald_play"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
@@ -135,7 +138,7 @@
                     android:layout_height="36dp"
                     android:background="@drawable/bg_turbo_btn_primary"
                     android:gravity="center"
-                    android:text="🚀 MỞ LIÊN QUÂN MOBILE NGAY"
+                    android:text="🚀 MỞ LIÊN QUÂN MOBILE (TURBO MODE)"
                     android:textColor="@color/bg_dark"
                     android:textSize="11sp"
                     android:textStyle="bold"
@@ -145,7 +148,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🎯 GÁN VỊ TRÍ CHIÊU (COMBO GHIM)"
+                    android:text="🎯 GÁN VỊ TRÍ CHIÊU / SHOP (COMBO GHIM)"
                     android:textColor="@color/cyan_neon"
                     android:textSize="11sp"
                     android:textStyle="bold" />
@@ -154,7 +157,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Kéo các điểm (1, 2, 3...) đặt lên nút chiêu trong game:"
+                    android:text="💡 Mở Shop/Chiêu trong game, kéo điểm (1, 2, 3...) vào nút muốn bấm. Chạm vào điểm để click thử ngay vào game!"
                     android:textColor="@color/text_secondary"
                     android:textSize="10sp" />
 
@@ -194,10 +197,10 @@
                         android:id="@+id/btnPlayTest"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.9"
+                        android:layout_weight="1.0"
                         android:background="@drawable/bg_turbo_btn_secondary"
                         android:gravity="center"
-                        android:text="▶ Thử"
+                        android:text="▶ Thử Click"
                         android:textColor="@color/emerald_play"
                         android:textSize="11sp"
                         android:textStyle="bold" />
@@ -277,20 +280,13 @@
                     android:layout_marginBottom="8dp" />
 
                 <!-- Phần 2: ĐỘ MỜ CỦA NÚT TRÊN MÀN HÌNH (OPACITY) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="👻 ĐỘ MỜ NÚT (TRONG SUỐT):"
-                        android:textColor="@color/cyan_neon"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    android:text="👻 ĐỘ MỜ NÚT (TRONG SUỐT):"
+                    android:textColor="@color/cyan_neon"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -397,6 +393,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
+                <!-- Nút Xóa Tất Cả Nút Macro (Dọn dẹp nhanh, chống spam nút) -->
+                <TextView
+                    android:id="@+id/btnClearAllTriggers"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_turbo_btn_secondary"
+                    android:gravity="center"
+                    android:text="🗑️ XÓA TOÀN BỘ NÚT COMBO ĐÃ TẠO"
+                    android:textColor="@color/crimson_stop"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -404,36 +413,31 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp" />
 
-                <!-- Phần 4: GHI THAO TÁC TRỰC TIẾP (MACRO RECORDER) -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🔴 GHI HÌNH THAO TÁC TAY TRỰC TIẾP"
-                    android:textColor="@color/crimson_stop"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Chạm mở shop/mua đồ trong lúc ghi sẽ tự động phản hồi vào game:"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="10sp" />
-
-                <!-- Nút BẮT ĐẦU GHI (START) Cực kỳ to và rõ ràng -->
-                <TextView
-                    android:id="@+id/btnStartRecord"
+                <!-- Phần 4: HƯỚNG DẪN ĐỔI ĐỒ NHANH LIÊN QUÂN -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="38dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/bg_turbo_btn_danger"
-                    android:gravity="center"
-                    android:text="🔴 BẮT ĐẦU GHI (START)"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.03" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_turbo_btn_secondary"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚡ CÁCH TẠO MACRO ĐỔI ĐỒ 0.1s:"
+                        android:textColor="@color/amber_warning"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="① Mở Shop trong game Liên Quân\n② Bấm [+ Ghim Điểm] kéo ① vào nút 'Bán'\n③ Bấm [+ Ghim Điểm] kéo ② vào 'Giáp Hộ Mệnh'\n④ Bấm [+ Ghim Điểm] kéo ③ vào nút 'Mua'\n⑤ Bấm [⚡ TẠO NÚT BẤM TURBO] là xong!"
+                        android:textColor="@color/text_primary"
+                        android:textSize="9.5sp"
+                        android:lineSpacingExtra="2dp" />
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"

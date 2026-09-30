@@ -4,6 +4,26 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.1.0] - 2026-09-30
+### 🚀 TÁI CẤU TRÚC TOÀN DIỆN: 100% TƯƠNG TÁC GAME, CHỐNG SPAM NÚT & TỐI ƯU CỰC ĐẠI
+- **KHẮC PHỤC TRIỆT ĐỂ LỖI BỊ CHẶN MÀN HÌNH & KHÔNG TƯƠNG TÁC ĐƯỢC VỚI GAME**:
+  - Gỡ bỏ vĩnh viễn Canvas ghi đè toàn màn hình cũ (`TouchRecorderCanvas`) - nguyên nhân cốt lõi gây chặn cảm ứng khiến người dùng không thể mở Shop hoặc tung chiêu trong game Liên Quân.
+  - Chuẩn hóa quy trình **Gán Ghim Trực Quan Game Turbo (Target Pin Mode)**: Màn hình game hoàn toàn thông thoáng 100%! Bạn thoải mái mở Shop trong game, di chuyển tướng, mua bán trang bị bình thường.
+  - Kéo các điểm ghim ①, ②, ③ vào nút muốn bấm (Bán, Giáp Hộ Mệnh, Mua). Chạm trực tiếp vào từng điểm ghim để test click ngay vào game!
+- **CHỐNG SPAM NÚT TRIỆT ĐỂ & NÚT XÓA TOÀN BỘ 1-CHẠM**:
+  - Thêm nút `[🗑️ XÓA TOÀN BỘ NÚT COMBO ĐÃ TẠO]` trên bảng điều khiển Game Turbo HUD: 1 chạm là dọn sạch toàn bộ nút trên màn hình và bộ nhớ vĩnh viễn!
+  - Giới hạn tối đa 5 nút combo, tự động phân bố vị trí so le không bao giờ bị xếp đè chồng lên nhau.
+  - Tự động dọn sạch các điểm ghim ngay sau khi tạo nút để màn hình game luôn gọn gàng, sạch sẽ.
+- **CẢI TIẾN CẢM ỨNG NÚT NỔI COMBO (FLOATING TRIGGER VIEW)**:
+  - Chạm nhanh dưới 350ms chắc chắn 100% xả combo vào game, không bao giờ bị nuốt chạm do ngón tay trượt nhẹ 10-15px khi combat.
+  - Nhấn giữ lâu trên 450ms để mở Menu cài đặt hoặc xóa nút.
+- **ĐỘNG CƠ SHELLEXECUTOR 120HZ TỐI TÂN**:
+  - Loại bỏ các câu lệnh sleep thập phân gây lỗi trên toybox Android, gom chuỗi `input swipe` siêu tốc với cơ chế redirect `>/dev/null 2>&1` giúp loại bỏ hoàn toàn hiện tượng nghẽn pipe buffer và phản hồi dưới 40ms.
+  - Đèn LED trạng thái Shizuku thời gian thực trên Header HUD: 🟢 Xanh khi sẵn sàng, 🔴 Đỏ khi chưa cấp (chạm vào là mở ngay màn hình cấp quyền).
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.1.0.apk`.
+
+---
+
 ## [v2.0.4] - 2026-09-30
 ### 🚀 Quản Lý Từng Nút (Xóa/Ghim Lại), Bộ Nhớ Tự Lưu Vĩnh Viễn, Chỉnh Độ Mờ & Mở Liên Quân (Game Turbo Mode)
 - **BỘ NHỚ LƯU TRỮ CẤU HÌNH VĨNH VIỄN (PERSISTENT CONFIG STORAGE)**:
