@@ -195,6 +195,59 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Độ trễ delay giữa các chiêu -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="⏱️ Độ trễ (Delay ghim điểm):"
+        android:textColor="@color/text_primary"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnOptDelayFast"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_turbo_btn_primary"
+            android:gravity="center"
+            android:text="30ms"
+            android:textColor="@color/bg_dark"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnOptDelayNormal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="60ms"
+            android:textColor="@color/text_primary"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/btnOptDelaySlow"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_turbo_btn_secondary"
+            android:gravity="center"
+            android:text="120ms"
+            android:textColor="@color/text_primary"
+            android:textSize="10sp" />
+    </LinearLayout>
+
     <!-- Số lần lặp lại combo -->
     <TextView
         android:layout_width="wrap_content"
