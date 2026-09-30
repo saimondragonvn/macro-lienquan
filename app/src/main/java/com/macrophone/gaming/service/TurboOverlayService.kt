@@ -190,7 +190,8 @@ class TurboOverlayService : Service() {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = Gravity.TOP or Gravity.START
@@ -198,6 +199,7 @@ class TurboOverlayService : Service() {
                 y = (screenHeight / 3).coerceAtLeast(100)
             }
 
+            (dockView as? android.view.ViewGroup)?.isMotionEventSplittingEnabled = true
             setupDockTouchAndDrag(dockView!!)
             setupDockButtons(dockView!!)
 
@@ -223,43 +225,64 @@ class TurboOverlayService : Service() {
                 private var touchY = 0f
                 private var isDragging = false
                 private var downTime = 0L
+                private var activePointerId = MotionEvent.INVALID_POINTER_ID
 
                 override fun onTouch(v: View, event: MotionEvent): Boolean {
-                    when (event.action) {
-                        MotionEvent.ACTION_DOWN -> {
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+                            val actionIndex = event.actionIndex
+                            activePointerId = event.getPointerId(actionIndex)
                             startX = dockParams.x
                             startY = dockParams.y
-                            touchX = event.rawX
-                            touchY = event.rawY
+                            touchX = event.getX(actionIndex) + dockParams.x
+                            touchY = event.getY(actionIndex) + dockParams.y
                             isDragging = false
                             downTime = System.currentTimeMillis()
                             return true
                         }
 
                         MotionEvent.ACTION_MOVE -> {
-                            val dx = (event.rawX - touchX).toInt()
-                            val dy = (event.rawY - touchY).toInt()
+                            val pIndex = if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
+                                event.findPointerIndex(activePointerId)
+                            } else {
+                                0
+                            }
+                            if (pIndex in 0 until event.pointerCount) {
+                                val curX = event.getX(pIndex) + dockParams.x
+                                val curY = event.getY(pIndex) + dockParams.y
+                                val dx = (curX - touchX).toInt()
+                                val dy = (curY - touchY).toInt()
 
-                            if (abs(dx) > 10 || abs(dy) > 10) {
-                                isDragging = true
-                                dockParams.x = startX + dx
-                                dockParams.y = startY + dy
-                                updateViewSafely(dockView, dockParams)
+                                if (abs(dx) > 10 || abs(dy) > 10) {
+                                    isDragging = true
+                                    dockParams.x = startX + dx
+                                    dockParams.y = startY + dy
+                                    updateViewSafely(dockView, dockParams)
+                                }
                             }
                             return true
                         }
 
-                        MotionEvent.ACTION_UP -> {
-                            if (isDragging) {
-                                val viewW = if (root.width > 0) root.width else 100
-                                val center = dockParams.x + (viewW / 2)
-                                val targetX = if (center < screenWidth / 2) 16 else (screenWidth - viewW - 16)
-                                snapDock(dockParams.x, targetX)
-                                return true
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+                            val actionIndex = event.actionIndex
+                            val pointerId = event.getPointerId(actionIndex)
+                            if (activePointerId == MotionEvent.INVALID_POINTER_ID || pointerId == activePointerId) {
+                                if (isDragging) {
+                                    val viewW = if (root.width > 0) root.width else 100
+                                    val center = dockParams.x + (viewW / 2)
+                                    val targetX = if (center < screenWidth / 2) 16 else (screenWidth - viewW - 16)
+                                    snapDock(dockParams.x, targetX)
+                                } else if (System.currentTimeMillis() - downTime < 400) {
+                                    targetView.performClick()
+                                }
+                                activePointerId = MotionEvent.INVALID_POINTER_ID
                             }
-                            if (System.currentTimeMillis() - downTime < 400) {
-                                targetView.performClick()
-                            }
+                            return true
+                        }
+
+                        MotionEvent.ACTION_CANCEL -> {
+                            isDragging = false
+                            activePointerId = MotionEvent.INVALID_POINTER_ID
                             return true
                         }
                     }
@@ -434,7 +457,7 @@ class TurboOverlayService : Service() {
             onPinClicked = { p ->
                 val (cx, cy) = p.getCenterCoordinates()
                 scope.launch(Dispatchers.IO) {
-                    ShellExecutor.executeCommand("input tap ${cx.toInt()} ${cy.toInt()}")
+                    ShellExecutor.tap(cx, cy, 45)
                 }
                 Toast.makeText(this@TurboOverlayService, "▶ Đã thử kích hoạt Điểm #${p.index} vào game!", Toast.LENGTH_SHORT).show()
             }
@@ -549,6 +572,8 @@ class TurboOverlayService : Service() {
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_SPLIT_TOUCH or
                         WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT
             )
@@ -561,6 +586,30 @@ class TurboOverlayService : Service() {
 
             canvas.onCountChanged = { count ->
                 tvCount.text = "Đã ghi: $count thao tác"
+            }
+
+            // Chuyển tiếp ngay lập tức thao tác chạm/vuốt vào game trong thời gian thực!
+            // Nhờ đó khi bấm vào shop thì shop mở thật, bấm chiêu thì chiêu tung thật!
+            canvas.onActionRecorded = { action ->
+                scope.launch(Dispatchers.IO) {
+                    when (action.type) {
+                        com.macrophone.gaming.data.model.MacroType.TAP, com.macrophone.gaming.data.model.MacroType.HOLD -> {
+                            val pt = action.points.firstOrNull() ?: return@launch
+                            val dur = if (action.type == com.macrophone.gaming.data.model.MacroType.HOLD) {
+                                action.durationMs.coerceIn(50L, 1000L)
+                            } else {
+                                45L
+                            }
+                            ShellExecutor.tap(pt.x, pt.y, dur)
+                        }
+                        com.macrophone.gaming.data.model.MacroType.SWIPE -> {
+                            val start = action.points.firstOrNull() ?: return@launch
+                            val end = action.points.lastOrNull() ?: return@launch
+                            val dur = action.durationMs.coerceIn(50L, 500L)
+                            ShellExecutor.swipe(start.x, start.y, end.x, end.y, dur)
+                        }
+                    }
+                }
             }
 
             btnUndo?.setOnClickListener {
@@ -578,6 +627,7 @@ class TurboOverlayService : Service() {
                     return@setOnClickListener
                 }
 
+                val recordedActionsList = ArrayList(actions)
                 closeRecordOverlay()
 
                 val points = actions.mapNotNull { act ->
@@ -599,7 +649,11 @@ class TurboOverlayService : Service() {
                     repeatCount = 1,
                     onTrigger = { pts, delay, repeat ->
                         scope.launch(Dispatchers.IO) {
-                            ShellExecutor.executeCombo(pts, delayBetweenMs = delay, repeatCount = repeat)
+                            if (recordedActionsList.isNotEmpty()) {
+                                ShellExecutor.executeActions(recordedActionsList, repeatCount = repeat)
+                            } else {
+                                ShellExecutor.executeCombo(pts, delayBetweenMs = delay, repeatCount = repeat)
+                            }
                         }
                     },
                     onRestorePins = { restoredPoints ->

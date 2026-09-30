@@ -51,7 +51,8 @@ class FloatingTriggerView(
         WindowManager.LayoutParams.WRAP_CONTENT,
         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.TOP or Gravity.START
@@ -61,6 +62,7 @@ class FloatingTriggerView(
 
     init {
         tvLabel.text = name.take(4)
+        (view as? android.view.ViewGroup)?.isMotionEventSplittingEnabled = true
         setupTouchListener()
 
         ivDelete.setOnClickListener {
@@ -81,47 +83,70 @@ class FloatingTriggerView(
             private var touchStartY = 0f
             private var isDragging = false
             private var downTime = 0L
+            private var activePointerId = MotionEvent.INVALID_POINTER_ID
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+                        val actionIndex = event.actionIndex
+                        activePointerId = event.getPointerId(actionIndex)
                         startX = params.x
                         startY = params.y
-                        touchStartX = event.rawX
-                        touchStartY = event.rawY
+                        touchStartX = event.getX(actionIndex) + params.x
+                        touchStartY = event.getY(actionIndex) + params.y
                         isDragging = false
                         downTime = System.currentTimeMillis()
                         return true
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        val dx = (event.rawX - touchStartX).toInt()
-                        val dy = (event.rawY - touchStartY).toInt()
+                        val pointerIndex = if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
+                            event.findPointerIndex(activePointerId)
+                        } else {
+                            0
+                        }
+                        if (pointerIndex in 0 until event.pointerCount) {
+                            val curX = event.getX(pointerIndex) + params.x
+                            val curY = event.getY(pointerIndex) + params.y
+                            val dx = (curX - touchStartX).toInt()
+                            val dy = (curY - touchStartY).toInt()
 
-                        if (abs(dx) > 10 || abs(dy) > 10) {
-                            isDragging = true
-                            params.x = startX + dx
-                            params.y = startY + dy
-                            if (view.isAttachedToWindow) {
-                                try {
-                                    windowManager.updateViewLayout(view, params)
-                                } catch (_: Throwable) {}
+                            if (abs(dx) > 10 || abs(dy) > 10) {
+                                isDragging = true
+                                params.x = startX + dx
+                                params.y = startY + dy
+                                if (view.isAttachedToWindow) {
+                                    try {
+                                        windowManager.updateViewLayout(view, params)
+                                    } catch (_: Throwable) {}
+                                }
                             }
                         }
                         return true
                     }
 
-                    MotionEvent.ACTION_UP -> {
-                        val duration = System.currentTimeMillis() - downTime
-                        if (!isDragging && duration < 400) {
-                            // Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME!
-                            flashFeedback()
-                            onTrigger(points, delayBetweenMs, repeatCount)
-                        } else if (!isDragging && duration >= 450) {
-                            // Nhấn giữ lâu -> Mở Menu Cài Đặt Combo!
-                            vibrate(60)
-                            showConfigDialog()
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+                        val actionIndex = event.actionIndex
+                        val pointerId = event.getPointerId(actionIndex)
+                        if (activePointerId == MotionEvent.INVALID_POINTER_ID || pointerId == activePointerId) {
+                            val duration = System.currentTimeMillis() - downTime
+                            if (!isDragging && duration < 450) {
+                                // Chạm nhanh -> KÍCH HOẠT COMBO VÀO GAME!
+                                flashFeedback()
+                                onTrigger(points, delayBetweenMs, repeatCount)
+                            } else if (!isDragging && duration >= 450) {
+                                // Nhấn giữ lâu -> Mở Menu Cài Đặt Combo!
+                                vibrate(60)
+                                showConfigDialog()
+                            }
+                            activePointerId = MotionEvent.INVALID_POINTER_ID
                         }
+                        return true
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        isDragging = false
+                        activePointerId = MotionEvent.INVALID_POINTER_ID
                         return true
                     }
                 }
@@ -142,7 +167,8 @@ class FloatingTriggerView(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = Gravity.CENTER

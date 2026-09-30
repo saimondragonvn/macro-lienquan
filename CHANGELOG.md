@@ -4,6 +4,20 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.0.3] - 2026-09-30
+### 🚀 Vừa Di Chuyển Vừa Bấm Combo Mượt Mà & Khắc Phục Lỗi Bấm Shop/Chiêu Không Mở
+- **VỪA DI CHUYỂN (JOYSTICK) VỪA BẤM COMBO MƯỢT MÀ**:
+  - Kích hoạt cờ `FLAG_SPLIT_TOUCH` trên toàn bộ cửa sổ nổi (`FloatingTriggerView`, `TargetPinView`, `TurboOverlayService`).
+  - Xử lý đa điểm cảm ứng (`ACTION_POINTER_DOWN / ACTION_POINTER_UP` và `event.actionMasked`) giúp ngón cái tay trái kéo analog di chuyển tướng, ngón tay phải bấm nút combo `[⚡ C1]` hoàn toàn độc lập, không còn bị khựng hay đơ cảm ứng!
+- **KHẮC PHỤC TRIỆT ĐỂ LỖI BẤM SHOP / CHIÊU KHÔNG MỞ TRONG GAME**:
+  - Thay thế lệnh `input tap` (0ms thường bị game engine Unity/Tencent bỏ qua do không đủ thời gian nhấn giữ) bằng `input swipe X Y X Y 45ms` (chuẩn thời gian giữ ngón tay thực tế).
+  - Nút Shop, nút Chiêu 1/2/3, nút Đánh thường, nút Trang bị trong game nhận diện và phản hồi 100% tức thì!
+- **GHI THAO TÁC TRỰC QUAN - TƯƠNG TÁC THỜI GIAN THỰC VÀO GAME**:
+  - Khi bấm [Ghi Thao Tác]: Mỗi lần chạm vào màn hình (ví dụ bấm mở Shop, bấm mua đồ, bấm đóng shop) thì game sẽ THỰC SỰ PHẢN HỒI VÀ MỞ SHOP ngay tức khắc nhờ cơ chế bắn lệnh song song (`ShellExecutor.tap(x, y, 45)`), đồng thời vẽ điểm đánh dấu số ①, ②, ③ trực tiếp trên màn hình!
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.0.3.apk`.
+
+---
+
 ## [v2.0.2] - 2026-09-30
 ### 🚀 Nâng Cấp Trải Nghiệm Gameplay: Menu Cài Đặt Combo & Khắc Phục Lỗi Ẩn Menu
 - **KHẮC PHỤC TRIỆT ĐỂ LỖI KHÔNG ẨN ĐƯỢC MENU**:

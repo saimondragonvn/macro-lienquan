@@ -151,16 +151,19 @@ class TouchRecorderCanvas @JvmOverloads constructor(
         val y = event.y
         val now = System.currentTimeMillis()
 
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+                val actionIndex = event.actionIndex
+                val px = event.getX(actionIndex)
+                val py = event.getY(actionIndex)
                 isTouching = true
-                currentX = x
-                currentY = y
+                currentX = px
+                currentY = py
                 actionDownTime = now
                 currentPoints.clear()
                 currentTrailPath.reset()
-                currentTrailPath.moveTo(x, y)
-                currentPoints.add(GesturePoint(x, y, now))
+                currentTrailPath.moveTo(px, py)
+                currentPoints.add(GesturePoint(px, py, now))
 
                 vibrateFeedback(25)
                 invalidate()
@@ -178,7 +181,7 @@ class TouchRecorderCanvas @JvmOverloads constructor(
                 return true
             }
 
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
                 if (isTouching) {
                     isTouching = false
                     val duration = max(30L, now - actionDownTime)

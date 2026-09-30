@@ -138,7 +138,26 @@ object ShellExecutor {
     }
 
     /**
-     * Thực thi chuỗi Combo các điểm chạm (input tap X Y) siêu tốc 120Hz
+     * Nhấn 1 điểm (tap) an toàn và chuẩn xác cho Game:
+     * Dùng `input swipe X Y X Y [durationMs]` với độ giữ 45ms thay vì `input tap` (0ms).
+     * `input tap` thường bị game engine (Liên Quân Mobile / Unity / Tencent) bỏ qua vì 0ms DOWN/UP.
+     */
+    fun tap(x: Float, y: Float, durationMs: Long = 45): Boolean {
+        return swipe(x, y, x, y, durationMs)
+    }
+
+    /**
+     * Vuốt từ điểm (x1, y1) đến (x2, y2) với thời lượng nhất định
+     */
+    fun swipe(x1: Float, y1: Float, x2: Float, y2: Float, durationMs: Long = 100): Boolean {
+        val dur = durationMs.coerceAtLeast(35)
+        val cmd = "input swipe ${x1.toInt()} ${y1.toInt()} ${x2.toInt()} ${y2.toInt()} $dur"
+        return executeCommand(cmd)
+    }
+
+    /**
+     * Thực thi chuỗi Combo các điểm chạm siêu tốc 120Hz:
+     * Dùng `input swipe X Y X Y 35` giúp mọi nút chiêu, nút shop, nút đánh trong game nhận diện 100%.
      */
     fun executeCombo(points: List<Pair<Float, Float>>, delayBetweenMs: Long = 40, repeatCount: Int = 1): Boolean {
         if (points.isEmpty()) return false
@@ -148,7 +167,10 @@ object ShellExecutor {
         for (r in 0 until totalLoops) {
             for (i in points.indices) {
                 val (x, y) = points[i]
-                sb.append("input tap ").append(x.toInt()).append(" ").append(y.toInt()).append("; ")
+                val xi = x.toInt()
+                val yi = y.toInt()
+                sb.append("input swipe ").append(xi).append(" ").append(yi).append(" ")
+                    .append(xi).append(" ").append(yi).append(" 35; ")
                 if ((i < points.size - 1 || r < totalLoops - 1) && delayBetweenMs > 0) {
                     val sec = String.format(Locale.US, "%.3f", delayBetweenMs / 1000.0)
                     sb.append("sleep ").append(sec).append("; ")
@@ -156,6 +178,51 @@ object ShellExecutor {
             }
         }
 
+        val fullCmd = sb.toString().trim().removeSuffix(";")
+        return executeCommand(fullCmd)
+    }
+
+    /**
+     * Thực thi chuỗi MacroAction (bao gồm cả TAP, HOLD, SWIPE) ghi lại từ màn hình
+     */
+    fun executeActions(actions: List<com.macrophone.gaming.data.model.MacroAction>, repeatCount: Int = 1): Boolean {
+        if (actions.isEmpty()) return false
+
+        val sb = StringBuilder()
+        val totalLoops = repeatCount.coerceIn(1, 10)
+        for (r in 0 until totalLoops) {
+            for (i in actions.indices) {
+                val act = actions[i]
+                when (act.type) {
+                    com.macrophone.gaming.data.model.MacroType.TAP -> {
+                        val pt = act.points.firstOrNull() ?: continue
+                        val xi = pt.x.toInt()
+                        val yi = pt.y.toInt()
+                        sb.append("input swipe ").append(xi).append(" ").append(yi).append(" ")
+                            .append(xi).append(" ").append(yi).append(" 35; ")
+                    }
+                    com.macrophone.gaming.data.model.MacroType.HOLD -> {
+                        val pt = act.points.firstOrNull() ?: continue
+                        val xi = pt.x.toInt()
+                        val yi = pt.y.toInt()
+                        val dur = act.durationMs.coerceIn(50L, 1000L)
+                        sb.append("input swipe ").append(xi).append(" ").append(yi).append(" ")
+                            .append(xi).append(" ").append(yi).append(" ").append(dur).append("; ")
+                    }
+                    com.macrophone.gaming.data.model.MacroType.SWIPE -> {
+                        val start = act.points.firstOrNull() ?: continue
+                        val end = act.points.lastOrNull() ?: continue
+                        val dur = act.durationMs.coerceIn(50L, 500L)
+                        sb.append("input swipe ").append(start.x.toInt()).append(" ").append(start.y.toInt()).append(" ")
+                            .append(end.x.toInt()).append(" ").append(end.y.toInt()).append(" ").append(dur).append("; ")
+                    }
+                }
+                if (act.delayBeforeMs > 0) {
+                    val sec = String.format(Locale.US, "%.3f", act.delayBeforeMs / 1000.0)
+                    sb.append("sleep ").append(sec).append("; ")
+                }
+            }
+        }
         val fullCmd = sb.toString().trim().removeSuffix(";")
         return executeCommand(fullCmd)
     }
