@@ -79,16 +79,24 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         try {
-            if (ShizukuHelper.isShizukuRunning()) {
-                Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
-            }
+            Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener)
         } catch (_: Throwable) {}
         super.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.refreshData()
+        try {
+            viewModel.refreshData()
+        } catch (_: Throwable) {}
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        try {
+            viewModel.refreshData()
+        } catch (_: Throwable) {}
     }
 
     private fun setupRecyclerView() {

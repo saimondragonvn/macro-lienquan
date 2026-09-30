@@ -54,6 +54,16 @@
         android:src="@drawable/ic_remove"
         android:contentDescription="Remove Target Point" />
 
+    <!-- Create Floating Macro Button from Points (✓) -->
+    <ImageButton
+        android:id="@+id/btnCreateMacroBtn"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="6dp"
+        android:src="@drawable/ic_check"
+        android:contentDescription="Tạo nút Macro tròn từ các điểm ghim" />
+
     <!-- Toggle Points Visibility (Eye) -->
     <ImageButton
         android:id="@+id/btnToggleVisibility"

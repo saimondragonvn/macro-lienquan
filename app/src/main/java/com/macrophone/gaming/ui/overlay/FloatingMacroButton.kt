@@ -168,10 +168,12 @@ class FloatingMacroButton(
     }
 
     fun destroy() {
-        if (view.isAttachedToWindow) {
-            try {
+        try {
+            if (view.isAttachedToWindow) {
+                windowManager.removeViewImmediate(view)
+            } else {
                 windowManager.removeView(view)
-            } catch (_: Exception) {}
-        }
+            }
+        } catch (_: Exception) {}
     }
 }

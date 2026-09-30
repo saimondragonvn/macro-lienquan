@@ -46,29 +46,26 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
         with:
           files: app/build/outputs/apk/release/*.apk
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.2' }}
-          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.2' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.3' }}
+          name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.2.3' }}
           body: |
-            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.2.2 (Đặc Trị Crash & Tối Ưu Riêng Cho Infinix Note 30 / XOS)
+            ### 🎮 Macro Liên Quân Mobile (Fast Combo Controller) - Bản Release v1.2.3 (Khắc Phục Toàn Diện Lỗi Ghi Thao Tác & Crash Khi Vào Lại App)
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 🛠️ CÁC SỬA LỖI & NÂNG CẤP CHUYÊN NGHIỆP TRONG BẢN v1.2.2:
-            1. **Đặc trị 100% lỗi Crash trên máy Infinix Note 30 (Transsion XOS 13/14)**:
-               - Loại bỏ hoàn toàn lệnh kiểm tra Root đồng bộ trên Main Thread làm treo máy / ANR ("Ứng dụng đã dừng").
-               - Bổ sung ServiceCompat và ForegroundServiceType an toàn cho Android 13/14, khắc phục triệt để lỗi ForegroundServiceDidNotStartInTimeException.
-               - Gỡ bỏ bộ bắt lỗi đóng băng Main Looper, chuyển sang cơ chế ghi nhận chẩn đoán sạch sẽ.
-            2. **Nâng cấp toàn diện giao diện Cyberpunk Gaming**:
-               - Tự động nhận diện thiết bị: Hiển thị badge "Thiết bị: Infinix Note 30 (XOS) • 120Hz Fast Combo" trực tiếp trên màn hình chính.
-               - Bổ sung Banner đặc quyền cho Infinix: Hướng dẫn mở khóa "Cài đặt bị hạn chế" (Restricted Settings) và "Cửa sổ thả nổi" (Floating Window) chỉ với 1 cú click!
-               - Đèn LED trạng thái hệ thống: Báo "SẴN SÀNG" hoặc "CHƯA CẤP ĐỦ" tức thì.
-            3. **Ghi hình trực quan & Tự tạo nút tròn Macro**:
-               - Hiển thị rõ nét các điểm Chạm (1, 2, 3...), Giữ (Hold) và Vuốt (Swipe) kèm nút hoàn tác (Undo).
-               - Bấm lưu là có ngay nút tròn nổi (56dp x 56dp) trên màn hình game để xả chiêu với tốc độ 5x!
+            #### 🛠️ CÁC SỬA LỖI & ĐỘT PHÁ QUAN TRỌNG TRONG BẢN v1.2.3:
+            1. **Khắc phục lỗi màn hình không hoạt động khi bắt đầu ghi thao tác**:
+               - Bổ sung nút **(✓) Tạo nút Macro tròn** trực tiếp ngay trên thanh Dock nổi: Cho phép đặt các điểm ghim (1, 2, 3...) lên các nút chiêu mà KHÔNG HỀ chặn cảm ứng màn hình, bấm (✓) là tạo ngay nút tròn Macro!
+               - Chế độ Ghi cử chỉ (Live Touch Recorder) được bọc ContextThemeWrapper an toàn 100%, thanh điều khiển dời xuống dưới tai thỏ/nốt ruồi (Punch hole camera) trên Infinix Note 30, nút Thoát và Lưu to rõ.
+            2. **Khắc phục triệt để lỗi không vào lại được app và crash ("Ứng dụng đã dừng")**:
+               - Bổ sung BroadcastReceiver lắng nghe sự kiện Home/Recent Apps/Tắt màn hình: Tự động đóng ngay lập tức màn hình ghi toàn màn hình, không bao giờ để lớp phủ vô hình che launcher hay chặn bấm icon app.
+               - Sửa cờ `FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_SINGLE_TOP` trong PendingIntent của Notification, xóa sổ hoàn toàn lỗi AndroidRuntimeException khi bấm vào lại app.
+               - Thiết lập `android:launchMode="singleTask"` cho MainActivity giúp tái kích hoạt Activity mượt mà, không xung đột hoặc nhân bản tiến trình.
+               - Nâng cấp `removeViewImmediate` giúp giải phóng bộ nhớ và giao diện overlay tức thì.
 
             #### 📲 Hướng dẫn cài đặt APK:
-            1. Tải file **`Macro-LienQuan-v1.2.2.apk`** ở mục **Assets** bên dưới.
+            1. Tải file **`Macro-LienQuan-v1.2.3.apk`** ở mục **Assets** bên dưới.
             2. Cài đặt vào điện thoại Infinix Note 30 hoặc trình giả lập PC.
-            3. Mở ứng dụng, bấm nút mở khóa Cài đặt bị hạn chế và bắt đầu chiến game!
+            3. Mở ứng dụng, bấm nút Bật Dock Điều Khiển và quẩy game thôi!
           draft: false
           prerelease: false
         env:

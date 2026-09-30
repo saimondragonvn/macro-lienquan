@@ -2,12 +2,15 @@ package com.macrophone.gaming.service
 
 import android.animation.ValueAnimator
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
+import androidx.appcompat.view.ContextThemeWrapper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
@@ -89,6 +92,42 @@ class FloatingWidgetService : Service() {
     private var screenWidth = 0
     private var screenHeight = 0
 
+    // Receiver tự động đóng màn hình ghi khi người dùng bấm Home, Recent Apps hoặc tắt màn hình
+    private var isSystemDialogsReceiverRegistered = false
+    private val systemDialogsReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (recordOverlayView != null) {
+                closeRecordOverlay()
+            }
+        }
+    }
+
+    private fun registerSystemDialogsReceiver() {
+        if (!isSystemDialogsReceiverRegistered) {
+            val filter = IntentFilter().apply {
+                addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+                addAction(Intent.ACTION_SCREEN_OFF)
+            }
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    registerReceiver(systemDialogsReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+                } else {
+                    registerReceiver(systemDialogsReceiver, filter)
+                }
+                isSystemDialogsReceiverRegistered = true
+            } catch (_: Throwable) {}
+        }
+    }
+
+    private fun unregisterSystemDialogsReceiver() {
+        if (isSystemDialogsReceiverRegistered) {
+            try {
+                unregisterReceiver(systemDialogsReceiver)
+            } catch (_: Throwable) {}
+            isSystemDialogsReceiverRegistered = false
+        }
+    }
+
     companion object {
         const val ACTION_START_SERVICE = "com.macrophone.gaming.ACTION_START_FLOATING"
         const val ACTION_STOP_SERVICE = "com.macrophone.gaming.ACTION_STOP_FLOATING"
@@ -133,6 +172,7 @@ class FloatingWidgetService : Service() {
     }
 
     override fun onDestroy() {
+        unregisterSystemDialogsReceiver()
         macroManager.setFloatingServiceRunning(false)
         stateObserverJob?.cancel()
         serviceScope.cancel()
@@ -142,7 +182,7 @@ class FloatingWidgetService : Service() {
 
         removeViewSafely(dockView)
         removeViewSafely(settingsDialogView)
-        removeViewSafely(recordOverlayView)
+        closeRecordOverlay()
         removeViewSafely(saveDialogView)
 
         super.onDestroy()
@@ -340,6 +380,7 @@ class FloatingWidgetService : Service() {
         val btnPlayStop = root.findViewById<ImageButton>(R.id.btnPlayStop)
         val btnAddPoint = root.findViewById<ImageButton>(R.id.btnAddPoint)
         val btnRemovePoint = root.findViewById<ImageButton>(R.id.btnRemovePoint)
+        val btnCreateMacroBtn = root.findViewById<ImageButton>(R.id.btnCreateMacroBtn)
         val btnToggleVisibility = root.findViewById<ImageButton>(R.id.btnToggleVisibility)
         val btnRecord = root.findViewById<ImageButton>(R.id.btnRecord)
         val btnSettings = root.findViewById<ImageButton>(R.id.btnSettings)
@@ -351,6 +392,10 @@ class FloatingWidgetService : Service() {
 
         btnRemovePoint.setOnClickListener {
             removeLastTargetPoint()
+        }
+
+        btnCreateMacroBtn?.setOnClickListener {
+            createMacroButtonFromTargetPoints()
         }
 
         btnToggleVisibility.setOnClickListener {
@@ -447,6 +492,62 @@ class FloatingWidgetService : Service() {
     }
 
     /**
+     * Tạo trực tiếp Nút Macro Nổi từ các Điểm Ghim (Target Points #1, #2, #3...)
+     * Không hề chặn cảm ứng màn hình, người chơi có thể đặt pin chính xác lên từng nút chiêu.
+     */
+    private fun createMacroButtonFromTargetPoints() {
+        if (targetPoints.isEmpty()) {
+            Toast.makeText(
+                this,
+                "Chưa có điểm ghim nào! Hãy bấm nút [+] để đặt các vị trí chiêu (1, 2, 3...) trước.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        val actions = targetPoints.map { marker ->
+            val (cx, cy) = marker.getCenterCoordinates()
+            MacroAction(
+                type = MacroType.TAP,
+                points = listOf(GesturePoint(cx, cy)),
+                durationMs = 25L,
+                delayBeforeMs = 40L
+            )
+        }
+
+        val macroIndex = macroManager.getAllMacros().size + 1
+        val macroName = "M$macroIndex"
+        val config = PlaybackConfig(
+            speedMultiplier = 5.0f,
+            loopCount = 1,
+            loopIntervalMs = 50L
+        )
+
+        val btnX = (screenWidth - 240).coerceAtLeast(60)
+        val btnY = (screenHeight / 2) - 100
+
+        val newSequence = MacroSequence(
+            name = macroName,
+            description = "Combo ${targetPoints.size} điểm ghim",
+            actions = actions,
+            config = config,
+            hasFloatingButton = true,
+            buttonX = btnX,
+            buttonY = btnY
+        )
+
+        macroManager.saveDirectSequence(newSequence)
+        clearAllTargetPoints()
+        createFloatingMacroButton(newSequence)
+
+        Toast.makeText(
+            this,
+            "✅ Đã tạo nút tròn Macro [$macroName] từ ${actions.size} điểm ghim! Chạm nút để xả combo, đè nút để xóa.",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    /**
      * Mở chế độ ghi thao tác
      */
     private fun openRecordOverlay() {
@@ -454,7 +555,8 @@ class FloatingWidgetService : Service() {
 
         macroManager.startRecording()
 
-        val inflater = LayoutInflater.from(this)
+        val themedContext = ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+        val inflater = LayoutInflater.from(themedContext)
         recordOverlayView = inflater.inflate(R.layout.view_touch_recorder, null)
 
         recordParams = WindowManager.LayoutParams(
@@ -488,7 +590,7 @@ class FloatingWidgetService : Service() {
             }
         }
 
-        btnSave.setOnClickListener {
+        btnSave?.setOnClickListener {
             val actions = canvas.getRecordedActions()
             if (actions.isEmpty()) {
                 Toast.makeText(this, "Chưa ghi thao tác nào! Hãy chạm hoặc vuốt trên màn hình.", Toast.LENGTH_SHORT).show()
@@ -505,15 +607,18 @@ class FloatingWidgetService : Service() {
                 loopIntervalMs = 50L
             )
 
+            val btnX = (screenWidth - 220).coerceAtLeast(60)
+            val btnY = (screenHeight / 2) - 100
+
             val savedSequence = macroManager.saveRecording(
                 name = macroName,
                 config = config,
-                customActions = actions
+                customActions = actions,
+                buttonX = btnX,
+                buttonY = btnY
             )
 
             if (savedSequence != null) {
-                savedSequence.buttonX = (screenWidth - 220).coerceAtLeast(60)
-                savedSequence.buttonY = (screenHeight / 2) - 100
                 createFloatingMacroButton(savedSequence)
 
                 Toast.makeText(
@@ -524,23 +629,35 @@ class FloatingWidgetService : Service() {
             }
         }
 
-        btnCancel.setOnClickListener {
-            macroManager.cancelRecording()
+        btnCancel?.setOnClickListener {
             closeRecordOverlay()
         }
 
         dockView?.visibility = View.GONE
+        registerSystemDialogsReceiver()
+
         try {
             windowManager.addView(recordOverlayView, recordParams)
         } catch (e: Exception) {
+            closeRecordOverlay()
             Toast.makeText(this, "Lỗi hiển thị màn hình ghi: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun closeRecordOverlay() {
-        removeViewSafely(recordOverlayView)
-        recordOverlayView = null
+        unregisterSystemDialogsReceiver()
+        if (recordOverlayView != null) {
+            try {
+                windowManager.removeViewImmediate(recordOverlayView)
+            } catch (_: Exception) {
+                try {
+                    windowManager.removeView(recordOverlayView)
+                } catch (_: Exception) {}
+            }
+            recordOverlayView = null
+        }
         dockView?.visibility = View.VISIBLE
+        macroManager.cancelRecording()
     }
 
     /**
@@ -552,7 +669,8 @@ class FloatingWidgetService : Service() {
             saveDialogView = null
         }
 
-        val inflater = LayoutInflater.from(this)
+        val themedContext = ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+        val inflater = LayoutInflater.from(themedContext)
         saveDialogView = inflater.inflate(R.layout.view_save_macro_dialog, null)
 
         saveParams = WindowManager.LayoutParams(
@@ -695,7 +813,8 @@ class FloatingWidgetService : Service() {
             return
         }
 
-        val inflater = LayoutInflater.from(this)
+        val themedContext = ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+        val inflater = LayoutInflater.from(themedContext)
         settingsDialogView = inflater.inflate(R.layout.view_macro_settings_dialog, null)
 
         settingsParams = WindowManager.LayoutParams(
@@ -871,9 +990,13 @@ class FloatingWidgetService : Service() {
     }
 
     private fun removeViewSafely(view: View?) {
-        if (view != null && view.isAttachedToWindow) {
+        if (view != null) {
             try {
-                windowManager.removeView(view)
+                if (view.isAttachedToWindow) {
+                    windowManager.removeViewImmediate(view)
+                } else {
+                    windowManager.removeView(view)
+                }
             } catch (_: Exception) {}
         }
     }

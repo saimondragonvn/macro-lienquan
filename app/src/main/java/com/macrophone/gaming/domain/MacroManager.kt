@@ -206,7 +206,9 @@ class MacroManager private constructor(private val context: Context) {
     fun saveRecording(
         name: String,
         config: PlaybackConfig = PlaybackConfig(),
-        customActions: List<MacroAction>? = null
+        customActions: List<MacroAction>? = null,
+        buttonX: Int = 100,
+        buttonY: Int = 250
     ): MacroSequence? {
         val actionsToSave = customActions ?: recordedActions
         if (actionsToSave.isEmpty()) {
@@ -214,12 +216,16 @@ class MacroManager private constructor(private val context: Context) {
             return null
         }
 
+        val nextIndex = getAllMacros().size + 1
+        val finalName = name.ifBlank { "M$nextIndex" }
         val newSequence = MacroSequence(
-            name = name.ifBlank { "Custom Combo #${System.currentTimeMillis() % 1000}" },
+            name = finalName,
             description = "Ghi lại trực tiếp từ màn hình",
             actions = ArrayList(actionsToSave),
             config = config,
-            hasFloatingButton = true
+            hasFloatingButton = true,
+            buttonX = buttonX,
+            buttonY = buttonY
         )
 
         repository.saveMacro(newSequence)
@@ -227,6 +233,14 @@ class MacroManager private constructor(private val context: Context) {
         recordedActions.clear()
         _macroState.value = MacroState.IDLE
         return newSequence
+    }
+
+    /**
+     * Lưu một chuỗi Macro tùy chỉnh và đặt làm active macro
+     */
+    fun saveDirectSequence(sequence: MacroSequence) {
+        repository.saveMacro(sequence)
+        setActiveMacro(sequence)
     }
 
     fun cancelRecording() {
