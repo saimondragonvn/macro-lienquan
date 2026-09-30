@@ -16,7 +16,6 @@ import rikka.shizuku.Shizuku
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.math.hypot
-import kotlin.math.max
 
 /**
  * Bộ Ghi Thao Tác Game Turbo Pro (Chuẩn Xiaomi / Redmi Turbo 4 Pro):
@@ -194,9 +193,9 @@ object GameTurboRecorder {
                 var latestScreenY = 0f
 
                 val devMinX = device?.minX ?: 0
-                val devMaxX = device?.maxX ?: max(screenW, screenH)
+                val devMaxX = device?.maxX ?: Math.max(screenW, screenH)
                 val devMinY = device?.minY ?: 0
-                val devMaxY = device?.maxY ?: max(screenW, screenH)
+                val devMaxY = device?.maxY ?: Math.max(screenW, screenH)
 
                 while (isActive && isRecording) {
                     val line = reader.readLine() ?: break
@@ -259,17 +258,19 @@ object GameTurboRecorder {
                         if (isPendingUp && isFingerDown) {
                             isPendingUp = false
                             isFingerDown = false
-                            val duration = max(35L, now - touchDownTime)
+                            val duration = Math.max(35L, now - touchDownTime)
                             val delayBefore = if (lastTouchUpTime > 0L) {
-                                max(30L, touchDownTime - lastTouchUpTime)
+                                Math.max(30L, touchDownTime - lastTouchUpTime)
                             } else {
                                 50L
                             }
                             lastTouchUpTime = now
 
-                            val distance = hypot((latestScreenX - downScreenX).toDouble(), (latestScreenY - downScreenY).toDouble()).toFloat()
+                            val dx = (latestScreenX - downScreenX).toDouble()
+                            val dy = (latestScreenY - downScreenY).toDouble()
+                            val distance = hypot(dx, dy).toFloat()
 
-                            val action = if (distance > (25f * density)) {
+                            val action = if (distance > (25.0f * density)) {
                                 // Thao tác Vuốt thực sự (SWIPE)
                                 MacroAction(
                                     type = MacroType.SWIPE,
@@ -330,8 +331,8 @@ object GameTurboRecorder {
         screenH: Int,
         rotation: Int
     ): Pair<Float, Float> {
-        val spanX = max(1, maxX - minX).toFloat()
-        val spanY = max(1, maxY - minY).toFloat()
+        val spanX = Math.max(1, maxX - minX).toFloat()
+        val spanY = Math.max(1, maxY - minY).toFloat()
 
         // Phân biệt cạnh ngắn (Width portrait) và cạnh dài (Height portrait) của cảm ứng phần cứng
         val isXShort = spanX <= spanY
@@ -344,8 +345,8 @@ object GameTurboRecorder {
         val normLong = (rawLong / spanLong).coerceIn(0f, 1f)
 
         // Đảm bảo displayWidth là cạnh dài và displayHeight là cạnh ngắn khi trong game Liên Quân
-        val dispW = max(screenW, screenH).toFloat()
-        val dispH = min(screenW, screenH).toFloat()
+        val dispW = Math.max(screenW, screenH).toFloat()
+        val dispH = Math.min(screenW, screenH).toFloat()
 
         return when (rotation) {
             Surface.ROTATION_90 -> {
