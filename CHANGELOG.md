@@ -4,6 +4,20 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.3.3] - 2026-09-30
+### 🚀 KHÓA VỊ TRÍ NÚT KHI CHIẾN GAME & CHẾ ĐỘ DI CHUYỂN NÚT CHUYÊN DỤNG KHI MỞ MENU
+- **KHÓA CỐ ĐỊNH VỊ TRÍ NÚT TRONG TRẬN ĐẤU (ZERO ACCIDENTAL MOVEMENT)**:
+  - Khi chơi game, vị trí tất cả các nút combo được **khóa hoàn toàn** (`isDraggable = false`).
+  - Mọi thao tác chạm vào nút đều được kích hoạt chuỗi combo ngay tức thì với độ trễ 0ms. Game thủ có thể ấn liên tục, vuốt nhanh trong giao tranh mà tuyệt đối không bao giờ bị trôi, lệch hay vô tình kéo nút chạy lung tung.
+- **CHẾ ĐỘ DI CHUYỂN VỊ TRÍ NÚT KHI MỞ MENU (POSITION EDIT MODE)**:
+  - Muốn thay đổi vị trí các nút: Chỉ cần vuốt thanh thông báo mở Menu Game Turbo ➔ Chọn **`[🎯 DI CHUYỂN & SỬA VỊ TRÍ NÚT]`**.
+  - Bảng menu tự động thu gọn thành một thanh điều khiển nổi nhỏ gọn trên đỉnh màn hình (`view_position_edit_pill`), để lộ 100% giao diện game thông thoáng.
+  - Các nút combo sẽ sáng viền xanh neon và mở khóa kéo thả (`isDraggable = true`), cho phép bạn thoải mái kéo đặt vào bất kỳ vị trí nào trên màn hình (ngay giữa màn hình, đè lên nút chiêu, nút đánh thường, v.v.).
+  - Sau khi sắp xếp xong, chỉ cần bấm **`[💾 LƯU & KHÓA VỊ TRÍ]`** trên thanh điều khiển nổi: Toàn bộ tọa độ mới được lưu vĩnh viễn và các nút lập tức khóa chặt lại để sẵn sàng chiến game!
+- **Phát hành file cài đặt**: `Macro-LienQuan-v2.3.3.apk`.
+
+---
+
 ## [v2.3.2] - 2026-09-30
 ### 🚀 KHẮC PHỤC TRIỆT ĐỂ LỖI ĐÓNG MENU & TỰ DO ĐẶT NÚT COMBO Ở CHÍNH GIỮA MÀN HÌNH
 - **SỬA LỖI MENU KHÔNG TẮT ĐƯỢC**:

@@ -157,6 +157,20 @@
                     android:letterSpacing="0.02"
                     android:layout_marginBottom="8dp" />
 
+                <!-- NÚT DI CHUYỂN & SỬA VỊ TRÍ NÚT COMBO -->
+                <TextView
+                    android:id="@+id/btnEditTriggerPositions"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_turbo_btn_secondary"
+                    android:gravity="center"
+                    android:text="🎯 DI CHUYỂN &amp; SỬA VỊ TRÍ NÚT"
+                    android:textColor="@color/cyan_neon"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.02"
+                    android:layout_marginBottom="8dp" />
+
                 <!-- GHIM ĐIỂM THỦ CÔNG (TARGET PINS) -->
                 <LinearLayout
                     android:layout_width="match_parent"

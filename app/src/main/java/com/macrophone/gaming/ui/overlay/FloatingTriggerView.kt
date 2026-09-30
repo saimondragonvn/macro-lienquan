@@ -89,6 +89,14 @@ class FloatingTriggerView(
         } catch (_: Throwable) {}
     }
 
+    var isDraggable: Boolean = false
+        private set
+
+    fun setDraggable(draggable: Boolean) {
+        isDraggable = draggable
+        view.setBackgroundResource(if (draggable) R.drawable.bg_floating_macro_btn_active else R.drawable.bg_floating_macro_btn_idle)
+    }
+
     fun updateOpacity(percent: Int) {
         opacityPercent = percent.coerceIn(20, 100)
         view.alpha = opacityPercent / 100f
@@ -166,6 +174,20 @@ class FloatingTriggerView(
             private var downTime = 0L
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
+                if (!isDraggable) {
+                    // Chế độ chiến game (Khóa vị trí cố định): Chạm là kích hoạt combo ngay tức thì, tuyệt đối không trôi nút!
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN -> {
+                            flashFeedback()
+                            onTrigger(this@FloatingTriggerView)
+                            return true
+                        }
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> return true
+                    }
+                    return false
+                }
+
+                // Khi mở Menu Turbo: Mở khóa chế độ kéo thả tự do
                 when (event.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
                         initialX = params.x

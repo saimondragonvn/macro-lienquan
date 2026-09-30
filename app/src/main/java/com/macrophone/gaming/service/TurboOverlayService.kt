@@ -74,6 +74,9 @@ class TurboOverlayService : Service() {
     private var recordingTimerJob: Job? = null
     private var recordingSeconds = 0
 
+    // View Thanh trạng thái di chuyển & khóa vị trí nút combo
+    private var positionEditPillView: View? = null
+
     // Danh sách các Điểm Ghim Chiêu đang hiển thị trên màn hình
     private val targetPins = mutableListOf<TargetPinView>()
 
@@ -185,6 +188,9 @@ class TurboOverlayService : Service() {
         scope.cancel()
 
         cancelRealtimeComboRecording()
+        if (positionEditPillView?.isAttachedToWindow == true) {
+            removeViewSafely(positionEditPillView)
+        }
         clearAllTargetPins()
         clearAllTriggerButtons()
         removeViewSafely(dockView)
@@ -484,6 +490,12 @@ class TurboOverlayService : Service() {
             startRealtimeComboRecording()
         }
 
+        // 🎯 DI CHUYỂN & CHỈNH SỬA VỊ TRÍ NÚT COMBO (KHÓA LẠI KHI CHIẾN GAME)
+        val btnEditTriggerPositions = root.findViewById<View>(R.id.btnEditTriggerPositions)
+        btnEditTriggerPositions?.setOnClickListener {
+            startPositionEditMode()
+        }
+
         // 1. Mở rộng khi chạm vào tab mép (nếu có kích hoạt)
         layoutCollapsed?.setOnClickListener {
             openTurboMenu()
@@ -573,6 +585,92 @@ class TurboOverlayService : Service() {
         btnCloseService?.setOnClickListener {
             stopSelf()
         }
+    }
+
+    /**
+     * Bật chế độ di chuyển & chỉnh sửa vị trí nút combo (khi mở menu)
+     * Toàn bộ màn hình game mở rộng 100%, nút mở khóa kéo thả tự do đến mọi vị trí
+     */
+    private fun startPositionEditMode() {
+        if (triggerButtons.isEmpty()) {
+            Toast.makeText(this, "Chưa có nút combo nào! Hãy tạo hoặc ghi combo trước.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        closeTurboMenu()
+
+        // Mở khóa kéo thả cho toàn bộ nút combo
+        triggerButtons.forEach { it.setDraggable(true) }
+
+        try {
+            if (positionEditPillView?.isAttachedToWindow == true) {
+                windowManager.removeView(positionEditPillView)
+            }
+
+            val themedContext = androidx.appcompat.view.ContextThemeWrapper(this, R.style.Theme_MacroGaming)
+            positionEditPillView = LayoutInflater.from(themedContext).inflate(R.layout.view_position_edit_pill, null)
+
+            val pillParams = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                        WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                y = 12
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                }
+            }
+
+            val btnSave = positionEditPillView!!.findViewById<View>(R.id.btnSaveAndLockPositions)
+            btnSave?.setOnClickListener {
+                saveAndLockTriggerPositions()
+            }
+
+            windowManager.addView(positionEditPillView, pillParams)
+            Toast.makeText(this, "🎯 Chế độ di chuyển: Hãy kéo các nút tới vị trí mong muốn rồi bấm Lưu!", Toast.LENGTH_LONG).show()
+        } catch (e: Throwable) {
+            Log.e("TurboOverlayService", "startPositionEditMode error: ${e.message}", e)
+        }
+    }
+
+    private fun saveAndLockTriggerPositions() {
+        // 1. Khóa kéo thả cho toàn bộ nút -> Trong game chạm là combo ngay, không bao giờ bị trôi nút
+        triggerButtons.forEach { btn ->
+            btn.setDraggable(false)
+            // 2. Lưu vĩnh viễn tọa độ mới nhất vào bộ nhớ
+            configStorage.upsertTrigger(
+                SavedMacroTrigger(
+                    id = btn.id,
+                    name = btn.name,
+                    x = btn.params.x,
+                    y = btn.params.y,
+                    delayBetweenMs = btn.delayBetweenMs,
+                    repeatCount = btn.repeatCount,
+                    opacityPercent = btn.opacityPercent,
+                    points = btn.points,
+                    actions = btn.actions,
+                    speedMultiplier = btn.speedMultiplier
+                )
+            )
+        }
+
+        // 3. Xóa thanh pill chỉnh vị trí
+        try {
+            if (positionEditPillView?.isAttachedToWindow == true) {
+                windowManager.removeViewImmediate(positionEditPillView)
+            }
+        } catch (_: Throwable) {
+            try { windowManager.removeView(positionEditPillView) } catch (_: Throwable) {}
+        }
+        positionEditPillView = null
+
+        Toast.makeText(this, "🔒 Đã lưu & khóa vị trí toàn bộ nút combo!", Toast.LENGTH_SHORT).show()
     }
 
     /**
