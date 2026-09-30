@@ -978,8 +978,9 @@ class FloatingWidgetService : Service() {
     private fun observeMacroState() {
         stateObserverJob = serviceScope.launch {
             macroManager.macroState.collectLatest { state ->
-                val btnPlayStop = dockView?.findViewById<ImageButton>(R.id.btnPlayStop)
-                val ivDragHandle = dockView?.findViewById<ImageView>(R.id.ivDragHandle)
+                val btnPlayTest = dockView?.findViewById<TextView>(R.id.btnPlayTest)
+                val ivCollapsedHandle = dockView?.findViewById<ImageView>(R.id.ivCollapsedHandle)
+                val ivExpandedDrag = dockView?.findViewById<ImageView>(R.id.ivExpandedDrag)
 
                 val isPlaying = state == MacroState.PLAYING
 
@@ -988,19 +989,22 @@ class FloatingWidgetService : Service() {
 
                 when (state) {
                     MacroState.PLAYING -> {
-                        btnPlayStop?.setImageResource(R.drawable.ic_stop)
-                        btnPlayStop?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.crimson_stop))
-                        ivDragHandle?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.emerald_play))
+                        btnPlayTest?.text = "⏹ Dừng"
+                        btnPlayTest?.setTextColor(ContextCompat.getColor(this@FloatingWidgetService, R.color.crimson_stop))
+                        ivCollapsedHandle?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.emerald_play))
+                        ivExpandedDrag?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.emerald_play))
                     }
                     MacroState.RECORDING -> {
-                        btnPlayStop?.setImageResource(R.drawable.ic_play)
-                        btnPlayStop?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.cyan_neon))
-                        ivDragHandle?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.crimson_stop))
+                        btnPlayTest?.text = "▶ Thử"
+                        btnPlayTest?.setTextColor(ContextCompat.getColor(this@FloatingWidgetService, R.color.emerald_play))
+                        ivCollapsedHandle?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.crimson_stop))
+                        ivExpandedDrag?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.crimson_stop))
                     }
                     else -> {
-                        btnPlayStop?.setImageResource(R.drawable.ic_play)
-                        btnPlayStop?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.cyan_neon))
-                        ivDragHandle?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.cyan_neon))
+                        btnPlayTest?.text = "▶ Thử"
+                        btnPlayTest?.setTextColor(ContextCompat.getColor(this@FloatingWidgetService, R.color.emerald_play))
+                        ivCollapsedHandle?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.cyan_neon))
+                        ivExpandedDrag?.setColorFilter(ContextCompat.getColor(this@FloatingWidgetService, R.color.cyan_neon))
                     }
                 }
 

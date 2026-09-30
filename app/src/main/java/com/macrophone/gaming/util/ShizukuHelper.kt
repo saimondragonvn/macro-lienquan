@@ -199,6 +199,7 @@ object ShizukuHelper {
             return@withContext Result.failure(Exception("Chưa kích hoạt Shizuku và máy chưa có Root! Hãy mở Shizuku hoặc bật Root trên giả lập."))
         }
 
+        val pkg = context.packageName
         val commands = listOf(
             // 1. Mở khóa "Cài đặt bị hạn chế" (Restricted Settings) trên Android 13/14 (Infinix XOS)
             "appops set $pkg ACCESS_RESTRICTED_SETTINGS allow",
