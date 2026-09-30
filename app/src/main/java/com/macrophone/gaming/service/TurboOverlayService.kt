@@ -1274,7 +1274,7 @@ class TurboOverlayService : Service() {
             container.addView(itemView)
         }
 
-        val tvActiveProfileSummary = root.findViewById<TextView>(R.id.tvActiveProfileSummary)
+        val tvActiveProfileSummary = dockView?.findViewById<TextView>(R.id.tvActiveProfileSummary)
         val active = configStorage.getActiveProfile()
         tvActiveProfileSummary?.text = "${active.iconEmoji} ${active.name} (${triggerButtons.size} nút combo)"
     }
