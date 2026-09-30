@@ -1,6 +1,7 @@
 package com.macrophone.gaming.core
 
 import android.content.Context
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
 import android.view.WindowManager
