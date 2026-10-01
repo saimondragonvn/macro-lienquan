@@ -1,67 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Premium Crystal Liquid Glass Macro Trigger (Idle State) -->
+    <!-- TRUE LIQUID GLASS DROP (HIỆU ỨNG GIỌT NƯỚC / PHA LÊ LỎNG 3D) -->
 
-    <!-- Layer 1: Translucent Smoky Sapphire Glass Base (Trong suốt quang học cao) -->
+    <!-- Layer 0: Vòng hào quang phát sáng nhẹ ngoài viền (Ambient Glass Glow) -->
     <item>
         <shape android:shape="oval">
+            <size android:width="56dp" android:height="56dp" />
             <gradient
-                android:angle="135"
-                android:startColor="#80182E50"
-                android:centerColor="#550E1C33"
-                android:endColor="#3307101E"
-                android:type="linear" />
-            <size
-                android:width="56dp"
-                android:height="56dp" />
-            <stroke
-                android:width="1.5dp"
-                android:color="#9900F5FF" />
+                android:type="radial"
+                android:gradientRadius="28dp"
+                android:startColor="#3300F5FF"
+                android:centerColor="#1000E5FF"
+                android:endColor="#00000000" />
         </shape>
     </item>
 
-    <!-- Layer 2: Inner Optical Bevel Ring (Vành khúc xạ kép thấu kính pha lê) -->
+    <!-- Layer 1: Lòng kính thủy tinh trong suốt quang học (Optical Clear Glass Body) -->
+    <!-- Tâm kính trong suốt xuyên thấu để nhìn rõ game, rìa kính khúc xạ xanh ngọc -->
     <item
         android:top="2dp"
         android:left="2dp"
         android:right="2dp"
         android:bottom="2dp">
         <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="26dp"
+                android:startColor="#1AFFFFFF"
+                android:centerColor="#2600D5FF"
+                android:endColor="#4D041B38" />
             <stroke
-                android:width="1dp"
-                android:color="#4DFFFFFF" />
+                android:width="1.8dp"
+                android:color="#E600F5FF" />
         </shape>
     </item>
 
-    <!-- Layer 3: Delicate Micro Top Specular Glint (Vệt bóng kính thanh mảnh đỉnh vòm, không đè icon) -->
+    <!-- Layer 2: Vành pha lê phản quang sắc nét (Crystal Refraction Ring) -->
     <item
-        android:top="2dp"
+        android:top="3dp"
+        android:left="3dp"
+        android:right="3dp"
+        android:bottom="3dp">
+        <shape android:shape="oval">
+            <stroke
+                android:width="1dp"
+                android:color="#80FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Layer 3: Đáy khúc xạ ánh sáng (Bottom Caustic Arc - Đặc trưng giọt nước lỏng) -->
+    <item
+        android:top="36dp"
         android:left="10dp"
         android:right="10dp"
-        android:bottom="38dp">
+        android:bottom="4dp">
         <shape android:shape="oval">
             <gradient
-                android:angle="270"
-                android:startColor="#B3FFFFFF"
-                android:centerColor="#40FFFFFF"
+                android:angle="90"
+                android:startColor="#B300F5FF"
+                android:centerColor="#4DFFFFFF"
                 android:endColor="#00FFFFFF"
                 android:type="linear" />
         </shape>
     </item>
 
-    <!-- Layer 4: Bottom Internal Caustic Bloom (Ánh quang đáy khúc xạ nội thể) -->
+    <!-- Layer 4: Vệt bóng kính trăng khuyết mặt trên (Glossy Crescent Dome) -->
     <item
-        android:top="42dp"
-        android:left="12dp"
-        android:right="12dp"
-        android:bottom="2dp">
+        android:top="3dp"
+        android:left="9dp"
+        android:right="9dp"
+        android:bottom="33dp">
         <shape android:shape="oval">
             <gradient
-                android:angle="90"
-                android:startColor="#5000F5FF"
-                android:centerColor="#1A0099FF"
-                android:endColor="#00000000"
+                android:angle="270"
+                android:startColor="#E6FFFFFF"
+                android:centerColor="#66FFFFFF"
+                android:endColor="#00FFFFFF"
                 android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 5: Điểm tụ sáng giọt thủy tinh góc 11 giờ (Specular Highlight Pin) -->
+    <item
+        android:top="5dp"
+        android:left="14dp"
+        android:right="30dp"
+        android:bottom="41dp">
+        <shape android:shape="oval">
+            <solid android:color="#F2FFFFFF" />
         </shape>
     </item>
 </layer-list>

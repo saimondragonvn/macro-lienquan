@@ -287,6 +287,10 @@ class TurboOverlayService : Service() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                 }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    flags = flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                    blurBehindRadius = 35
+                }
             }
 
             (dockView as? android.view.ViewGroup)?.isMotionEventSplittingEnabled = true

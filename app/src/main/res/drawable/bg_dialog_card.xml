@@ -1,43 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Optimized Frosted Smoked Liquid Glass Card -->
+    <!-- FROSTED LIQUID GLASS PANEL (TẤM KÍNH PHA LÊ NGUYÊN KHỐI) -->
 
-    <!-- Layer 1: Translucent Acrylic Smoked Glass Base -->
+    <!-- Layer 0: Vòng tỏa sáng huyền ảo xung quanh (Outer Diffused Ambient Glow) -->
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="20dp" />
-            <gradient
-                android:angle="135"
-                android:startColor="#D6122240"
-                android:centerColor="#C00C182E"
-                android:endColor="#A6070F1F"
-                android:type="linear" />
+            <corners android:radius="24dp" />
             <stroke
-                android:width="1.2dp"
-                android:color="#59FFFFFF" />
-            <padding
-                android:bottom="14dp"
-                android:left="14dp"
-                android:right="14dp"
-                android:top="14dp" />
+                android:width="2dp"
+                android:color="#4000F5FF" />
+            <solid android:color="#1A00F5FF" />
         </shape>
     </item>
 
-    <!-- Layer 2: Subtle Top Specular Glass Sheen -->
+    <!-- Layer 1: Thân kính mờ xuyên thấu (Ultra-translucent Frosted Smoked Glass) -->
+    <!-- Trong suốt quang học để nhìn thấy trận đấu đang diễn ra mờ ảo phía sau -->
     <item
         android:top="1dp"
-        android:left="4dp"
-        android:right="4dp"
-        android:bottom="160dp">
+        android:left="1dp"
+        android:right="1dp"
+        android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="23dp" />
+            <gradient
+                android:angle="135"
+                android:startColor="#59132238"
+                android:centerColor="#400B1524"
+                android:endColor="#33070E1A"
+                android:type="linear" />
+            <!-- Viền vát kính phản quang kim cương -->
+            <stroke
+                android:width="1.2dp"
+                android:color="#80FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Layer 2: Viền khúc xạ phụ bên trong (Inner Glass Bevel) -->
+    <item
+        android:top="2dp"
+        android:left="2dp"
+        android:right="2dp"
+        android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="22dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#20FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Layer 3: Vệt bóng kính đỉnh bảng điều khiển (Top Glass Specular Flare) -->
+    <!-- Giống ánh đèn rọi lên mép trên tấm kính dày -->
+    <item
+        android:top="1dp"
+        android:left="2dp"
+        android:right="2dp"
+        android:bottom="100dp">
         <shape android:shape="rectangle">
             <corners
-                android:topLeftRadius="19dp"
-                android:topRightRadius="19dp"
-                android:bottomLeftRadius="6dp"
-                android:bottomRightRadius="6dp" />
+                android:topLeftRadius="22dp"
+                android:topRightRadius="22dp"
+                android:bottomLeftRadius="0dp"
+                android:bottomRightRadius="0dp" />
             <gradient
                 android:angle="270"
-                android:startColor="#25FFFFFF"
+                android:startColor="#59FFFFFF"
+                android:centerColor="#18FFFFFF"
                 android:endColor="#00FFFFFF"
                 android:type="linear" />
         </shape>

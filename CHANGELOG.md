@@ -4,6 +4,24 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.7.0] - 2026-10-01
+### 💎 BẢN NÂNG CẤP LIQUID GLASS 3D SIÊU THỰC & BLUR NỀN HỆ THỐNG (CRE: GIAHOAI)
+- **THIẾT KẾ LIQUID GLASS 3D ĐỘT PHÁ (TRUE OPTICAL LIQUID DROP)**:
+  - **Tâm kính trong suốt quang học**: Độ trong suốt xuyên thấu cao giúp nhìn rõ địa hình bản đồ game đang diễn ra bên dưới mà không bị cản trở tầm nhìn.
+  - **Vệt bóng trăng khuyết vòm kính (Glossy Crescent Dome)**: Hiệu ứng ánh sáng phản chiếu vòm cầu chân thực tạo độ căng bóng như giọt nước pha lê.
+  - **Điểm tụ sáng phản quang góc 11h (Specular Pin)**: Chi tiết đặc trưng chuẩn phong cách Apple Aqua / VisionOS glassmorphism.
+  - **Đáy tụ quang nội thể (Bottom Caustic Arc)**: Khúc xạ ánh sáng rực rỡ ở đáy giọt nước.
+  - **Viền cắt pha lê laser kim cương kép (Dual Laser Bevel Rim)**: Vành ngoài Cyan Neon 1.8dp kết hợp vành trong bạch kim 1.0dp sắc sảo.
+- **MENU GAME TURBO HỆ THỐNG KÍNH MỜ (FROSTED GLASS PANEL)**:
+  - **Hỗ trợ làm mờ nền phần cứng (Hardware Blur Behind - Android 12+)**: Tích hợp `FLAG_BLUR_BEHIND` làm mờ trực tiếp hình ảnh game phía sau menu cực kỳ mượt mà.
+  - **Tấm kính mờ xuyên thấu**: Loại bỏ màn đen tối mịt, thay bằng kính pha lê mờ khói cao cấp viền kim cương sáng.
+- **TRẠNG THÁI KÍCH HOẠT (ACTIVE COMBAT STATE)**:
+  - Giọt ngọc lục bảo Liquid Emerald Glass rực sáng viền bạch kim 2.0dp cùng hiệu ứng nảy thấu kính khi chạm bắn combo.
+- **TÍCH HỢP BẢN QUYỀN CRE: GIAHOAI ĐỘC QUYỀN**:
+  - Giữ vững toàn bộ nhận diện tác giả GiaHoai trên Header, Footer, và các thanh điều khiển.
+
+---
+
 ## [v2.6.0] - 2026-10-01
 ### ⚡ THIẾT KẾ NÚT MACRO GAMING HUD SIÊU NÉT & BẢN QUYỀN CRE: GIAHOAI
 - **NÚT MACRO GAMING TACTICAL HUD (CHUẨN REDMI TURBO / ROG PHONE)**:
