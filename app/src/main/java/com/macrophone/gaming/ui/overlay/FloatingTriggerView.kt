@@ -95,6 +95,7 @@ class FloatingTriggerView(
     fun setDraggable(draggable: Boolean) {
         isDraggable = draggable
         view.setBackgroundResource(if (draggable) R.drawable.bg_floating_macro_btn_active else R.drawable.bg_floating_macro_btn_idle)
+        ivIcon.setColorFilter(ContextCompat.getColor(context, if (draggable) R.color.white else R.color.cyan_neon))
     }
 
     fun updateOpacity(percent: Int) {

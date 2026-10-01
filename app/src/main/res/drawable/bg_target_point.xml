@@ -1,59 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Layer 1: Crystalline Sapphire Liquid Glass Base (NO STROKE / KHÔNG VIỀN) -->
+    <!-- Layer 1: Crystalline Sapphire Liquid Glass Base with Crisp Edge Rim -->
     <item>
         <shape android:shape="oval">
             <gradient
                 android:angle="135"
-                android:startColor="#651C3660"
-                android:centerColor="#3D0F213E"
-                android:endColor="#25060F1E"
+                android:startColor="#751A3258"
+                android:centerColor="#450D1C34"
+                android:endColor="#20060E1C"
                 android:type="linear" />
+            <stroke
+                android:width="1dp"
+                android:color="#8000F5FF" />
             <size
                 android:width="44dp"
                 android:height="44dp" />
         </shape>
     </item>
 
-    <!-- Layer 2: Subtle Cyan Chromatic Sheen -->
-    <item>
+    <!-- Layer 2: Subtle Cyan Chromatic Edge Glow -->
+    <item
+        android:top="1dp"
+        android:left="1dp"
+        android:right="1dp"
+        android:bottom="1dp">
         <shape android:shape="oval">
-            <gradient
-                android:angle="45"
-                android:startColor="#3000E5FF"
-                android:centerColor="#100099FF"
-                android:endColor="#00000000"
-                android:type="linear" />
+            <stroke
+                android:width="1dp"
+                android:color="#33FFFFFF" />
         </shape>
     </item>
 
-    <!-- Layer 3: Specular Glare (Vầng bóng kính mặt trên) -->
+    <!-- Layer 3: Specular Micro Glint (Tia sáng bóng kính ở viền trên, không che số) -->
     <item
         android:top="2dp"
-        android:left="5dp"
-        android:right="5dp"
-        android:bottom="19dp">
+        android:left="7dp"
+        android:right="7dp"
+        android:bottom="28dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="270"
-                android:startColor="#70FFFFFF"
-                android:centerColor="#1CFFFFFF"
+                android:startColor="#80FFFFFF"
+                android:centerColor="#26FFFFFF"
                 android:endColor="#00FFFFFF"
                 android:type="linear" />
         </shape>
     </item>
 
-    <!-- Layer 4: Bottom Ambient Highlight -->
+    <!-- Layer 4: Bottom Caustic Refraction -->
     <item
-        android:top="28dp"
-        android:left="8dp"
-        android:right="8dp"
+        android:top="30dp"
+        android:left="10dp"
+        android:right="10dp"
         android:bottom="2dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="90"
-                android:startColor="#25FFFFFF"
-                android:centerColor="#1000E5FF"
+                android:startColor="#3000F5FF"
                 android:endColor="#00000000"
                 android:type="linear" />
         </shape>

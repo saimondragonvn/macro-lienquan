@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Game Turbo Floating HUD Capsule -->
+    <!-- Optimized Liquid Glass Floating Capsule -->
+
+    <!-- Layer 1: Translucent Acrylic Smoked Base with Neon Rim -->
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="999dp" />
             <gradient
                 android:angle="135"
-                android:startColor="#E610213E"
-                android:centerColor="#D90C172E"
-                android:endColor="#C8070F1F"
+                android:startColor="#D615284B"
+                android:centerColor="#BA0D1B32"
+                android:endColor="#9E071020"
                 android:type="linear" />
             <stroke
-                android:width="1.5dp"
-                android:color="@color/glass_rim_cyan" />
+                android:width="1.2dp"
+                android:color="#8000F5FF" />
             <padding
                 android:bottom="6dp"
                 android:left="12dp"
                 android:right="12dp"
                 android:top="6dp" />
+        </shape>
+    </item>
+
+    <!-- Layer 2: Top Curved Glass Highlight -->
+    <item
+        android:top="1dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:bottom="16dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="999dp" />
+            <gradient
+                android:angle="270"
+                android:startColor="#4DFFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="linear" />
         </shape>
     </item>
 </layer-list>
