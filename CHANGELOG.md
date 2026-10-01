@@ -4,6 +4,35 @@ Tất cả các thay đổi và bản cải tiến của dự án sẽ được 
 
 ---
 
+## [v2.6.0] - 2026-10-01
+### 🍏 NÂNG CẤP TOÀN DIỆN iOS 26 LIQUID GLASS & TÍCH HỢP BẢN QUYỀN CRE: GIAHOAI
+- **CHUẨN KÍNH LỎNG SIÊU THỰC iOS 26 (FUTURISTIC iOS 26 LIQUID GLASS)**:
+  - **Nút Macro Nổi (Liquid Glass Action Orb)**:
+    - Nâng cấp cấu trúc thấu kính quang học 5 tầng (5-Layer Optical Lens Droplet):
+      1. *Lớp đế kính Sapphire mờ sẫm (Frosted Midnight Obsidian Base)*: Tỷ lệ xuyên thấu cao, nhìn mờ ảo và huyền bí trên nền combat Liên Quân.
+      2. *Viền phản quang khúc xạ kim cương (Specular Rim Light)*: Đường viền quang học siêu mảnh 1.0dp bắt sáng tinh xảo khi xoay góc nhìn.
+      3. *Tán sắc ánh sáng nội thể (Internal Cyan Caustic Glow)*: Ánh sáng xanh ngọc bích khúc xạ bên trong lòng giọt kính.
+      4. *Vầng lóa mặt kính vòm bán nguyệt (Apple Curved Specular Dome Highlight)*: Giọt nước lỏng 3D nổi khối cực đại.
+      5. *Ánh quang đáy giọt nước (Bottom Ambient Bounce)*: Hắt sáng tự nhiên tạo độ sâu không gian.
+    - *Trạng thái kích hoạt (Active State)*: Xung điện ngọc bích cực sáng (Luminous Emerald Shockwave) bung tỏa cùng hiệu ứng nén đàn hồi micro scale bounce.
+  - **Menu Game Turbo HUD (Control Center Liquid Glass Panel)**:
+    - Bán kính góc bo liên tục 28dp (Continuous Squircle Radius) chuẩn ngôn ngữ thiết kế iOS.
+    - Bổ sung **Apple Dynamic Grabber Bar** ở đỉnh hộp thoại.
+    - Tấm kính acrylic saphir tối trong suốt (`#C4101E36` -> `#A6070E1C`), cho phép nhìn mờ khung cảnh trận đấu phía sau mà không gây rối mắt.
+    - Phân chia khối tính năng thành các thẻ kính lỏng thành phần (*Grouped Inset Glass Cards*) với viền phản quang mờ sang trọng.
+    - Toàn bộ nút bấm, chip chọn game, thanh chọn tốc độ và độ mờ được chuyển sang thiết kế viên nang kính lỏng (*Liquid Glass Capsules*) với vệt bóng kính trên đỉnh.
+  - **Đồng Bộ Mọi Cửa Sổ Hộp Thoại Nổi**:
+    - Áp dụng chuẩn kính lỏng iOS 26 cho: Menu cài đặt nút combo, Hộp thoại lưu combo mới, Hộp thoại thêm game, Hộp thoại đổi tên nút, Thanh chỉnh sửa vị trí và Thanh ghi hình combo thực tế.
+- **TÍCH HỢP ĐẶC QUYỀN BẢN QUYỀN CRE: GIAHOAI**:
+  - **Header Menu**: Huy hiệu kính lỏng `Cre: GiaHoai` đặt trang trọng ngay cạnh tiêu đề GAME TURBO PRO.
+  - **Footer Menu**: Thẻ vinh danh kính lỏng phát quang `💎 iOS 26 LIQUID GLASS • CRE: GIAHOAI`.
+  - **Tab Mép Thu Gọn**: Hiển thị phong cách `⚡ TURBO • GIAHOAI`.
+  - **Thanh Công Cụ Nổi & Hộp Thoại**: Đính kèm chữ ký nhận diện tác giả `GiaHoai`.
+  - **Màn Hình Chính (`MainActivity`)**: Bổ sung thẻ vinh danh nổi bật `💎 iOS 26 LIQUID GLASS EDITION • CRE: GIAHOAI`.
+  - **Thanh Thông Báo Tiện Ích**: Ghi nhận `Liquid Glass by GiaHoai`.
+
+---
+
 ## [v2.5.1] - 2026-09-30
 ### 💧 TÁI THIẾT KẾ NÚT MACRO CHUẨN LIQUID GLASS (KHÔNG VIỀN - BORDERLESS LIQUID GLASS)
 - **LOẠI BỎ TRIỆT ĐỂ ĐƯỜNG VIỀN THÔ RÁP**:

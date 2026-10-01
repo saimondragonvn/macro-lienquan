@@ -1,59 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Layer 1: Supercharged Luminous Emerald Liquid Core (NO STROKE / KHÔNG VIỀN) -->
+    <!-- iOS 26 Liquid Glass Orb - Active / Triggered State -->
+
+    <!-- Layer 1: Supercharged Luminous Emerald Liquid Base with Specular Rim -->
     <item>
         <shape android:shape="oval">
             <gradient
                 android:angle="135"
-                android:startColor="#8500F59B"
-                android:centerColor="#5508BA7B"
-                android:endColor="#30059669"
+                android:startColor="#E600F59B"
+                android:centerColor="#B308BA7B"
+                android:endColor="#80059669"
                 android:type="linear" />
             <size
                 android:width="56dp"
                 android:height="56dp" />
+            <stroke
+                android:width="1.2dp"
+                android:color="#FFFFFFFF" />
         </shape>
     </item>
 
-    <!-- Layer 2: Radiant Internal Neon Flare -->
-    <item>
+    <!-- Layer 2: Radiant Internal Neon Shockwave Flare -->
+    <item
+        android:left="3dp"
+        android:top="3dp"
+        android:right="3dp"
+        android:bottom="3dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="45"
-                android:startColor="#5000FFCC"
-                android:centerColor="#1A00F59B"
+                android:startColor="#8000FFCC"
+                android:centerColor="#4000F59B"
                 android:endColor="#00000000"
                 android:type="linear" />
         </shape>
     </item>
 
-    <!-- Layer 3: Brilliant Specular Glare (Phản xạ chói sáng khi bắn combo) -->
+    <!-- Layer 3: Blinding Specular Glare (Phản xạ chói sáng thấu kính lỏng cực đại) -->
     <item
         android:top="2dp"
-        android:left="6dp"
-        android:right="6dp"
-        android:bottom="24dp">
+        android:left="5dp"
+        android:right="5dp"
+        android:bottom="26dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="270"
-                android:startColor="#95FFFFFF"
-                android:centerColor="#38FFFFFF"
+                android:startColor="#EEFFFFFF"
+                android:centerColor="#60FFFFFF"
                 android:endColor="#00FFFFFF"
                 android:type="linear" />
         </shape>
     </item>
 
-    <!-- Layer 4: Bottom Emerald Radiant Bloom -->
+    <!-- Layer 4: Micro Edge Glint -->
+    <item
+        android:top="1dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:bottom="38dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="270"
+                android:startColor="#FFFFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 5: Bottom Emerald Radiant Bloom -->
     <item
         android:top="36dp"
-        android:left="10dp"
-        android:right="10dp"
+        android:left="8dp"
+        android:right="8dp"
         android:bottom="2dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="90"
-                android:startColor="#4500F59B"
-                android:centerColor="#1500FFCC"
+                android:startColor="#70FFFFFF"
+                android:centerColor="#4500F59B"
                 android:endColor="#00000000"
                 android:type="linear" />
         </shape>

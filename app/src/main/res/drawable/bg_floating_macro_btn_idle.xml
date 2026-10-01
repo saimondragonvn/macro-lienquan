@@ -1,59 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Layer 1: Crystalline Translucent Liquid Glass Base Disc (NO STROKE / KHÔNG VIỀN) -->
+    <!-- iOS 26 Liquid Glass Orb - Idle State -->
+
+    <!-- Layer 1: Ambient Drop Shadow / Deep Depth Base -->
     <item>
         <shape android:shape="oval">
             <gradient
                 android:angle="135"
-                android:startColor="#60223D66"
-                android:centerColor="#38101E35"
-                android:endColor="#22060F1F"
+                android:startColor="#75152A4A"
+                android:centerColor="#4D0E1C33"
+                android:endColor="#2E071020"
                 android:type="linear" />
             <size
                 android:width="56dp"
                 android:height="56dp" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/ios_glass_orb_rim" />
         </shape>
     </item>
 
-    <!-- Layer 2: Subtle Chromatic Cyan Ambient Refraction Glow -->
-    <item>
+    <!-- Layer 2: Internal Chromatic Caustic Glow (Phản xạ khúc xạ ánh sáng lỏng xanh ngọc) -->
+    <item
+        android:left="4dp"
+        android:top="4dp"
+        android:right="4dp"
+        android:bottom="4dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="45"
-                android:startColor="#2600E5FF"
-                android:centerColor="#0D0099FF"
+                android:startColor="#3300F5FF"
+                android:centerColor="#140099FF"
                 android:endColor="#00000000"
                 android:type="linear" />
         </shape>
     </item>
 
-    <!-- Layer 3: Pristine Specular Glare / Curved Glass Lens Highlight (Vầng bóng kính lỏng đỉnh) -->
+    <!-- Layer 3: iOS Curved 3D Specular Dome Highlight (Vệt chói thấu kính lỏng đỉnh Apple) -->
     <item
         android:top="2dp"
-        android:left="6dp"
-        android:right="6dp"
-        android:bottom="24dp">
+        android:left="5dp"
+        android:right="5dp"
+        android:bottom="26dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="270"
-                android:startColor="#75FFFFFF"
-                android:centerColor="#20FFFFFF"
+                android:startColor="#95FFFFFF"
+                android:centerColor="#30FFFFFF"
                 android:endColor="#00FFFFFF"
                 android:type="linear" />
         </shape>
     </item>
 
-    <!-- Layer 4: Soft Diffuse Ambient Bottom Reflection (Ánh quang đáy giọt nước) -->
+    <!-- Layer 4: Micro Edge Specular Highlight Ring (Viền phản quang mép trên) -->
+    <item
+        android:top="1dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:bottom="38dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="270"
+                android:startColor="#CCFFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 5: Bottom Ambient Reflection (Ánh quang đáy giọt nước kính lỏng) -->
     <item
         android:top="36dp"
-        android:left="10dp"
-        android:right="10dp"
+        android:left="8dp"
+        android:right="8dp"
         android:bottom="2dp">
         <shape android:shape="oval">
             <gradient
                 android:angle="90"
-                android:startColor="#25FFFFFF"
-                android:centerColor="#0F00E5FF"
+                android:startColor="#35FFFFFF"
+                android:centerColor="#1800F5FF"
                 android:endColor="#00000000"
                 android:type="linear" />
         </shape>

@@ -1,22 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- iOS 26 Liquid Glass HUD Card -->
+
+    <!-- Layer 1: Ultra-translucent Frosted Midnight Sapphire Base -->
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="22dp" />
+            <corners android:radius="28dp" />
             <gradient
                 android:angle="135"
-                android:startColor="@color/glass_card_bg_start"
-                android:centerColor="#D00F1B33"
-                android:endColor="@color/glass_card_bg_end"
+                android:startColor="#D00F1E38"
+                android:centerColor="#B80A1528"
+                android:endColor="#9E060D1A"
                 android:type="linear" />
             <stroke
                 android:width="1.2dp"
-                android:color="@color/glass_rim_specular" />
-            <padding
-                android:bottom="14dp"
-                android:left="14dp"
-                android:right="14dp"
-                android:top="14dp" />
+                android:color="@color/ios_glass_rim_light" />
+        </shape>
+    </item>
+
+    <!-- Layer 2: Apple Curved Specular Glare (Vầng bóng kính lỏng phản chiếu mép trên) -->
+    <item
+        android:top="2dp"
+        android:left="3dp"
+        android:right="3dp"
+        android:bottom="160dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:topLeftRadius="26dp"
+                android:topRightRadius="26dp"
+                android:bottomLeftRadius="8dp"
+                android:bottomRightRadius="8dp" />
+            <gradient
+                android:angle="270"
+                android:startColor="#45FFFFFF"
+                android:centerColor="#14FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Layer 3: Delicate Inner Ambient Caustic Light -->
+    <item
+        android:top="4dp"
+        android:left="4dp"
+        android:right="4dp"
+        android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="24dp" />
+            <gradient
+                android:angle="45"
+                android:startColor="#1800F5FF"
+                android:centerColor="#080099FF"
+                android:endColor="#00000000"
+                android:type="linear" />
         </shape>
     </item>
 </layer-list>

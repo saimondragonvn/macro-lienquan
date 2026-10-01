@@ -106,7 +106,7 @@ object NotificationHelper {
             isRecording -> "Vào game thao tác bình thường, bấm Xong trên đỉnh màn hình để lưu"
             isMenuOpen -> "Chạm thông báo hoặc bấm [✕ ĐÓNG MENU] để quay lại game"
             isButtonsHidden -> "Bấm [⚡ MỞ MENU] hoặc [👁️ HIỆN NÚT] để thao tác"
-            else -> "Game đang chọn: ${activeGameName ?: "Liên Quân Mobile"}. Chạm thông báo để mở menu hoặc đổi game."
+            else -> "Game: ${activeGameName ?: "Liên Quân Mobile"} • Liquid Glass by GiaHoai"
         }
 
         val toggleLabel = if (isButtonsHidden) "👁️ Hiện Nút" else "🙈 Ẩn Nút"

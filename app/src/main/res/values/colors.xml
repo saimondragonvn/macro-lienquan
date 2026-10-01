@@ -50,6 +50,26 @@
     <color name="text_disabled">#64748B</color>
     <color name="text_glass_glow">#E0F2FE</color>
 
+    <!-- iOS 26 Liquid Glass & Translucent Crystal Tokens -->
+    <color name="ios_glass_card_bg_start">#C4101E36</color>
+    <color name="ios_glass_card_bg_end">#A6070E1C</color>
+    <color name="ios_glass_rim_light">#70FFFFFF</color>
+    <color name="ios_glass_rim_subtle">#26FFFFFF</color>
+    <color name="ios_glass_inner_sheen">#33FFFFFF</color>
+    <color name="ios_glass_surface">#2E1B2E4D</color>
+    <color name="ios_glass_surface_stroke">#38FFFFFF</color>
+    <color name="ios_glass_btn_idle">#36254066</color>
+    <color name="ios_glass_btn_stroke">#52FFFFFF</color>
+    <color name="ios_glass_orb_base_start">#701B3054</color>
+    <color name="ios_glass_orb_base_mid">#480F1F3B</color>
+    <color name="ios_glass_orb_base_end">#2E061022</color>
+    <color name="ios_glass_orb_rim">#90FFFFFF</color>
+    <color name="ios_glass_orb_active_start">#CC00F59B</color>
+    <color name="ios_glass_orb_active_mid">#9908BA7B</color>
+    <color name="ios_glass_orb_active_end">#55059669</color>
+    <color name="cre_giahoai_accent">#38F9FF</color>
+    <color name="cre_giahoai_gold">#FCD34D</color>
+
     <!-- Overlay / Recorders / Target Reticles -->
     <color name="rec_overlay_tint">#99000000</color>
     <color name="touch_point_circle">#CCFF2A55</color>
