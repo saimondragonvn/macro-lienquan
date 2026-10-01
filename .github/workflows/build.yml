@@ -49,22 +49,20 @@ jobs:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.6.0' }}
           name: Macro Liên Quân Mobile - ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.6.0' }}
           body: |
-            ### 🍏 Macro Liên Quân Mobile - Game Turbo Pro (Bản Release ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.6.0' }})
+            ### ⚡ Macro Liên Quân Mobile - Game Turbo Pro (Bản Release ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.6.0' }})
             Bản cài đặt APK hoàn chỉnh đã được ký số (Signed Release) từ commit `${{ github.sha }}`.
 
-            #### 💎 GIAO DIỆN iOS 26 LIQUID GLASS SIÊU THỰC & BẢN QUYỀN CRE: GIAHOAI:
-            1. **NÚT MACRO THẤU KÍNH LỎNG 5 TẦNG (OPTICAL ACTION ORB)**:
-               - Lớp đế kính Sapphire mờ sẫm trong suốt quang học cao (High Refraction Translucent Glass).
-               - Đường viền phản quang khúc xạ kim cương siêu mảnh 1.0dp (`Specular Rim Light`).
-               - Tán sắc ánh sáng ngọc bích nội thể (`Cyan Caustic Glow`) và ánh quang đáy giọt nước (`Bottom Ambient Bounce`).
-               - Vòm lóa mặt cầu 3D (`Apple Curved Specular Dome Highlight`) cùng phản hồi nén xung lực ngọc bích khi kích hoạt.
-            2. **MENU GAME TURBO HUD CHUẨN CONTROL CENTER LIQUID GLASS**:
-               - Bo góc squircle liên tục 28dp, thanh kéo Apple Dynamic Grabber Bar.
-               - Nền kính acrylic saphir tối bán trong suốt nhìn thấu khung cảnh trận đấu.
-               - Phân nhóm Inset Glass Cards và hệ thống nút bấm viên nang kính lỏng.
+            #### 🎮 GIAO DIỆN TACTICAL GAMING HUD & BẢN QUYỀN CRE: GIAHOAI:
+            1. **NÚT MACRO GAMING HUD SIÊU NÉT (TACTICAL TRIGGER BUTTON)**:
+               - Vòng hào quang Neon Cyan 2.0dp sắc sảo, chống chìm màu khi giao tranh combat tổng.
+               - Lõi Stealth Obsidian tương phản cao giúp nhìn rõ từng nút M1, M2 trên nền game.
+               - Trạng thái kích hoạt (Active State): Bùng nổ lõi ngọc bích cực sáng cùng viền trắng phát quang.
+            2. **BẢNG ĐIỀU KHIỂN GAME TURBO HUD CHUẨN CYBERPUNK**:
+               - Giao diện đen nhám viền Neon sắc bén, tối ưu hiển thị nhanh, trực quan.
+               - Hệ thống nút bấm và thẻ chọn game phong cách Redmi Turbo 4 Pro / ROG Phone.
             3. **TÍCH HỢP BẢN QUYỀN ĐỘC QUYỀN CRE: GIAHOAI**:
-               - Huy hiệu kính lỏng `Cre: GiaHoai` trên Header Menu.
-               - Thẻ kính phát quang `💎 iOS 26 LIQUID GLASS • CRE: GIAHOAI` ở Footer Menu.
+               - Huy hiệu `Cre: GiaHoai` trên Header Menu.
+               - Thanh vinh danh `⚡ GAME TURBO PRO • CRE: GIAHOAI` ở Footer Menu.
                - Tab mép thu gọn `⚡ TURBO • GIAHOAI` và thẻ vinh danh trên màn hình chính.
 
             #### 📲 Tải về APK:
